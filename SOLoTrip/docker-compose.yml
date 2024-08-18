@@ -5,8 +5,8 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: ${DB_name}
-      MYSQL_USER: ${DB_user}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -24,7 +24,7 @@ services:
     depends_on:
       - db
     environment:
-      - DB_NAME=${DB_name}
+      - DB_NAME=${DB_NAME}
       - DB_USER=root
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=db
