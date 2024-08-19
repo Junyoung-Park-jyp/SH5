@@ -1,79 +1,98 @@
+
+
 <template>
-  <v-app>
-    <v-container>
-      <v-row>
-        <!-- 상단 네비게이션 -->
-        <v-app-bar app dense>
-          <v-spacer></v-spacer>
-          <v-btn icon>
-            <v-icon>mdi-message-outline</v-icon>
-          </v-btn>
-          <v-btn icon>
-            <v-icon>mdi-bell-outline</v-icon>
-          </v-btn>
-          <v-btn icon>
-            <v-icon>mdi-account-circle-outline</v-icon>
-          </v-btn>
-        </v-app-bar>
-      </v-row>
+  <v-container fluid class="py-4">
+    <v-row>
+      <v-col cols="12">
+        <v-card class="account-card pa-4">
+          <v-row no-gutters>
+            <v-col class="text-left">
+              <h3 class="mb-2">OOO님</h3>
+              <p>계좌번호<br/>잔액</p>
+            </v-col>
+            <v-col class="text-right">
+              <v-img src="your-image-url-here" max-width="100" contain></v-img>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
 
-      <!-- 계좌 정보 및 배너 -->
-      <v-row class="mt-4">
-        <v-col cols="12">
-          <v-card class="px-4 py-3">
-            <v-row align="center">
-              <v-col>
-                <v-img src="https://via.placeholder.com/50" class="mr-4" max-width="50"></v-img>
-                <div>
-                  <h3 class="mb-1">내 계좌</h3>
-                  <v-btn text>전체보기</v-btn>
-                </div>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <p>박준영님, 환영합니다.</p>
-                <p>본인인증 하신 후 안전한 금융거래를 시작하세요.</p>
-                <v-btn class="btn-blue">금융 거래하기</v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+    <v-row class="mt-4">
+      <v-col cols="4">
+        <v-card class="menu-card blue-card pa-4" outlined>
+          <p class="text-center white--text">SOL트래블</p>
+        </v-card>
+      </v-col>
+      <v-col cols="4">
+        <v-card class="menu-card blue-card pa-4" outlined>
+          <p class="text-center white--text">SOL로 여행</p>
+        </v-card>
+      </v-col>
+      <v-col cols="4">
+        <v-card class="menu-card white-card pa-4" outlined>
+          <p class="text-center">환율조회</p>
+        </v-card>
+      </v-col>
+    </v-row>
 
-      <!-- 아이콘 버튼들 -->
-      <v-row class="mt-4">
-        <v-col cols="4">
-          <v-card class="pa-3" outlined>
-            <v-icon size="large" color="orange">mdi-chicken</v-icon>
-            <p class="text-center">땡겨요</p>
-          </v-card>
-        </v-col>
-        <v-col cols="4">
-          <v-card class="pa-3" outlined>
-            <v-icon size="large" color="pink">mdi-magnify</v-icon>
-            <p class="text-center">대출비교/갈아타기</p>
-          </v-card>
-        </v-col>
-        <v-col cols="4">
-          <v-card class="pa-3" outlined>
-            <v-icon size="large" color="blue">mdi-credit-card</v-icon>
-            <p class="text-center">SOL트래블</p>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-app>
-
+    <v-row class="mt-2">
+      <v-col cols="4">
+        <v-card class="menu-card white-card pa-4" outlined>
+          <p class="text-center">환전</p>
+        </v-card>
+      </v-col>
+      <v-col cols="4">
+        <v-card class="menu-card white-card pa-4" outlined>
+          <p class="text-center">목표환율<br/>환전</p>
+        </v-card>
+      </v-col>
+      <v-col cols="4">
+        <v-card class="menu-card white-card pa-4" outlined>
+          <p class="text-center">메뉴추가</p>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 <script setup>
 </script>
+
 <style scoped>
+.account-card {
+  background-color: #f7f9fc;
+  border-radius: 12px;
+}
+
+.menu-card {
+  border-radius: 12px;
+  height: 100%;
+  font-size: 0.8rem;
+}
+
+.blue-card {
+  background-color: #0471E9;
+  color: #ffffff;
+}
+
+.white-card {
+  background-color: #ffffff; 
+}
+
 .text-center {
   text-align: center;
 }
 
 .mt-4 {
   margin-top: 16px;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.white--text {
+  color: white !important;
 }
 </style>
