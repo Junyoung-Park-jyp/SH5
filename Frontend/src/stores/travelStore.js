@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useTravelStore = defineStore('travel', {
   state: () => ({
+    travelId: null,
     country: '',
     exchangeRate: null,
     members: [],
@@ -32,6 +33,30 @@ export const useTravelStore = defineStore('travel', {
       this.endDate = travelData.endDate;
       this.adjustTime = travelData.adjustTime;
     },
+    async makeTravel(travelData) {
+      try {
+        const response = await axiosInstance.post('/travel', {
+          country: travelData.country,
+          members: travelData.members,
+          apiKey: this.apiKey,
+          startDate: travelData.startDate,
+          endDate: travelData.endDate,
+          adjustTime: travelData.adjustTime,
+        });
+
+        const travelId  = response.data;
+
+        this.travelId = travelId;
+        this.members = travelData.members; 
+        this.startDate = travelData.startDate;
+        this.endDate = travelData.endDate,
+        this.adjustTime = travelData.adjustTime,
+
+      } catch (error) {
+        console.error('로그인 실패:', error);
+      }
+    },
+
 
     clearTravel() {
       this.country = '';
