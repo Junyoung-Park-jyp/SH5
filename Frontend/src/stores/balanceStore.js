@@ -11,20 +11,26 @@ export const useBalanceStore = defineStore('balance', {
     withdrawal: null, // 출금
     deposit: null, // 입금
   }),
-
   getters: {
-    balance(state) {
+    userBalance(state) {
       return state.balance
     },
-    withdrawal(state) {
+    userWithdrawal(state) {
       return state.withdrawal
     },
-    deposit(state) {
+    userDeposit(state) {
       return state.deposit
     }
   },
 
   actions: {
+    // 사용자가 계좌 변경시, 계좌 초기화
+    clearAccount() {
+      this.bank = null
+      this.balance = null
+      this.accountNum = null
+    },
+
     // 계좌 리스트 조회 데이터 처리
     setAccounts(accountsData) {
       this.accounts = accountsData
@@ -89,7 +95,7 @@ export const useBalanceStore = defineStore('balance', {
         console.error('계좌 리스트 조회 실패:', error);
       }
     },
-    
+
     // 계좌 입금
     async depositAccount(accountData) {
       try { 
