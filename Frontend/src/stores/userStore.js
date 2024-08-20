@@ -5,7 +5,6 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     name: '',
     email: '',
-    apiKey: '',
     userKey: '',
     bank: null,
     accountNum: null,
@@ -38,17 +37,13 @@ export const useUserStore = defineStore('user', {
       try {
         // 회원가입 API 호출
         const response = await axiosInstance.post('/member', {
-          apiKey: this.apiKey,
           userId: userData.userId,
-          password: userData.password
         });
 
         const { userId, username, institutionCode, userKey } = response.data;
 
         await this.signIn({
           userId,
-          apiKey: this.apiKey,
-          password: userData.password,
         });
 
       } catch (error) {
@@ -60,8 +55,6 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await axiosInstance.post('/member/search', {
           userId: userData.userId,
-          apiKey: this.apiKey,
-          password: userData.password, 
         });
 
         const { userId, userName, institutionCode, userKey } = response.data;
@@ -79,7 +72,6 @@ export const useUserStore = defineStore('user', {
       this.name = '';
       this.email = '';
       this.isLogin = false;
-      this.apiKey = '';
       this.userKey = '';
     },
 
