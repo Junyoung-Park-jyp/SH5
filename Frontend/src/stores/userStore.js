@@ -18,9 +18,6 @@ export const useUserStore = defineStore('user', {
     userEmail(state) {
       return state.email;
     },
-    apiKey(state) {
-      return state.apiKey
-    },
     isLogin(state) {
       return state.isLogin;
     },

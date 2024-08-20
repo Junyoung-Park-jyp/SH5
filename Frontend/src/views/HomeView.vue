@@ -1,5 +1,3 @@
-
-
 <template>
   <v-container fluid class="my-5">
     <v-row>
