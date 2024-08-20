@@ -37,7 +37,6 @@ export const useTravelStore = defineStore('travel', {
 
     setTravel(travelData) {
       this.country = travelData.country;
-      this.exchangeRate = travelData.exchangeRate;
       this.members = travelData.members;
       this.startDate = travelData.startDate;
       this.endDate = travelData.endDate;
@@ -52,10 +51,7 @@ export const useTravelStore = defineStore('travel', {
         if (response.data.REC) {
           const travelId  = response.data;
           this.travelId = travelId;
-          this.members = travelData.members; 
-          this.startDate = travelData.startDate;
-          this.endDate = travelData.endDate;
-          this.adjustTime = travelData.adjustTime;
+          this.setTravel(travelData)
 
           console.log('여행 생성 성공')
         } else {
@@ -84,16 +80,11 @@ export const useTravelStore = defineStore('travel', {
         const response = await axiosInstance.put(`/travel/${travelId}`, travelData)
   
         if (response.data.REC) {
-          this.country = travelData.country
-          this.members = travelData.members
-          this.startDate = travelData.startDate
-          this.endDate = travelData.endDate
-          this.adjustTime = travelData.adjustTime
+          this.setTravel(travelData)
         }
       } catch(error) {
         console.error('여행 정보 수정 실패:', error)
       }
-
-    }
+    },
   },
 });
