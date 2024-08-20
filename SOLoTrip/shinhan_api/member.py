@@ -2,8 +2,8 @@ from shinhan_api.request import post
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # .env 파일 로드
 
+load_dotenv()
 API_KEY = os.getenv('API_KEY')
 
 
@@ -13,6 +13,7 @@ def signup(email):
     """
     url = "member"
     body = {"apiKey": API_KEY, "userId": email}
+    print(API_KEY)
     '''
     {'userId': 'oodeng98@gmail.com', 'userName': 'oodeng98', 'institutionCode': '00100', 'userKey': '62ce827d-2f7e-49be-b77d-9482df614445', 'created': '2024-08-17T12:05:41.879020702+09:00', 'modified': '2024-08-17T12:05:41.879020702+09:00'}
     '''
@@ -32,5 +33,5 @@ def search(email):
     
 
 if __name__ == "__main__":
-    signup("oodeng98@naver.com")
-    # search()
+    # signup("oodeng98@naver.com")
+    print(search("oodeng98@naver.com"))

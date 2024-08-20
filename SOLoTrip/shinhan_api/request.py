@@ -13,6 +13,7 @@ def get_response(response):
 def post(url, body):
     url = URL + url
     response = requests.post(url, json=body).json()
+    return response
     return get_response(response)
 
 

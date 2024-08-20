@@ -1,10 +1,10 @@
 from request import post
-import configparser
+from dotenv import load_dotenv
+import os
 
 
-config = configparser.ConfigParser()
-config.read("settings.ini")
-API_KEY = config["ApiSettings"]["ApiKey"]
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 
 
 def signup():

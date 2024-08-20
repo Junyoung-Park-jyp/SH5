@@ -1,5 +1,5 @@
-from request import post
-from common import make_header
+from shinhan_api.request import post
+from shinhan_api.common import make_header
 
 
 def exchange_rate():

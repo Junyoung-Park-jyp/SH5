@@ -173,7 +173,7 @@ def inquire_transaction_history():
 
 if __name__ == "__main__":
     # create_demand_deposit()
-    # inquire_demand_deposit_list()
+    inquire_demand_deposit_list()
     # create_demand_deposit_account()
     # inquire_demand_deposit_account_list()
     # inquire_demand_deposit_account()
@@ -183,4 +183,4 @@ if __name__ == "__main__":
     # update_demand_deposit_account_deposit()
     # update_demand_deposit_account_Transfer()
     # inquire_transaction_history_list()
-    inquire_transaction_history()
+    # inquire_transaction_history()

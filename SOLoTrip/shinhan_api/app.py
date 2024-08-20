@@ -1,4 +1,4 @@
-from request import post
+from shinhan_api.request import post
 
 
 def issued_api_key():
@@ -21,4 +21,4 @@ def re_issued_api_key():
 
 if __name__ == "__main__":
     # issued_api_key()
-    re_issued_api_key()
+    print(re_issued_api_key())
