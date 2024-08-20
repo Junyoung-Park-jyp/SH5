@@ -1,5 +1,3 @@
-
-
 <template>
   <v-container fluid class="py-4">
     <v-row>

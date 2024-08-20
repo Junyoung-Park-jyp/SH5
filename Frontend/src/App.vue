@@ -6,8 +6,8 @@
         :label="isTraveling ? '홈' : '여행'"
         inset
         color="primary"
-      class="btn-switch"
-        >
+        class="btn-switch"
+      >
       </v-switch>
     </v-container>
     <v-main>
