@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework', 
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'corsheaders', 
     'accounts', 
 ]
 
@@ -53,7 +60,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
+# CSRF 보호 비활성화
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+CSRF_COOKIE_SECURE = False
+CSRF_USE_SESSIONS = False
+
+
+SITE_ID = 1
 
 ROOT_URLCONF = 'SOLoTrip.urls'
 
@@ -133,3 +150,24 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'  # Django 프로젝트의 User를 나타내는 데 사용하는 모델을 지정
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
+# CSRF 보호 비활성화
+CSRF_TRUSTED_ORIGINS = []
+CORS_ORIGIN_ALLOW_ALL = True  # 모든 도메인에 대해 허용
+# 또는 특정 도메인만 허용할 경우
+# CORS_ORIGIN_WHITELIST = [
+#    'http://localhost:3000',
+#    'https://yourfrontenddomain.com',
+# ]
