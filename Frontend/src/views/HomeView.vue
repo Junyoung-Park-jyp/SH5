@@ -52,9 +52,11 @@
       </v-col>
     </v-row>
   </v-container>
+  <CountryDateForm />
 </template>
 
 <script setup>
+import CountryDateForm from '@/components/TripReadyView/CountryDateForm.vue'
 </script>
 
 <style scoped>
