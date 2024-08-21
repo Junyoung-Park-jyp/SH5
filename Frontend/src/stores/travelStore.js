@@ -75,7 +75,7 @@ export const useTravelStore = defineStore('travel', {
       }
     },
 
-    async changeTravel(travelId, travelData) {
+    async editTravel(travelId, travelData) {
       try {
         const response = await axiosInstance.put(`/travel/${travelId}`, travelData)
   
