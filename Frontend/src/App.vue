@@ -1,26 +1,15 @@
 <template>
   <v-app class="app-gradient">
-    <v-container class="sticky-container">
+    <v-container>
       <v-toolbar
         :color="isHomeView ? 'white-3' : 'white-4'"
         class="toolbar-layout"
-        floating
       >
         <!-- 커스텀 스위치 버튼 -->
         <div class="custom-switch" @click="toggleSwitch">
           <div class="switch-thumb" :class="{ active: !isTraveling }"></div>
-          <span
-            class="switch-label"
-            :class="{ active: !isTraveling }"
-            style="padding-left: 5px"
-            >홈</span
-          >
-          <span
-            class="switch-label"
-            :class="{ active: isTraveling }"
-            style="padding-right: 5px"
-            >여행</span
-          >
+          <span class="switch-label" :class="{ active: !isTraveling }" style=" padding-left: 5px;">홈</span>
+          <span class="switch-label" :class="{ active: isTraveling }" style=" padding-right: 5px;">여행</span>
         </div>
 
         <!-- 이 요소가 왼쪽과 오른쪽의 요소들을 양 끝으로 배치 -->
@@ -53,39 +42,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import axios from "axios";
-import { useRoute } from "vue-router";
-import "./assets/base.css";
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import './assets/base.css'
 
 const route = useRoute();
 const isTraveling = ref(false);
 
 // HomeView에서는 별도의 스타일 적용
-const isHomeView = computed(() => route.name === "HomeView");
+const isHomeView = computed(() => route.name === 'HomeView');
 
 // 토글 스위치 함수
 const toggleSwitch = () => {
   isTraveling.value = !isTraveling.value;
 };
-
-// 태완이 회원가입 실험용 코드
-// // axios 요청을 보내는 함수
-// const sendData = async () => {
-//   try {
-//     const response = await axios.post('http://52.79.246.151:8000/accounts/signup/', {
-//       email: 'jamie9@naver.com'
-//     });
-//     console.log('Data sent successfully:', response.data);
-//   } catch (error) {
-//     console.error('Error sending data:', error);
-//   }
-// };
-
-// // 컴포넌트가 마운트될 때 axios 요청을 보냄
-// onMounted(() => {
-//   sendData();
-// });
 </script>
 
 <style scoped>
@@ -121,7 +91,6 @@ const toggleSwitch = () => {
   margin: 0px auto;
   padding: 0px;
   font-size: 1.1rem;
-  position: sticky;
 }
 
 /* 커스텀 스위치 스타일 */
