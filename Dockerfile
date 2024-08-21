@@ -5,7 +5,7 @@ FROM python:3.10
 RUN pip install --upgrade pip
 
 # 작업 디렉토리를 /app으로 설정
-WORKDIR /app
+WORKDIR /app/SOLoTrip
 
 # requirements.txt를 먼저 복사하고 의존성 설치
 COPY requirements.txt /app/
@@ -18,4 +18,4 @@ COPY . /app/
 EXPOSE 8000
 
 # Gunicorn을 사용하여 서버 실행
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.SOLoTrip.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.wsgi:application"]

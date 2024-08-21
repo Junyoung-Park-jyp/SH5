@@ -3,6 +3,6 @@ version: "3"
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 SOLoTrip.SOLoTrip.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 SOLoTrip.wsgi:application
     ports:
       - "8000:8000"
