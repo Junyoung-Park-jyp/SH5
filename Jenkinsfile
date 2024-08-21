@@ -38,10 +38,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Docker 컨테이너 내부에서 Django 유닛 테스트 실행
-                    dockerImage.inside {
-                        sh 'python manage.py test'
-                    }
+                    // WORKDIR로 이동한 후 테스트 실행
+                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} python manage.py test"
                 }
             }
         }
