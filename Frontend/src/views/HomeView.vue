@@ -160,6 +160,7 @@ const navigateToBridge = () => {
 
 .flex-grow-1 {
   flex-grow: 1;
+  height: 400px;
 }
 
 .main-content {
