@@ -46,7 +46,7 @@
       </v-toolbar>
     </v-container>
 
-    <v-main>
+    <v-main class="main-container">
       <router-view />
     </v-main>
   </v-app>
@@ -91,13 +91,13 @@ const toggleSwitch = () => {
 <style scoped>
 /* v-app의 배경 그라데이션 */
 .app-gradient {
-  background: linear-gradient(to bottom, #ffffff, #f4f6fa);
+  width: 100%;
   height: 100vh; /* 페이지 전체 높이를 채우기 위해 */
   display: flex;
   flex-direction: column;
-  margin: 0px;
+  margin: 0px auto;
   padding: 0px;
-  width: 100%;
+  border: none;
 }
 
 /* sticky-container에 sticky 속성 추가 */
@@ -105,6 +105,9 @@ const toggleSwitch = () => {
   position: sticky;
   top: 0;
   z-index: 1000; /* 필요시 다른 요소 위에 표시되도록 z-index 조정 */
+  width: 100%;
+  margin: 0px auto;
+  padding: 0px;
 }
 
 /* 툴바 레이아웃 조정 */
@@ -112,9 +115,11 @@ const toggleSwitch = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* background-color: grey; */
   background-color: white;
+  width: 100%;
+  margin: 0px auto;
   padding: 0px;
-  margin: 0px;
   font-size: 1.1rem;
   position: sticky;
 }
@@ -171,7 +176,4 @@ const toggleSwitch = () => {
   height: 30px;
 }
 
-/* navbar css */
-.btn-switch {
-}
 </style>
