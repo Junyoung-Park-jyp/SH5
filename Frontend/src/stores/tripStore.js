@@ -10,6 +10,14 @@ export const useTripStore = defineStore('trip', {
     startDate: null,
     endDate: null,
     adjustTime: null,
+
+    // 다녔던 여행들 더미 데이터
+    travelExperiences: [
+      {country: '제주도', cost: 963500},
+      {country: '파리', cost: 3572600},
+      {country: '오키나와', cost: 1572600},
+      {country: '부산', cost: 678830},
+    ],
   }),
 
   getters: {
