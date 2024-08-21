@@ -23,10 +23,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // 컨테이너 내부에서 /app 디렉토리로 이동한 후, manage.py 파일을 찾음
-                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} ls /app"  // 디버깅을 위해 /app 디렉토리의 파일 확인
-                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} ls /app/SOLoTrip"  // 디버깅을 위해 /app 디렉토리의 파일 확인
-                    sh "docker run --rm -w /app/SOLoTrip my-django-app:${env.BUILD_ID} python manage.py test"
+                    // 컨테이너 내부에서 환경 변수 출력
+                    sh "docker run --rm --env-file ${env.ENV_FILE_PATH} my-django-app:${env.BUILD_ID} printenv"
+                    sh "docker run --rm -w /app/SOLoTrip --env-file ${env.ENV_FILE_PATH} my-django-app:${env.BUILD_ID} python manage.py test"
                 }
             }
         }
