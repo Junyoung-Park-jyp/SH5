@@ -1,82 +1,261 @@
 <template>
-  <v-container fluid class="py-4">
-    <v-row>
-      <v-col cols="12">
-        <v-card class="account-card pa-4">
-          <v-row no-gutters>
-            <v-col class="text-left">
-              <h3 class="mb-2">OOO님</h3>
-              <p>계좌번호<br/>잔액</p>
-            </v-col>
-            <v-col class="text-right">
-              <v-img src="your-image-url-here" max-width="100" contain></v-img>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-app class="app-gradient">
+    <v-main class="d-flex flex-column main-content">
+      <v-container fluid class="flex-grow-1">
+        <v-row>
+          <v-col cols="12">
+            <v-card class="account-card pa-10">
+              <v-row no-gutters>
+                <v-col class="text-left p-3">
+                  <div class="mb-2 account-name">OOO님</div>
+                  <div class="account-num">
+                    <span>신한</span>
+                    <span class="mx-1">110-</span>
+                  </div>
+                  <div class="account-balance">
+                    <span>잔액</span>
+                    <span class="mx-2">1,000,000</span>
+                  </div>
+                </v-col>
+                <v-col class="text-right">
+                  <img
+                    src="../assets/img/account.png"
+                    alt="account"
+                    style="max-width: 100px"
+                  />
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
 
-    <v-row class="mt-4">
-      <v-col cols="4">
-        <v-card class="menu-card blue-card pa-4" outlined>
-          <p class="text-center white--text">SOL트래블</p>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card blue-card pa-4" outlined>
-          <p class="text-center white--text">SOL로 여행</p>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <p class="text-center">환율조회</p>
-        </v-card>
-      </v-col>
-    </v-row>
+        <v-row class="mt-10">
+          <v-col cols="4">
+            <v-card class="menu-card green-card pa-4" outlined>
+              <div class="text-left menu">SOL트래블</div>
+              <div class="menu-icon">
+                <img src="../assets/img/menu1.png" alt="menu1" />
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="4">
+            <v-card
+              class="menu-card blue-card pa-4"
+              outlined
+              @click="navigateToBridge"
+            >
+              <div class="text-left menu">SOL로 여행</div>
+              <div class="menu-icon">
+                <img src="../assets/img/menu2.png" alt="menu2" />
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="4">
+            <v-card class="menu-card white-card pa-4" outlined>
+              <div class="text-left menu">환율조회</div>
+              <div class="menu-icon">
+                <img src="../assets/img/menu3.png" alt="menu3" />
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
 
-    <v-row class="mt-2">
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <p class="text-center">환전</p>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <p class="text-center">목표환율<br/>환전</p>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <p class="text-center">메뉴추가</p>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+        <v-row class="mt-2">
+          <v-col cols="4">
+            <v-card class="menu-card white-card pa-4" outlined>
+              <div class="text-left menu">환전</div>
+              <div class="menu-icon">
+                <img src="../assets/img/menu4.png" alt="menu4" />
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="4">
+            <v-card class="menu-card white-card pa-4" outlined>
+              <div class="text-left menu">목표환율<br />환전</div>
+              <div class="menu-icon">
+                <img src="../assets/img/menu5.png" alt="menu5" />
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="4">
+            <v-card class="menu-card gray-card pa-4" outlined>
+              <div class="plus-icon">
+                <img src="../assets/img/menu6.png" alt="menu6" />
+              </div>
+              <div class="text-center menu">메뉴추가</div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <!-- Footer를 하단에 고정 -->
+      <v-footer color="white" app>
+        <v-row
+          justify="space-around"
+          align="center"
+          no-gutters
+          class="footer-container"
+        >
+          <v-col cols="auto" class="text-center">
+            <v-btn icon>
+              <v-icon color="primary" size="32">mdi-home</v-icon>
+            </v-btn>
+            <div class="footer-label active">홈</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <v-btn icon>
+              <v-icon color="grey" size="32">mdi-chart-pie</v-icon>
+            </v-btn>
+            <div class="footer-label">자산관리</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <v-btn icon>
+              <v-icon color="grey" size="32">mdi-shopping</v-icon>
+            </v-btn>
+            <div class="footer-label">상품</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <v-btn icon>
+              <v-icon color="grey" size="32">mdi-gift</v-icon>
+            </v-btn>
+            <div class="footer-label">혜택</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <v-btn icon>
+              <v-icon color="grey" size="32">mdi-view-grid</v-icon>
+            </v-btn>
+            <div class="footer-label">전체메뉴</div>
+          </v-col>
+        </v-row>
+      </v-footer>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+import "../assets/base.css";
+
+// 라우터 훅 설정
+const router = useRouter();
+
+// BridgeView로 라우팅하는 함수
+const navigateToBridge = () => {
+  router.push({ name: "bridge" });
+};
 </script>
 
 <style scoped>
+/* v-app의 배경 그라데이션 */
+.app-gradient {
+  background: linear-gradient(to bottom, #ffffff, #f4f6fa);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto; /* 스크롤 가능 */
+}
+
+/* 계좌 정보 */
 .account-card {
-  background-color: #f7f9fc;
+  background-color: #ffffff;
   border-radius: 12px;
+  height: 200px;
+  font-size: large;
+  font-weight: bold;
+}
+
+.account-name {
+  font-size: xx-large;
+  font-weight: bolder;
 }
 
 .menu-card {
   border-radius: 12px;
-  height: 100%;
+  width: 100%;
+  aspect-ratio: 1;
   font-size: 0.8rem;
+  position: relative;
+}
+
+.menu {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.menu-icon {
+  position: absolute;
+  bottom: 2px;
+  right: 5px;
+}
+
+.menu-icon img {
+  width: 50px;
+}
+
+.plus-icon {
+  text-align: center;
+}
+
+.plus-icon img {
+  width: 50px;
+}
+
+.green-card {
+  background-color: #5e9bc1;
+  color: #ffffff;
+  font-weight: lighter;
 }
 
 .blue-card {
-  background-color: #0471E9;
+  background-color: #4b72e1;
   color: #ffffff;
+  font-weight: lighter;
 }
 
 .white-card {
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
+
+.gray-card {
+  background-color: #e3e6eb;
+  color: #626569;
+}
+
+/* footer */
+.footer-container {
+  padding: 10px 0;
+}
+
+.footer-label {
+  font-size: 0.75rem;
+  color: #9e9e9e;
+}
+
+.footer-label.active {
+  color: #1976d2;
+}
+
+.v-footer {
+  border-top: 1px solid #e0e0e0;
+}
+
+.v-btn {
+  padding: 0;
+}
+
+/* class 값 */
 
 .text-center {
   text-align: center;
@@ -88,9 +267,5 @@
 
 .mt-2 {
   margin-top: 8px;
-}
-
-.white--text {
-  color: white !important;
 }
 </style>
