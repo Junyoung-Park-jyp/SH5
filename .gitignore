@@ -1,4 +1,5 @@
 settings.ini
+SOLoTrip.pem
 
 # Created by https://www.toptal.com/developers/gitignore/api/venv,django,vuejs,database,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=venv,django,vuejs,database,python
@@ -181,7 +182,7 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

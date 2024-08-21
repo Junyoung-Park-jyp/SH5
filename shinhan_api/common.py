@@ -1,12 +1,11 @@
 from request import post
 from member import search
-import configparser
 from datetime import datetime
+import os
+from dotenv import load_dotenv
 
 
-config = configparser.ConfigParser()
-config.read("settings.ini")
-API_KEY = config["ApiSettings"]["apikey"]
+API_KEY = os.getenv('API_KEY')
 
 
 def make_header(apiName):
