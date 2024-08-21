@@ -9,26 +9,34 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                // Python 의존성 설치
-                sh 'pip install --upgrade pip'
-                sh 'pip install -r requirements.txt'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                // Django 유닛 테스트 실행
-                sh 'python manage.py test'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 // Docker 이미지를 빌드
                 script {
                     dockerImage = docker.build("my-django-app:${env.BUILD_ID}")
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                // Docker 컨테이너 내부에서 명령 실행
+                script {
+                    dockerImage.inside {
+                        sh 'pip install --upgrade pip'
+                        sh 'pip install -r requirements.txt'
+                    }
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                // Docker 컨테이너 내부에서 Django 유닛 테스트 실행
+                script {
+                    dockerImage.inside {
+                        sh 'python manage.py test'
+                    }
                 }
             }
         }
