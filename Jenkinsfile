@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // EC2 인스턴스의 .env 파일 경로
+        ENV_FILE_PATH = '/home/ubuntu/.env'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,8 +16,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                // Docker 이미지를 빌드
                 script {
+                    // Docker 이미지를 빌드
                     dockerImage = docker.build("my-django-app:${env.BUILD_ID}")
                 }
             }
@@ -20,8 +25,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Docker 컨테이너 내부에서 명령 실행
                 script {
+                    // Docker 컨테이너 내부에서 명령 실행
                     dockerImage.inside {
                         sh 'pip install --upgrade pip'
                         sh 'pip install -r requirements.txt'
@@ -32,8 +37,8 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // Docker 컨테이너 내부에서 Django 유닛 테스트 실행
                 script {
+                    // Docker 컨테이너 내부에서 Django 유닛 테스트 실행
                     dockerImage.inside {
                         sh 'python manage.py test'
                     }
@@ -48,8 +53,8 @@ pipeline {
                     sh "docker stop my-django-app || true"
                     sh "docker rm my-django-app || true"
 
-                    // Docker 이미지를 컨테이너로 실행
-                    dockerImage.run("-d -p 8000:8000 --name my-django-app --env-file .env")
+                    // Docker 이미지를 컨테이너로 실행, EC2 인스턴스에 있는 .env 파일 사용
+                    dockerImage.run("-d -p 8000:8000 --name my-django-app --env-file ${env.ENV_FILE_PATH}")
                 }
             }
         }
