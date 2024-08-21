@@ -1,14 +1,15 @@
-from request import post
-from member import search
-from datetime import datetime
-import os
+from shinhan_api.request import post
+from shinhan_api.member import search
 from dotenv import load_dotenv
+import os
+from datetime import datetime
 
 
+load_dotenv()
 API_KEY = os.getenv('API_KEY')
 
 
-def make_header(apiName):
+def make_header(apiName, email="oodeng98@naver.com"):
     current_time = datetime.now()
     numeric_time = current_time.strftime("%Y%m%d%H%M%S") + f"{current_time.microsecond:06d}"
     common_body = {
@@ -20,7 +21,7 @@ def make_header(apiName):
         "apiServiceCode": apiName, # apiName 필드와 동일
         "institutionTransactionUniqueNo": numeric_time, # 기관별 API 서비스 호출 단위의 고유 코드, YYYYMMDD + HHMMSS + 일련번호 6자리 또는 20자리의 난수, 항상 새로운 번호로 임의 채번해야함
         "apiKey": API_KEY, # 앱 관리자가 발급받은 API KEY
-        "userKey": search()["userKey"] # 앱 사용자가 회원가입할 때 발급받은 USER KEY
+        "userKey": search(email)["userKey"] # 앱 사용자가 회원가입할 때 발급받은 USER KEY
     }
     return {'Header': common_body}
 
