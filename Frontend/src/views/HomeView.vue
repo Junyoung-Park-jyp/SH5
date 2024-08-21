@@ -1,142 +1,144 @@
 <template>
-  <v-container fluid class="flex-grow-1">
-    <v-row>
-      <v-col cols="12">
-        <v-card class="account-card pa-10">
-          <v-row no-gutters>
-            <v-col class="text-left p-3">
-              <div class="mb-2 account-name">OOO님</div>
-              <div class="account-num">
-                <span>신한</span>
-                <span class="mx-1">110-</span>
-              </div>
-              <div class="account-balance">
-                <span>잔액</span>
-                <span class="mx-2">1,000,000</span>
-              </div>
-            </v-col>
-            <v-col class="text-right">
-              <img
-                src="../assets/img/account.png"
-                alt="account"
-                style="max-width: 100px"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row class="mt-10">
-      <v-col cols="4">
-        <v-card class="menu-card green-card pa-4" outlined>
-          <div class="text-left menu">SOL트래블</div>
-          <div class="menu-icon">
-            <img src="../assets/img/menu1.png" alt="menu1" />
-          </div>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card
-          class="menu-card blue-card pa-4"
-          outlined
-          @click="navigateToBridge"
-        >
-          <div class="text-left menu">SOL로 여행</div>
-          <div class="menu-icon">
-            <img src="../assets/img/menu2.png" alt="menu2" />
-          </div>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <div class="text-left menu">환율조회</div>
-          <div class="menu-icon">
-            <img src="../assets/img/menu3.png" alt="menu3" />
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row class="mt-2">
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <div class="text-left menu">환전</div>
-          <div class="menu-icon">
-            <img src="../assets/img/menu4.png" alt="menu4" />
-          </div>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card white-card pa-4" outlined>
-          <div class="text-left menu">목표환율<br />환전</div>
-          <div class="menu-icon">
-            <img src="../assets/img/menu5.png" alt="menu5" />
-          </div>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card class="menu-card gray-card pa-4" outlined>
-          <div class="plus-icon">
-            <img src="../assets/img/menu6.png" alt="menu6" />
-          </div>
-          <div class="text-center menu">메뉴추가</div>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
-
-  <!-- footer -->
-  <v-container fluid class="flex-grow-1 sticky-container">
-    <v-footer color="white" app>
-      <v-row
-        justify="space-around"
-        align="center"
-        no-gutters
-        class="footer-container"
-      >
-        <v-col cols="auto" class="text-center">
-          <v-btn icon>
-            <v-icon color="primary" size="32">mdi-home</v-icon>
-          </v-btn>
-          <div class="footer-label active">홈</div>
-        </v-col>
-
-        <v-col cols="auto" class="text-center">
-          <v-btn icon>
-            <v-icon color="grey" size="32">mdi-chart-pie</v-icon>
-          </v-btn>
-          <div class="footer-label">자산관리</div>
-        </v-col>
-
-        <v-col cols="auto" class="text-center">
-          <v-btn icon>
-            <v-icon color="grey" size="32">mdi-shopping</v-icon>
-          </v-btn>
-          <div class="footer-label">상품</div>
-        </v-col>
-
-        <v-col cols="auto" class="text-center">
-          <v-btn icon>
-            <v-icon color="grey" size="32">mdi-gift</v-icon>
-          </v-btn>
-          <div class="footer-label">혜택</div>
-        </v-col>
-
-        <v-col cols="auto" class="text-center">
-          <v-btn icon>
-            <v-icon color="grey" size="32">mdi-view-grid</v-icon>
-          </v-btn>
-          <div class="footer-label">전체메뉴</div>
+  <div class="main-container">
+    <div class="menu-container">
+      <v-row>
+        <v-col cols="12">
+          <v-card class="account-card pa-10">
+            <v-row no-gutters>
+              <v-col class="text-left p-3">
+                <div class="mb-2 account-name">OOO님</div>
+                <div class="account-num">
+                  <span>신한</span>
+                  <span class="mx-1">110-</span>
+                </div>
+                <div class="account-balance">
+                  <span>잔액</span>
+                  <span class="mx-2">1,000,000</span>
+                </div>
+              </v-col>
+              <v-col class="text-right">
+                <img
+                  src="../assets/img/account.png"
+                  alt="account"
+                  style="max-width: 100px"
+                />
+              </v-col>
+            </v-row>
+          </v-card>
         </v-col>
       </v-row>
-    </v-footer>
-  </v-container>
+
+      <v-row class="mt-10">
+        <v-col cols="4">
+          <v-card class="menu-card green-card pa-4" outlined>
+            <div class="text-left menu">SOL트래블</div>
+            <div class="menu-icon">
+              <img src="../assets/img/menu1.png" alt="menu1" />
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="4">
+          <v-card
+            class="menu-card blue-card pa-4"
+            outlined
+            @click="navigateToBridge"
+          >
+            <div class="text-left menu">SOL로 여행</div>
+            <div class="menu-icon">
+              <img src="../assets/img/menu2.png" alt="menu2" />
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="4">
+          <v-card class="menu-card white-card pa-4" outlined>
+            <div class="text-left menu">환율조회</div>
+            <div class="menu-icon">
+              <img src="../assets/img/menu3.png" alt="menu3" />
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row class="mt-2">
+        <v-col cols="4">
+          <v-card class="menu-card white-card pa-4" outlined>
+            <div class="text-left menu">환전</div>
+            <div class="menu-icon">
+              <img src="../assets/img/menu4.png" alt="menu4" />
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="4">
+          <v-card class="menu-card white-card pa-4" outlined>
+            <div class="text-left menu">목표환율<br />환전</div>
+            <div class="menu-icon">
+              <img src="../assets/img/menu5.png" alt="menu5" />
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="4">
+          <v-card class="menu-card gray-card pa-4" outlined>
+            <div class="plus-icon">
+              <img src="../assets/img/menu6.png" alt="menu6" />
+            </div>
+            <div class="text-center menu">메뉴추가</div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+
+    <!-- footer -->
+    <div class="sticky-container">
+      <div class="footer" color="white">
+        <v-row
+          justify="space-around"
+          align="center"
+          no-gutters
+          class="footer-container"
+        >
+          <v-col cols="auto" class="text-center">
+            <button icon>
+              <v-icon color="primary" size="32">mdi-home</v-icon>
+            </button>
+            <div class="footer-label active">홈</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <button icon>
+              <v-icon color="grey" size="32">mdi-chart-pie</v-icon>
+            </button>
+            <div class="footer-label">자산관리</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <button icon>
+              <v-icon color="grey" size="32">mdi-shopping</v-icon>
+            </button>
+            <div class="footer-label">상품</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <button icon>
+              <v-icon color="grey" size="32">mdi-gift</v-icon>
+            </button>
+            <div class="footer-label">혜택</div>
+          </v-col>
+
+          <v-col cols="auto" class="text-center">
+            <button icon>
+              <v-icon color="grey" size="32">mdi-view-grid</v-icon>
+            </button>
+            <div class="footer-label">전체메뉴</div>
+          </v-col>
+        </v-row>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
-import "../assets/base.css";
+import '../assets/base.css';
 
 // 라우터 훅 설정
 const router = useRouter();
@@ -148,6 +150,18 @@ const navigateToBridge = () => {
 </script>
 
 <style scoped>
+.main-container {
+  padding-bottom: 20px;
+  width: 100%;
+  margin: 10px auto 0px auto;
+  padding: 0px 15px;
+}
+
+.menu-container, .sticky-container {
+  width: 100%;
+  margin: 0px auto;
+}
+
 /* 계좌 정보 */
 .account-card {
   background-color: #ffffff;
@@ -217,24 +231,26 @@ const navigateToBridge = () => {
 /* footer */
 /* sticky-container에 sticky 속성 추가 */
 .sticky-container {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  z-index: 1000; /* 필요시 다른 요소 위에 표시되도록 z-index 조정 */
-  width: 100%;
+  left: 0;
+  z-index: 1000;
   margin: 0px auto;
   padding: 0px;
+  background-color: white; /* 추가: 배경색 지정으로 투명도를 방지 */
+  width: 100%;
 }
 
-.v-footer {
+.footer {
   border-top: 1px solid #e0e0e0;
   background-color: #f4f6fa;
+  width: auto;
 }
 
 .footer-container {
   padding: 10px 0;
-  width: 100%;
+  /* width: 100%; */
   margin: 0px auto;
-  padding: 0px;
 }
 
 .footer-label {

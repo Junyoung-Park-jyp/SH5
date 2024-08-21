@@ -1,6 +1,6 @@
 <template>
   <div>
-    여행 전 / 여행 시작 / 지출관리
+    정산
   </div>
 </template>
 

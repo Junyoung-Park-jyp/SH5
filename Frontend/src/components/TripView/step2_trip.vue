@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    지출 관리
   </div>
 </template>
 
