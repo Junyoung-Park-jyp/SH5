@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ENV_FILE_PATH = '/home/ec2-user/.env'
+        ENV_FILE_PATH = '/home/ubuntu/.env'
     }
 
     stages {
