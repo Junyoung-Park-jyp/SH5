@@ -17,16 +17,22 @@
         </v-row>
       </v-container>
     </v-row>
-    <v-btn>여행 만들기</v-btn>
+    <v-btn @click="makeTrip">여행 만들기</v-btn>
   </v-container>
 </template>
 
 <script setup>
 import { useUserStore } from '@/stores/userStore';
 import { useTripStore } from '@/stores/tripStore';
+import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
 const tripStore = useTripStore()
+const router = useRouter();
+
+const makeTrip = () => {
+  router.push({ name: "createTrip"})
+}
 </script>
 
 <style scoped>

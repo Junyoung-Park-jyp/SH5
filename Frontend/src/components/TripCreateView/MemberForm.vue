@@ -10,14 +10,6 @@
             <v-chip>{{ member }}</v-chip>
           </v-col>
         </v-row>
-         <!-- 사용자명 입력 필드 -->
-         <v-text-field
-          label="사용자명"
-          placeholder="닉네임"
-          outlined
-          v-model="userName"
-        ></v-text-field>
-        
         <!-- 이메일 입력 필드 -->
         <v-text-field
           label="이메일"

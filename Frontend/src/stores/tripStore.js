@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { watch } from 'vue';
 import axiosInstance from '@/axios';
 
 export const useTripStore = defineStore('trip', {
@@ -18,6 +19,7 @@ export const useTripStore = defineStore('trip', {
       {country: '오키나와', cost: 1572600},
       {country: '부산', cost: 678830},
     ],
+    stage: 0,
   }),
 
   getters: {
@@ -30,6 +32,9 @@ export const useTripStore = defineStore('trip', {
     tripMembers(state) {
       return state.members.map(member => member.userName);
     },
+    tripFormStage(state) {
+      return state.stage
+    }
   },
 
   actions: {
@@ -40,7 +45,6 @@ export const useTripStore = defineStore('trip', {
       this.startDate = null;
       this.endDate = null;
       this.adjustTime = null;
-      this.currentStage = 0;
     },
 
     setTravel(travelData) {
@@ -53,14 +57,13 @@ export const useTripStore = defineStore('trip', {
 
     async makeTravel(travelData) {
       try {
-        const response = await axiosInstance.post('/travel', {
+        const response = await axiosInstance.post('/trips/', {
           travelData
         });
         if (response.data.REC) {
           const travelId  = response.data;
           this.travelId = travelId;
           this.setTravel(travelData)
-
           console.log('여행 생성 성공')
         } else {
           console.error('여행 데이터 전송 실패')
@@ -72,7 +75,7 @@ export const useTripStore = defineStore('trip', {
 
     async deleteTravel(travelId) {
       try {
-        const response = await axiosInstance.delete(`/travel/${travelId}`)
+        const response = await axiosInstance.delete(`/trips/`)
 
         if (response.data.REC) {
           this.clearTravel()
@@ -85,7 +88,7 @@ export const useTripStore = defineStore('trip', {
 
     async editTravel(travelId, travelData) {
       try {
-        const response = await axiosInstance.put(`/travel/${travelId}`, travelData)
+        const response = await axiosInstance.put(`/trips/`, travelData)
   
         if (response.data.REC) {
           this.setTravel(travelData)

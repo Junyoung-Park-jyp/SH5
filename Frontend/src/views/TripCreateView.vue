@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <!-- 각 단계에 따른 폼을 조건부로 렌더링 -->
-    <CountryDateForm v-if="tripFormStage === 0" />
-    <MemberForm v-if="tripFormStage === 1" />
-    <AccountAdjustForm v-if="tripFormStage === 2" />
+    <CountryDateForm v-if="tripFormStage == 0" />
+    <MemberForm v-if="tripFormStage == 1" />
+    <AccountAdjustForm v-if="tripFormStage == 2" />
 
     <v-row>
       <v-col cols="6">
@@ -32,16 +32,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import CountryDateForm from '@/components/TripCreateView/CountryDateForm.vue';
 import MemberForm from '@/components/TripCreateView/MemberForm.vue';
 import AccountAdjustForm from '@/components/TripCreateView/AccountAdjustForm.vue';
-
 import { useTripStore } from '@/stores/tripStore';
+import { useBalanceStore } from '@/stores/balanceStore';
 
 const tripStore = useTripStore();
-const tripFormStage = ref(0); // 초기 스테이지 설정
+const balanceStore = useBalanceStore();
+const tripFormStage = ref(0) // 초기 스테이지 설정
 const showCancelModal = ref(false);
 const router = useRouter();
 
@@ -54,14 +55,30 @@ const closeCancelModal = () => {
 };
 
 const clearTrip = () => {
-  console.log("clear")
   tripStore.clearTravel();
   router.replace({ name: 'trip' });
 };
 
 const nextStep = () => {
-  if (tripFormStage.value < 2) {
-    tripFormStage.value++;
+  if (tripFormStage.value == 0) {
+    if (tripStore.country != '' && tripStore.startDate != null && tripStore.endDate != null) {
+      tripFormStage.value ++;
+    } else {
+      alert('누락된 정보가 있습니다!')
+    }
+  } else if (tripFormStage.value == 1) {
+    if (tripStore.members != []) {
+      tripFormStage.value ++;
+    } else {
+      alert('누락된 정보가 있습니다!')
+    }
+  } else if (tripFormStage.value == 2){
+    if (balanceStore.bank) {
+      router.push('')
+      alert('여행이 생성되었습니다.')
+    } else {
+      alert('누락된 정보가 있습니다!')
+    }
   }
 };
 </script>
