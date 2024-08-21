@@ -1,6 +1,6 @@
 <template>
   <div>
-    여행 기록 조회
+    날짜 / 멤버 / 환율계산기 / 여행자보험
   </div>
 </template>
 

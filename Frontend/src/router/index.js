@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import BridgeView from "@/views/BridgeView.vue";
 import TripView from "@/views/TripView.vue";
-import TripReadyView from "@/views/TripReadyView.vue";
+import TripCreateView from "@/views/TripCreateView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,14 +20,14 @@ const router = createRouter({
     {
       path: "/tripready",
       name: "tripready",
-      component: TripReadyView,
+      component: TripCreateView,
     },
     {
       path: "/trip",
       name: "trip",
       component: TripView,
-    }
-  ],
+    },
+  ]
 });
 
 export default router;

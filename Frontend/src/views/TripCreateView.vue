@@ -34,9 +34,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import CountryDateForm from '@/components/TripReadyView/CountryDateForm.vue';
-import MemberForm from '@/components/TripReadyView/MemberForm.vue';
-import AccountAdjustForm from '@/components/TripReadyView/AccountAdjustForm.vue';
+import CountryDateForm from '@/components/TripCreateView/CountryDateForm.vue';
+import MemberForm from '@/components/TripCreateView/MemberForm.vue';
+import AccountAdjustForm from '@/components/TripCreateView/AccountAdjustForm.vue';
 
 import { useTripStore } from '@/stores/tripStore';
 

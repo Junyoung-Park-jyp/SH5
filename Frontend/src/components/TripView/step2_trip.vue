@@ -1,6 +1,6 @@
 <template>
   <div>
-    여행 기록 조회
+    지출 관리
   </div>
 </template>
 

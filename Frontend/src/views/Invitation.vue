@@ -1,6 +1,6 @@
 <template>
   <div>
-    여행 기록 조회
+    여행 거절/수락
   </div>
 </template>
 
