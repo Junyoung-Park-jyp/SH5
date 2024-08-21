@@ -12,6 +12,9 @@ export const useBalanceStore = defineStore('balance', {
     deposit: null, // 입금
   }),
   getters: {
+    userAccounts(state) {
+      return state.accounts
+    },
     userBalance(state) {
       return state.balance
     },

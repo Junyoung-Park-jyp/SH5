@@ -74,6 +74,11 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+import { useTripStore } from '@/stores/tripStore';
+
+const userStore = useUserStore();
+const tripStore = useTripStore();
 
 const selectedCountry = ref('');
 const selectedCity = ref([]);
