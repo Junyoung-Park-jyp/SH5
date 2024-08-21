@@ -7,6 +7,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from shinhan_api.member import signup as shinhan_signup
 from django.contrib.auth.decorators import login_required
+from shinhan_api.demand_deposit import create_demand_deposit_account
 
 
 User = get_user_model()
@@ -27,7 +28,8 @@ def signup(request):
         data['user_key'] = response['userKey']
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        return Response({"message": "회원가입 완료"}, status=status.HTTP_201_CREATED)
+            create_demand_deposit_account(email)
+            return Response({"message": "회원가입 완료"}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -65,5 +67,3 @@ def profile(request):
         if serializer.is_valid(raise_exception=True):
             serializer.save() 
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        
-        

@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class BankAccounts(models.Model):
+class BankAccount(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     account_number = models.CharField(max_length=25, null=False, blank=False)
     balance = models.IntegerField()

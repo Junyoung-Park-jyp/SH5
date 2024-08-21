@@ -1,34 +1,40 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 from shinhan_api.request import post
 from shinhan_api.common import make_header
+from pprint import pprint
+import random
 
 
-def create_demand_deposit():
+
+def create_demand_deposit(email, bankcode, bankname):
     """
     2.4.1 상품 등록
     """
     url = "edu/demandDeposit/createDemandDeposit"
-    body = make_header(url.split('/')[-1])
+    body = make_header(url.split('/')[-1], email)
     del body['Header']['userKey']
-    body["bankCode"] = "088"
-    body["accountName"] = "정태완"
-    body["accountDescription"] = "정태완이임의로만든상품"
-    '''
-    {'REC': {'accountTypeUniqueNo': '088-1-8bcd47cd8f5143', 'bankCode': '088', 'bankName': '신한은행', 'accountTypeCode': '1', 'accountTypeName': '수시입출금', 'accountName': '정태완', 'accountDescription': '정태완이임의로만든상품', 'accountType': 'DOMESTIC'}}
-    '''
+    body["bankCode"] = bankcode
+    body["accountName"] = f"{bankname} 수시입출금 상품"
+    body["accountDescription"] = "0"
     return post(url, body)
 
 
-def inquire_demand_deposit_list():
+def inquire_demand_deposit_list(email):
     """
     2.4.2 상품 조회
     """
     url = "edu/demandDeposit/inquireDemandDepositList"
-    body = make_header(url.split('/')[-1])
-    del body['Header']['userKey']
-    '''
-    {'REC': [{'accountTypeUniqueNo': '001-1-38626eb91f9843', 'bankCode': '001', 'bankName': '한국은행', 'accountTypeCode': '1', 'accountTypeName': '수시입출금', 'accountName': '한국은행 수시입출금 상품', 'accountDescription': '자유로운 수시입출금', 'accountType': 'DOMESTIC'}, {'accountTypeUniqueNo': '088-1-8bcd47cd8f5143', 'bankCode': '088', 'bankName': '신한은행', 'accountTypeCode': '1', 'accountTypeName': '수시입출금', 'accountName': '정태완', 'accountDescription': '정태완이임의로만든상품', 'accountType': 'DOMESTIC'}]}
-    '''
-    return post(url, body)
+    body = make_header(url.split('/')[-1], email)
+    response = post(url, body)
+    ret = []
+    for i in response['REC']:
+        if i['accountDescription'] == '1':
+            ret.append(i)
+    return ret[1:-1]
 
 
 def create_demand_deposit_account(email):
@@ -36,24 +42,28 @@ def create_demand_deposit_account(email):
     2.4.3 계좌 생성
     """
     url = "edu/demandDeposit/createDemandDepositAccount"
-    body = make_header(url.split('/')[-1], email)
-    body['accountTypeUniqueNo'] = "088-1-8bcd47cd8f5143"
-    '''
-    {'REC': {'bankCode': '088', 'accountNo': '0886248123734384', 'currency': {'currency': 'KRW', 'currencyName': '원화'}}}
-    '''
-    return post(url, body)
+    accountTypeUniqueNos = []
+    for i in inquire_demand_deposit_list(email):
+        accountTypeUniqueNos.append(i['accountTypeUniqueNo'])
+
+    
+    for accountTypeUniqueNo in ["088-1-8447fb08f3ea43", random.choice(accountTypeUniqueNos)]:
+        body = make_header(url.split('/')[-1], email)
+        body['accountTypeUniqueNo'] = accountTypeUniqueNo
+        response = post(url, body)
+        accountNo = response['REC']['accountNo']
+        update_demand_deposit_account_deposit(email, accountNo)
+    return
 
 
-def inquire_demand_deposit_account_list():
+def inquire_demand_deposit_account_list(email):
     """
     2.4.4 계좌 목록 조회
     """
     url = "edu/demandDeposit/inquireDemandDepositAccountList"
-    body = make_header(url.split('/')[-1])    
-    '''
-    {'REC': [{'bankCode': '088', 'bankName': '신한은행', 'userName': 'oodeng98', 'accountNo': '0886248123734384', 'accountName': '정태완', 'accountTypeCode': '1', 'accountTypeName': '수시입출금', 'accountCreatedDate': '20240817', 'accountExpiryDate': '20290817', 'dailyTransferLimit': '500000000', 'oneTimeTransferLimit': '100000000', 'accountBalance': '0', 'lastTransactionDate': '', 'currency': 'KRW'}]}
-    '''
-    return post(url, body)
+    body = make_header(url.split('/')[-1], email)
+    response = post(url, body)
+    return response
 
 
 def inquire_demand_deposit_account():
@@ -109,15 +119,15 @@ def update_demand_deposit_account_withdrawal():
     return post(url, body)
 
 
-def update_demand_deposit_account_deposit():
+def update_demand_deposit_account_deposit(email, accountNo):
     """
     2.4.9 계좌 입금
     """
     url = "edu/demandDeposit/updateDemandDepositAccountDeposit"
-    body = make_header(url.split('/')[-1])
-    body['accountNo'] = "0886248123734384"
-    body['transactionBalance'] = "1000000000"
-    body['transactionSummary'] = "나 10억 자산가야"
+    body = make_header(url.split('/')[-1], email)
+    body['accountNo'] = accountNo
+    body['transactionBalance'] = random.randrange(100000, 2000000)
+    body['transactionSummary'] = "초기 잔액 입금"
     '''
     '''
     return post(url, body)
@@ -171,11 +181,36 @@ def inquire_transaction_history():
     return post(url, body)
 
 
+def create_demand_deposit_for_each_bank():
+    rec =  [{'bankCode': '001', 'bankName': '한국은행'},
+        {'bankCode': '002', 'bankName': '산업은행'},
+        {'bankCode': '003', 'bankName': '기업은행'},
+        {'bankCode': '004', 'bankName': '국민은행'},
+        {'bankCode': '011', 'bankName': '농협은행'},
+        {'bankCode': '020', 'bankName': '우리은행'},
+        {'bankCode': '023', 'bankName': 'SC제일은행'},
+        {'bankCode': '027', 'bankName': '시티은행'},
+        {'bankCode': '032', 'bankName': '대구은행'},
+        {'bankCode': '034', 'bankName': '광주은행'},
+        {'bankCode': '035', 'bankName': '제주은행'},
+        {'bankCode': '037', 'bankName': '전북은행'},
+        {'bankCode': '039', 'bankName': '경남은행'},
+        {'bankCode': '045', 'bankName': '새마을금고'},
+        {'bankCode': '081', 'bankName': 'KEB하나은행'},
+        {'bankCode': '088', 'bankName': '신한은행'},
+        {'bankCode': '090', 'bankName': '카카오뱅크'},
+        {'bankCode': '999', 'bankName': '싸피은행'}]
+    for i in rec:
+        create_demand_deposit("oodeng98@naver.com", i['bankCode'], i['bankName'])
+    
+
+
 if __name__ == "__main__":
-    # create_demand_deposit()
-    inquire_demand_deposit_list()
-    # create_demand_deposit_account()
-    # inquire_demand_deposit_account_list()
+    # create_demand_deposit_for_each_bank()
+    # create_demand_deposit("oodeng98@naver.com")
+    # inquire_demand_deposit_list("oodeng98@naver.com")
+    # create_demand_deposit_account("oodeng98@naver.com")
+    inquire_demand_deposit_account_list("oodeng98@naver.com")
     # inquire_demand_deposit_account()
     # inquire_demand_deposit_account_holder_name()
     # inquire_demand_deposit_account_balance()
