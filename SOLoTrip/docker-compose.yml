@@ -1,46 +1,8 @@
-version: "3.8"
+version: "3"
 
 services:
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3307:3306"
-
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    command: gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=root
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=db
-      - DB_PORT=3306
-    env_file:
-      - .env
-
-  ngrok:
-    image: wernight/ngrok
-    ports:
-      - "4040:4040" # ngrok 웹 인터페이스 포트
-    environment:
-      - NGROK_PORT=web:8000 # ngrok이 Django 서버의 8000 포트를 외부에 노출
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN} # ngrok 인증 토큰 설정
-    depends_on:
-      - web
-
-volumes:
-  db_data:
