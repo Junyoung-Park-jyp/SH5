@@ -23,8 +23,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // 프로젝트 루트에서 manage.py를 실행하되, SOLOTrip 설정 파일을 명시적으로 지정
-                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} python manage.py test --settings=SOLOTrip.settings"
+                    // 컨테이너 내부에서 /app 디렉토리로 이동한 후, manage.py 파일을 찾음
+                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} ls /app"  // 디버깅을 위해 /app 디렉토리의 파일 확인
+                    sh "docker run --rm -w /app my-django-app:${env.BUILD_ID} ls /app/SOLoTrip"  // 디버깅을 위해 /app 디렉토리의 파일 확인
+                    sh "docker run --rm -w /app/SOLoTrip my-django-app:${env.BUILD_ID} python manage.py test"
                 }
             }
         }
