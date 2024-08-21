@@ -18,9 +18,14 @@ const router = createRouter({
       component: BridgeView,
     },
     {
+      path: "/tripready",
+      name: "tripready",
+      component: TripReadyView,
+    },
+    {
       path: "/trip",
       name: "trip",
-      component: TripReadyView,
+      component: TripView,
     }
   ],
 });
