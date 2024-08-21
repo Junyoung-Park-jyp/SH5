@@ -21,6 +21,7 @@ export const useTripStore = defineStore('trip', {
     ],
 
     stage: 0,
+    progressStage: 0,
   }),
 
   getters: {
@@ -38,6 +39,9 @@ export const useTripStore = defineStore('trip', {
     },
     tripFormStage(state) {
       return state.stage
+    },
+    tripProgressStage(state) {
+      return state.progressStage
     }
   },
 

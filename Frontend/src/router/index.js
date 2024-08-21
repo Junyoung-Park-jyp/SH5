@@ -29,6 +29,7 @@ const router = createRouter({
       component: TripView,
     },
     {
+      // path: "/trip/:tripId",
       path: "/trip/progress",
       name: "progresstrip",
       component: TripProgressView,
