@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    {{ travelStore.travelExperiences }}
+    {{ tripStore.travelExperiences }}
     <v-row>
       {{ userStore.name }} 님
     </v-row>
     <v-row>
       <v-icon icon="mdi-music"></v-icon>
-      <div>현재 {{ travelStore.country }} 여행 중</div>
+      <div>현재 {{ tripStore.country }} 여행 중</div>
       <v-icon icon="mdi-music"></v-icon>
     </v-row>
     <v-row>
@@ -23,10 +23,10 @@
 
 <script setup>
 import { useUserStore } from '@/stores/userStore';
-import { useTravelStore } from '@/stores/travelStore';
+import { useTripStore } from '@/stores/tripStore';
 
 const userStore = useUserStore()
-const travelStore = useTravelStore()
+const tripStore = useTripStore()
 </script>
 
 <style scoped>
