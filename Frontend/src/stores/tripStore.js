@@ -10,7 +10,6 @@ export const useTripStore = defineStore('trip', {
     startDate: null,
     endDate: null,
     adjustTime: null,
-    currentStage: 0
   }),
 
   getters: {
