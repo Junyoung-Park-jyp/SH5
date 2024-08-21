@@ -15,10 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # 환경 변수 설정
-ENV DJANGO_SETTINGS_MODULE=SOLoTrip.settings
+ENV DJANGO_SETTINGS_MODULE=SOLoTrip.SOLoTrip.settings
 
 # 컨테이너의 8000번 포트를 외부에 노출
 EXPOSE 8000
 
 # Gunicorn을 사용하여 서버 실행
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.SOLoTrip.wsgi:application"]
