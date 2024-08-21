@@ -1,28 +1,28 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
 
-export const useTravelStore = defineStore('travel', {
+export const useTripStore = defineStore('trip', {
   state: () => ({
     travelId: null,
-    country: '',
+    country: null,
     exchangeRate: null,
     members: [],
     startDate: null,
     endDate: null,
     adjustTime: null,
+    currentStage: 0
   }),
 
   getters: {
-    travelCountry(state) {
+    tripCountry(state) {
       return state.country;
     },
-    travelExchangeRate(state) {
+    tripExchangeRate(state) {
       return state.exchangeRate;
     },
-    travelMembers(state) {
-      return state.members
+    tripMembers(state) {
+      return state.members.map(member => member.userName);
     },
-    
   },
 
   actions: {
@@ -33,6 +33,7 @@ export const useTravelStore = defineStore('travel', {
       this.startDate = null;
       this.endDate = null;
       this.adjustTime = null;
+      this.currentStage = 0;
     },
 
     setTravel(travelData) {
@@ -75,7 +76,7 @@ export const useTravelStore = defineStore('travel', {
       }
     },
 
-    async changeTravel(travelId, travelData) {
+    async editTravel(travelId, travelData) {
       try {
         const response = await axiosInstance.put(`/travel/${travelId}`, travelData)
   

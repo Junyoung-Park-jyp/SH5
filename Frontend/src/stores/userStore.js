@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', {
     userEmail(state) {
       return state.email;
     },
-    isLogin(state) {
+    userIsLogin(state) {
       return state.isLogin;
     },
     userBank(state) {
@@ -62,6 +62,25 @@ export const useUserStore = defineStore('user', {
 
       } catch (error) {
         console.error('로그인 실패:', error);
+      }
+    },
+
+    async getUser(userName, email) {
+      try {
+        const response = await axiosInstance.get('/users', {
+          userName: userName,
+          userEmail: email
+        })
+
+        if (response.data) {
+          return response.data
+        } else {
+          console.error('사용자가 존재하지 않습니다')
+          return null
+        }
+      } catch(error) {
+        console.error('사용자 검색 실패:', error)
+        return null
       }
     },
 

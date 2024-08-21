@@ -1,5 +1,5 @@
-from request import post
-from common import make_header
+from shinhan_api.request import post
+from shinhan_api.common import make_header
 
 
 def create_demand_deposit():
@@ -31,12 +31,12 @@ def inquire_demand_deposit_list():
     return post(url, body)
 
 
-def create_demand_deposit_account():
+def create_demand_deposit_account(email):
     """
     2.4.3 계좌 생성
     """
     url = "edu/demandDeposit/createDemandDepositAccount"
-    body = make_header(url.split('/')[-1])
+    body = make_header(url.split('/')[-1], email)
     body['accountTypeUniqueNo'] = "088-1-8bcd47cd8f5143"
     '''
     {'REC': {'bankCode': '088', 'accountNo': '0886248123734384', 'currency': {'currency': 'KRW', 'currencyName': '원화'}}}
