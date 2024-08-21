@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+
     <!-- 상단 국가 입력창 -->
     <v-row>
       <v-col cols="12">
@@ -69,7 +69,7 @@
         </v-menu>
       </v-col>
     </v-row>
-  </v-container>
+
 </template>
 
 <script setup>

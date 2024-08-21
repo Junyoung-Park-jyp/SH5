@@ -23,10 +23,6 @@ export const useTripStore = defineStore('trip', {
     tripMembers(state) {
       return state.members.map(member => member.userName);
     },
-    
-    tripFormStage(state) {
-      return state.currentStage
-    }
   },
 
   actions: {
