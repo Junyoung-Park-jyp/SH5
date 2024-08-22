@@ -4,10 +4,10 @@
 <v-row>
       <v-col cols="12">
         <h1>누구와 여행을 떠나시나요?</h1>
-        <p>닉네임과 이메일 입력시 자동으로 PUSH알림 일일 전송</p>
+        <p>이메일 입력시 자동으로 사용자 검색</p>
         <v-row>
-          <v-col v-for="(member, index) in tripStore.tripMembers" :key="index">
-            <v-chip>{{ member }}</v-chip>
+          <v-col v-for="(member, index) in tripStore.members" :key="index">
+            <v-chip>{{ member.username }}</v-chip>
           </v-col>
         </v-row>
         <!-- 이메일 입력 필드 -->
@@ -31,12 +31,10 @@ import { useTripStore } from '@/stores/tripStore';
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
-
-const userName = ref('')
 const email = ref('')
 
 const addMember = async() => {
-  const userData = await userStore.getUser(userName.value, email.value)
+  const userData = await userStore.getUser(email.value)
 
   if (userData) {
     tripStore.members.push(userData)

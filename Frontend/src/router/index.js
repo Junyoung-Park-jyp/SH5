@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
+      component: TripView
     },
     {
       path: "/bridge",
@@ -19,14 +19,9 @@ const router = createRouter({
       component: BridgeView,
     },
     {
-      path: "/trip/create",
+      path: "/create",
       name: "createTrip",
       component: TripCreateView,
-    },
-    {
-      path: "/trip",
-      name: "trip",
-      component: TripView,
     },
     {
       // path: "/trip/:tripId",

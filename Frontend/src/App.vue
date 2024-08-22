@@ -36,20 +36,28 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStateStore } from '@/stores/stateStore';
+import { useUserStore } from './stores/userStore';
 import HomeView from './views/HomeView.vue';
 import './assets/base.css';
 
 const stateStore = useStateStore();
+const userStore = useUserStore();
 const route = useRoute();
 const isTraveling = computed(() => stateStore.travel)
 // 토글 스위치 함수
 const toggleSwitch = () => {
-  console.log(stateStore.travel)
+  console.log(isTraveling.value, stateStore.isTraveling)
   stateStore.toggleTrip()
 };
+
+// onMounted(
+//   userStore.signIn({
+//     email: '94oldman@gmail.com'
+//   })
+// )
 </script>
 
 <style scoped>

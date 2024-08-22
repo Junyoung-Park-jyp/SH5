@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <!-- 계좌 선택 드롭다운 -->
-         <h1>여행용 출금 계좌 선택하기</h1>
+        <h1>여행용 출금 계좌 선택하기</h1>
         <v-select
           v-model="selectedAccount"
           :items="accounts"
@@ -14,7 +14,7 @@
         ></v-select>
 
         <!-- 시간 입력 필드 -->
-         <h1>일일 정산 시간 설정하기</h1>
+        <h1>일일 정산 시간 설정하기</h1>
         <v-text-field
           v-model="settlementTime"
           label="정산 시간 선택"

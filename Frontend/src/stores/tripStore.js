@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import { onMounted, watch } from 'vue';
 import axiosInstance from '@/axios';
 
 export const useTripStore = defineStore('trip', {
   state: () => ({
-    travelId: null,
-    country: null,
+    tripId: null,
+    country: [],
+    city: [],
     exchangeRate: null,
     members: [],
     startDate: null,
@@ -46,8 +46,9 @@ export const useTripStore = defineStore('trip', {
   },
 
   actions: {
-    clearTravel() {
-      this.country = '';
+    clearTrip() {
+      this.country = [];
+      this.city = [];
       this.exchangeRate = null;
       this.members = [];
       this.startDate = null;
@@ -55,23 +56,23 @@ export const useTripStore = defineStore('trip', {
       this.adjustTime = null;
     },
 
-    setTravel(travelData) {
-      this.country = travelData.country;
-      this.members = travelData.members;
-      this.startDate = travelData.startDate;
-      this.endDate = travelData.endDate;
-      this.adjustTime = travelData.adjustTime;
+    setTrip(tripData) {
+      this.country = tripData.country;
+      this.members = tripData.members;
+      this.startDate = tripData.startDate;
+      this.endDate = tripData.endDate;
+      this.adjustTime = tripData.adjustTime;
     },
 
-    async makeTravel(travelData) {
+    async makeTrip(tripData) {
       try {
         const response = await axiosInstance.post('/trips/', {
-          travelData
+          tripData
         });
         if (response.data.REC) {
-          const travelId  = response.data;
-          this.travelId = travelId;
-          this.setTravel(travelData)
+          const tripId  = response.data;
+          this.tripId = tripId;
+          this.setTrip(travelData)
           console.log('여행 생성 성공')
         } else {
           console.error('여행 데이터 전송 실패')
@@ -81,12 +82,12 @@ export const useTripStore = defineStore('trip', {
       }
     },
 
-    async deleteTravel(travelId) {
+    async deleteTrip(tripId) {
       try {
         const response = await axiosInstance.delete(`/trips/`)
 
         if (response.data.REC) {
-          this.clearTravel()
+          this.clearTrip()
           console.log('여행 삭제 성공')
         }
       } catch(error) {
@@ -94,12 +95,12 @@ export const useTripStore = defineStore('trip', {
       }
     },
 
-    async editTravel(travelId, travelData) {
+    async editTrip(tripId, tripData) {
       try {
-        const response = await axiosInstance.put(`/trips/`, travelData)
+        const response = await axiosInstance.put(`/trips/`, tripData)
   
         if (response.data.REC) {
-          this.setTravel(travelData)
+          this.setTrip(tripData)
         }
       } catch(error) {
         console.error('여행 정보 수정 실패:', error)

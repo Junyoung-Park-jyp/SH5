@@ -33,15 +33,15 @@ export const useUserStore = defineStore('user', {
     async signUp(userData) {
       try {
         // 회원가입 API 호출
-        const response = await axiosInstance.post('/member', {
-          userId: userData.userId,
+        const response = await axiosInstance.post('/accounts/signup/', {
+          username: userData.username,
+          email: userData.email,
         });
+        console.log(response.data)
 
-        const { userId, username, institutionCode, userKey } = response.data;
-
-        await this.signIn({
-          userId,
-        });
+        // await this.signIn({
+        //   email,
+        // });
 
       } catch (error) {
         console.error('회원가입 실패:', error);
@@ -50,26 +50,25 @@ export const useUserStore = defineStore('user', {
 
     async signIn(userData) {
       try {
-        const response = await axiosInstance.post('/member/search', {
-          userId: userData.userId,
+        const response = await axiosInstance.post('/accounts/login/', {
+          email: userData.email,
+
         });
-
-        const { userId, userName, institutionCode, userKey } = response.data;
-
-        this.name = userName;
-        this.userKey = userKey;
-        this.isLogin = true;
+        if (response.message) {
+          this.email = userData.email;
+          this.isLogin = true;
+        }
+        
 
       } catch (error) {
         console.error('로그인 실패:', error);
       }
     },
 
-    async getUser(userName, email) {
+    async getUser(email) {
       try {
         const response = await axiosInstance.get('/users', {
-          userName: userName,
-          userEmail: email
+          email: email
         })
 
         if (response.data) {
