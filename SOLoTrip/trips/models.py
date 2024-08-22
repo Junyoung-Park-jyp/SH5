@@ -3,8 +3,6 @@ from django.conf import settings
 
 
 class Trip(models.Model):
-    country = models.CharField(max_length=30, null=False, blank=False)
-    city = models.CharField(max_length=30, null=False, blank=False)
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField()
     budget = models.IntegerField()
@@ -16,3 +14,9 @@ class Member(models.Model):
     budget = models.IntegerField(default=0)
     bank_account = models.CharField(max_length=30, default="")
     is_participate = models.BooleanField(default=True)
+    
+    
+class Location(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    country = models.CharField(max_length=30, null=False, blank=False)
+    city = models.CharField(max_length=30, null=False, blank=False)
