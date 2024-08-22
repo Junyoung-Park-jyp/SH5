@@ -8,7 +8,7 @@
       </div>
     </v-card>
     
-    <div class="mt-10 px-7">
+    <div class="mt-10 px-7 pb-7">
       <div class="my-5">
         <div class="my-5" style="font-size:large; font-weight:bold;">여행 짐만큼 중요한 혜택 챙기기</div>
         <v-btn-toggle v-model="selectedCardType" mandatory class="toggle">
@@ -70,8 +70,7 @@ function goToTrip() {
 
 <style scoped>
 .main-container {
-  padding-bottom: 20px;
-  width: 100%;
+  height: 90vh;
 }
 
 .upper-card {

@@ -52,6 +52,7 @@ const toggleSwitch = () => {
 <style scoped>
 .main-container {
   padding-bottom: 100px;
+  height: 100vh;
 }
 
 /* 상단 툴바 */
