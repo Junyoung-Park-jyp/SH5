@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .serializers import TripSerializer, TripDetailSerializer, MemberCreateSerializer
+from .serializers import TripSerializer, TripDetailSerializer, MemberCreateSerializer, UserSerializer
 from .models import Trip, Member
 from django.utils import timezone
 
@@ -97,13 +97,21 @@ def detail(request, trip_id):
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @login_required
-def invite(request):
-    if request.method == 'POST':
+def member(request):
+    if request.method == 'GET':
+        email = request.GET.get('email')
+        print(email)
+        try:
+            user = User.objects.get(email=email)
+        except:
+            return Response({"error": "사용자가 없습니다."}, status=status.HTTP_204_NO_CONTENT)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
         username = request.data.get('username')
         trip_id = request.data.get('tripId')
-
         # 사용자가 존재하는지 확인
         try:
             user = User.objects.get(username=username)

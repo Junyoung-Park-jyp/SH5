@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, UserCreationSerializer
+from .serializers import UserCreationSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
@@ -55,17 +55,17 @@ def logout(request):
         return Response({"message": "로그아웃 완료"}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET','PUT'])
-@login_required
-def profile(request):
-    user = get_user_model().objects.get(pk=request.user.pk)
-    if request.method == 'GET':
-        seriazlier = UserSerializer(user)
-        return Response(seriazlier.data, status=status.HTTP_200_OK)
-    elif request.method == 'PUT':
-        if user != request.user:
-            return Response({'message': 'disallowed'})
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save() 
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+# @api_view(['GET','PUT'])
+# @login_required
+# def profile(request):
+#     user = get_user_model().objects.get(pk=request.user.pk)
+#     if request.method == 'GET':
+#         seriazlier = UserSerializer(user)
+#         return Response(seriazlier.data, status=status.HTTP_200_OK)
+#     elif request.method == 'PUT':
+#         if user != request.user:
+#             return Response({'message': 'disallowed'})
+#         serializer = UserSerializer(user, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save() 
+#             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

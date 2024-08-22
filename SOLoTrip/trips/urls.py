@@ -8,5 +8,5 @@ urlpatterns = [
     path('ongoing/', ongoing), 
     path('finish/', finish), 
     path('detail/<int:trip_id>', detail), 
-    path('invite/', invite), 
+    path('member/', member), 
 ]

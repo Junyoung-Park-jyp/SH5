@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 ]
+
 # CSRF 보호 비활성화
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 CSRF_COOKIE_SECURE = False
@@ -108,8 +109,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
     }
 }
-
-print(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
