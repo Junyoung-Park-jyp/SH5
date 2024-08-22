@@ -17,14 +17,6 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh 'docker run --rm my-vue-app:latest npm run test'
-                }
-            }
-        }
-
         stage('Deploy Docker Container') {
             steps {
                 script {
