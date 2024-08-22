@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/yourusername/your-vue-repo', branch: 'main'
+                git url: 'https://github.com/Junyoung-Park-jyp/SH5', branch: 'taewan-front'
             }
         }
 
