@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Junyoung-Park-jyp/SH5', branch: 'taewan-front'
+                git url: 'https://github.com/Junyoung-Park-jyp/SH5', branch: 'develop-front'
             }
         }
 
