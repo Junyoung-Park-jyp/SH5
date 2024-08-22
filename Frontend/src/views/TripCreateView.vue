@@ -42,7 +42,7 @@ import { useBalanceStore } from '@/stores/balanceStore';
 
 const tripStore = useTripStore();
 const balanceStore = useBalanceStore();
-const tripFormStage = ref(1) // 초기 스테이지 설정
+const tripFormStage = ref(0) // 초기 스테이지 설정
 const showCancelModal = ref(false);
 const router = useRouter();
 
