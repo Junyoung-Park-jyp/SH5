@@ -1,10 +1,10 @@
-# Step 1: Build the application
+# Step 1: Build the Vue.js application and run tests
 FROM node:18-alpine as build-stage
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
@@ -15,6 +15,9 @@ COPY . .
 
 # Build the application
 RUN npm run build
+
+# Run tests
+RUN npm run test
 
 # Step 2: Serve the application using Nginx
 FROM nginx:stable-alpine as production-stage
