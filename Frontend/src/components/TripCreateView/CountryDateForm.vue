@@ -6,17 +6,42 @@
         <div class="question">어디로 여행을 떠나시나요?</div>
         <v-col cols="12">
           <v-text-field
-            v-model="selectedCountry"
-            label="국가"
-            @input="fetchCities"
+            v-model="countryInput"
+            label="국가를 입력하세요"
+            @keyup.enter="addCountry"
             outlined
           ></v-text-field>
+          <div class="chip-container">
+            <v-chip
+              v-for="(country, index) in tripStore.country"
+              :key="index"
+              color="primary"
+              class="ma-1"
+              close
+              @click:close="removeCountry(index)"
+            >
+              {{ country }}
+            </v-chip>
+          </div>
           <v-select
-            v-model="selectedCity"
+            v-model="cityInput"
             :items="cities"
-            label="도시"
+            label="도시를 선택하세요"
+            @change="addCity"
             outlined
           ></v-select>
+          <div class="chip-container">
+            <v-chip
+              v-for="(city, index) in tripStore.city"
+              :key="index"
+              color="primary"
+              class="ma-1"
+              close
+              @click:close="removeCity(index)"
+            >
+              {{ city }}
+            </v-chip>
+          </div>
         </v-col>
           <div class="btn-container">
             <button @click="addCity" class="mt-1 btn-add">
@@ -33,79 +58,71 @@
       </v-row>
     </div>
   </div>
-
-
-    <!-- 상단 국가 입력창 -->
-    <v-row>
-      <v-col cols="12">
-        <h1>어디로 여행을 떠나시나요?</h1>
-        <v-text-field
-          v-model="selectedCountry"
-          label="국가를 입력하세요"
-          @input="fetchCities"
-          outlined
-        ></v-text-field>
-        <v-select
-          v-model="selectedCity"
-          :items="cities"
-          label="도시를 선택하세요"
-          outlined
-        ></v-select>
-        <v-btn @click="addCity" color="primary" class="mt-2">
-          도시 추가
-        </v-btn>
-      </v-col>
-    </v-row>
-    
-
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useUserStore } from '@/stores/userStore';
+import { ref, watch } from 'vue';
 import { useTripStore } from '@/stores/tripStore';
 
-const userStore = useUserStore();
 const tripStore = useTripStore();
 
-const selectedCountry = ref('');
-const selectedCity = ref([]);
+const countryInput = ref('');
+const cityInput = ref('');
 const cities = ref([]);
-const selectedCities = ref([]);
 
-const startDate = ref('');
-const endDate = ref('');
-const menu1 = ref(false);
-const menu2 = ref(false);
-
+// 도시 목록을 가져오기 위한 예제 데이터
 const cityData = {
   '한국': ['서울', '부산', '인천', '대구'],
   '일본': ['도쿄', '오사카', '교토', '삿포로'],
   '미국': ['뉴욕', '로스앤젤레스', '시카고', '샌프란시스코']
 };
 
+// 사용자가 국가를 입력하면 해당 국가의 도시 목록을 가져오는 함수
 const fetchCities = () => {
-  if (cityData[selectedCountry.value]) {
-    cities.value = cityData[selectedCountry.value];
+  if (cityData[countryInput.value]) {
+    cities.value = cityData[countryInput.value];
   } else {
     cities.value = [];
   }
 };
 
-const addCity = () => {
-  if (selectedCity.value && !selectedCities.value.includes(selectedCity.value)) {
-    selectedCities.value.push(selectedCity.value);
+// 국가를 배열에 추가하는 함수
+const addCountry = () => {
+  if (countryInput.value && !tripStore.country.includes(countryInput.value)) {
+    tripStore.country.push(countryInput.value);
+    countryInput.value = '';
+    console.log("국가 목록:", tripStore.country)
   }
 };
 
-const removeCity = (index) => {
-  selectedCities.value.splice(index, 1);
+// 도시를 배열에 추가하는 함수
+const addCity = () => {
+  if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
+    tripStore.city.push(cityInput.value);
+    cityInput.value = '';
+  }
 };
+
+// 추가된 국가를 제거하는 함수
+const removeCountry = (index) => {
+  tripStore.country.splice(index, 1);
+};
+
+// 추가된 도시를 제거하는 함수
+const removeCity = (index) => {
+  tripStore.city.splice(index, 1);
+};
+
+// 국가가 변경될 때마다 도시 목록을 업데이트
+watch(countryInput, fetchCities);
+
 </script>
 
 <style scoped>
-.v-chip {
-  margin-top: 10px;
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 8px;
 }
 
 .first, .second {
