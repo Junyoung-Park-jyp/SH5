@@ -37,15 +37,16 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStateStore } from '@/stores/stateStore';
 import './assets/base.css';
 
+const stateStore = useStateStore();
 const route = useRoute();
-const isTraveling = ref(false);
-
-
+const isTraveling = computed(() => stateStore.travel)
 // 토글 스위치 함수
 const toggleSwitch = () => {
-  isTraveling.value = !isTraveling.value;
+  console.log(stateStore.travel)
+  stateStore.toggleTrip()
 };
 </script>
 

@@ -33,7 +33,7 @@
           <v-card class="menu-card green-card pa-4" outlined>
             <div class="text-left menu">SOL트래블</div>
             <div class="menu-icon">
-              <img src="../assets/img/menu1.png" alt="menu1" />
+              <img src="../assets/img/menu1.png" alt="menu1" /> 
             </div>
           </v-card>
         </v-col>
