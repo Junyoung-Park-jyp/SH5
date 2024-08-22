@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 나머지 소스 코드를 컨테이너로 복사
 COPY . .
 
+# 디버깅을 위해 ls 명령어 실행
+RUN ls
+
 # 컨테이너의 8000번 포트를 외부에 노출
 EXPOSE 8000
 
