@@ -23,9 +23,6 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // 컨테이너 내부에서 환경 변수 출력
-                    sh "docker run --rm -w /app/SOLoTrip my-django-app:${env.BUILD_ID} ls -l"
-                    sh "docker run --rm -w /app/SOLoTrip/SOLoTrip my-django-app:${env.BUILD_ID} ls -l"
                     sh "docker run --env-file ${env.ENV_FILE_PATH} -w /app/SOLoTrip my-django-app:${env.BUILD_ID} python manage.py test"
                 }
             }
@@ -37,6 +34,14 @@ pipeline {
                     sh "docker stop my-django-app || true"
                     sh "docker rm my-django-app || true"
                     sh "docker run -d -p 8000:8000 --name my-django-app --env-file ${env.ENV_FILE_PATH} my-django-app:${env.BUILD_ID}"
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    sh "docker system prune -a -f --volumes"
                 }
             }
         }

@@ -16,7 +16,7 @@ User = get_user_model()
 def signup(request):
     if request.method == 'POST':
         email = request.data.get('email')
-        username = email.split("@")[0]
+        username = request.data.get('username')
         password = 'rkskekfk'  # 이 프로젝트에서 사용자는 비밀번호가 필요없으므로 기본값 설정
         data = {
             "username": username, "password": password, "email": email
@@ -36,9 +36,8 @@ def signup(request):
 def login(request):
     if request.method == 'POST':
         email = request.data.get('email')
-        username = email.split("@")[0]
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except:
             return Response({"message": "확인되지 않는 사용자 이메일"}, status=status.HTTP_404_NOT_FOUND)
         auth_login(request, user)
