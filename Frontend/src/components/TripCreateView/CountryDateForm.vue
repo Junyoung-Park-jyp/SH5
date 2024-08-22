@@ -2,44 +2,7 @@
   <v-row>
     <v-col cols="12">
       <h1>어디로 여행을 떠나시나요?</h1>
-      <v-text-field
-        v-model="countryInput"
-        label="국가를 입력하세요"
-        @keyup.enter="addCountry"
-        outlined
-      ></v-text-field>
-      <div class="chip-container">
-        <v-chip
-          v-for="(country, index) in tripStore.country"
-          :key="index"
-          color="primary"
-          class="ma-1"
-          close
-          @click:close="removeCountry(index)"
-        >
-          {{ country }}
-        </v-chip>
-      </div>
 
-      <v-select
-        v-model="cityInput"
-        :items="cities"
-        label="도시를 선택하세요"
-        @change="addCity"
-        outlined
-      ></v-select>
-      <div class="chip-container">
-        <v-chip
-          v-for="(city, index) in tripStore.city"
-          :key="index"
-          color="primary"
-          class="ma-1"
-          close
-          @click:close="removeCity(index)"
-        >
-          {{ city }}
-        </v-chip>
-      </div>
     </v-col>
   </v-row>
 
@@ -90,6 +53,102 @@
         </v-menu>
       </v-col>
     </v-row>
+  <div class="main-container">
+    <!-- 상단 국가 입력창 -->
+    <div class="first">
+      <v-row>
+        <v-text-field
+        v-model="countryInput"
+        label="국가를 입력하세요"
+        @keyup.enter="addCountry"
+        outlined
+      ></v-text-field>
+      <div class="chip-container">
+        <v-chip
+          v-for="(country, index) in tripStore.country"
+          :key="index"
+          color="primary"
+          class="ma-1"
+          close
+          @click:close="removeCountry(index)"
+        >
+          {{ country }}
+        </v-chip>
+      </div>
+
+      <v-select
+        v-model="cityInput"
+        :items="cities"
+        label="도시를 선택하세요"
+        @change="addCity"
+        outlined
+      ></v-select>
+      <div class="chip-container">
+        <v-chip
+          v-for="(city, index) in tripStore.city"
+          :key="index"
+          color="primary"
+          class="ma-1"
+          close
+          @click:close="removeCity(index)"
+        >
+          {{ city }}
+        </v-chip>
+      </div>
+      </v-row>
+    </div>
+
+    <!-- 하단 날짜 선택 입력창 -->
+    <div class="second">
+      <v-row>
+        <div class="question">언제 여행을 떠나시나요?</div>
+        <!-- <v-col cols="12" sm="6">
+          <v-menu
+            v-model="menu1"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="startDate"
+                label="시작일"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-input v-model="startDate" @input="menu1 = false"></v-date-input>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <v-menu
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="endDate"
+                label="종료일"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-input v-model="endDate" @input="menu2 = false"></v-date-input>
+          </v-menu>
+        </v-col> -->
+      </v-row>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -155,5 +214,34 @@ watch(countryInput, fetchCities);
   display: flex;
   flex-wrap: wrap;
   margin-top: 8px;
+}
+.first, .second {
+  margin: 0px 10px;
+}
+
+.first {
+  margin-top: 30px;
+  margin-bottom: 70px;
+}
+
+.question {
+  font-size: x-large;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-left: 15px;
+  width: 90%;
+}
+
+.btn-container {
+  margin: 0px auto;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-add {
+  margin: 0px auto;
+  width: 80%;
+  text-align: center;
+  cursor: pointer;
 }
 </style>
