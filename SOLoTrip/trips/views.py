@@ -43,7 +43,7 @@ def create_trip(request):
 
         serializer = TripSerializer(trip, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            trip = serializer.save()
             # 기존 멤버와 새로운 멤버를 비교해서 추가해줘야하는데...
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)

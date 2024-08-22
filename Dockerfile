@@ -21,4 +21,4 @@ ENV DJANGO_SETTINGS_MODULE=SOLoTrip.SOLoTrip.settings
 EXPOSE 8000
 
 # Gunicorn을 사용하여 서버 실행
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "SOLoTrip.SOLoTrip.wsgi:application"]
