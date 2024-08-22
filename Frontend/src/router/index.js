@@ -3,7 +3,8 @@ import HomeView from "../views/HomeView.vue";
 import BridgeView from "@/views/BridgeView.vue";
 import TripView from "@/views/TripView.vue";
 import TripCreateView from "@/views/TripCreateView.vue";
-import TripProgressView from "@/views/TripProgressView.vue";
+import TripMainView from "@/views/TripMainView.vue";
+import TripDetailView from "@/views/TripDetailView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,9 +31,15 @@ const router = createRouter({
     },
     {
       // path: "/trip/:tripId",
-      path: "/trip/progress",
-      name: "progresstrip",
-      component: TripProgressView,
+      path: "/trip/main",
+      name: "tripMain",
+      component: TripMainView,
+    },
+    {
+      // path: "/trip/:tripId",
+      path: "/trip/detail",
+      name: "tripDetail",
+      component: TripDetailView,
     },
   ]
 });

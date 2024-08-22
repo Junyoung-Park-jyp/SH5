@@ -95,7 +95,7 @@ const makeTrip = () => {
 }
 
 const goProgress = () => {
-  router.push({ name: 'progresstrip' })
+  router.push({ name: 'tripMain' })
 }
 </script>
 
