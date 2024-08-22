@@ -3,18 +3,14 @@
     <v-row class="my-10 justify-center">
       <h1>ㅇㅇㅇ 님</h1>
     </v-row>
-    <v-row v-if="tripState === 0" class="py-5 my-5 justify-center">
-      <v-btn @click="makeTrip">여행 만들기</v-btn>
-    </v-row>
-    <v-row v-else-if="tripState === 1" class="background-image py-5 my-5 justify-center" @click="goProgress">
-      <v-icon icon="mdi-music"></v-icon>
-      <h2>현재 스페인 여행 준비 중</h2>
-      <v-icon icon="mdi-music"></v-icon>
-    </v-row>
-    <v-row v-else-if="tripState === 2" class="background-image py-5 my-5 justify-center" @click="goProgress">
-      <v-icon icon="mdi-music"></v-icon>
-      <h2>현재 스페인 여행 중</h2>
-      <v-icon icon="mdi-music"></v-icon>
+    <v-row>
+      <v-carousel :show-arrows="false" hide-delimiters cycle interval="3000">
+        <v-carousel-item v-for="(experience, index) in tripStore.tripExperiences" :key="index" class="background-image" @click="goTripMain">
+          <v-icon icon="mdi-music"></v-icon>
+          <h2>현재 스페인 여행 준비 중</h2>
+          <v-icon icon="mdi-music"></v-icon>
+        </v-carousel-item>
+      </v-carousel>
     </v-row>
     <v-row v-if="tripStore.tripExperiences.length > 0" class="justify-center py-5 my-5">
       <h2>총 {{ tripStore.tripExperiences.length }}회 SOL로 여행을 다녀오셨네요!</h2>
@@ -26,13 +22,10 @@
             </v-btn>
           </v-col>
           <v-col>
-            <v-carousel v-model="currentSlide" :show-arrows="false">
-              <v-carousel-item
-                v-for="(experience, index) in tripStore.tripExperiences"
-                :key="index"
-                class="background-image"
-              >
-                  <v-img :src="experience.imageUrl" class="align-center"></v-img>
+            <v-carousel v-model="currentSlide" :show-arrows="false" cycle interval="3000">
+              <v-carousel-item v-for="(experience, index) in tripStore.tripExperiences" :key="index"
+                class="background-image">
+                <v-img :src="experience.imageUrl" class="align-center"></v-img>
                 <h2>{{ experience.city }}</h2>
                 <h2>{{ experience.cost }}</h2>
               </v-carousel-item>
@@ -45,6 +38,9 @@
           </v-col>
         </v-row>
       </v-container>
+    </v-row>
+    <v-row class="py-5 my-5 justify-center">
+      <v-btn @click="makeTrip">여행 만들기</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -61,7 +57,6 @@ const tripStore = useTripStore();
 
 const router = useRouter();
 
-const tripState = ref(1)  // 0: 여행 만들기 1: 여행 준비 중 2: 여행 중
 const currentSlide = ref(0)
 
 const getImageUrl = async (countryName) => {
@@ -94,7 +89,7 @@ const makeTrip = () => {
   router.push({ name: 'createTrip' })
 }
 
-const goProgress = () => {
+const goTripMain = () => {
   router.push({ name: 'tripMain' })
 }
 </script>
