@@ -29,7 +29,8 @@
           </button>
         </div>
       </v-toolbar>
-      <router-view />
+      <HomeView v-if="!isTraveling" />
+      <router-view v-else />
     </div>
   </v-app>
 </template>
@@ -38,6 +39,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStateStore } from '@/stores/stateStore';
+import HomeView from './views/HomeView.vue';
 import './assets/base.css';
 
 const stateStore = useStateStore();

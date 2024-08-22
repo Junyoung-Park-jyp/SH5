@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import axiosInstance from '@/axios';
 
 export const useTripStore = defineStore('trip', {
@@ -13,13 +13,15 @@ export const useTripStore = defineStore('trip', {
     adjustTime: null,
 
     // 다녔던 여행들 더미 데이터
-    travelExperiences: [
-      {country: '제주도', cost: 963500},
-      {country: '파리', cost: 3572600},
-      {country: '오키나와', cost: 1572600},
-      {country: '부산', cost: 678830},
+    experiences: [
+      {country: '대한민국', city: '제주도', cost: 963500},
+      {country: '프랑스', city: '파리', cost: 3572600},
+      {country: '일본', city: '오키나와', cost: 1572600},
+      {country: '대한민국', city: '부산', cost: 678830},
     ],
+
     stage: 0,
+    progressStage: 0,
   }),
 
   getters: {
@@ -32,8 +34,14 @@ export const useTripStore = defineStore('trip', {
     tripMembers(state) {
       return state.members.map(member => member.userName);
     },
+    tripExperiences(state) {
+      return state.experiences;
+    },
     tripFormStage(state) {
       return state.stage
+    },
+    tripProgressStage(state) {
+      return state.progressStage
     }
   },
 
