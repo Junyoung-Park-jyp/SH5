@@ -4,15 +4,15 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Junyoung-Park-jyp/SH5', branch: 'taewan-front'
+                git url: 'https://github.com/yourusername/your-vue-repo', branch: 'main'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // 명시적으로 Dockerfile의 경로를 지정
-                    sh 'docker build -t my-vue-app:latest -f Dockerfile .'
+                    // Docker 이미지를 빌드할 때 Dockerfile의 경로와 빌드 컨텍스트를 명시적으로 지정
+                    sh 'docker build -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
                 }
             }
         }
