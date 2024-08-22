@@ -138,13 +138,15 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { useStateStore } from "@/stores/stateStore";
 import '../assets/base.css';
 
 // 라우터 훅 설정
 const router = useRouter();
-
+const stateStore = useStateStore();
 // BridgeView로 라우팅하는 함수
 const navigateToBridge = () => {
+  stateStore.toggleTrip()
   router.push({ name: "bridge" });
 };
 </script>

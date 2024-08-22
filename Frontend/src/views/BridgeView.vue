@@ -64,7 +64,7 @@ const benefits = {
 
 // 여행 시작 페이지 이동 함수
 function goToTrip() {
-  router.push({ name: 'trip' });
+  router.push({ name: 'home' });
 }
 </script>
 
