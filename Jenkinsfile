@@ -24,8 +24,8 @@ pipeline {
             steps {
                 script {
                     // 컨테이너 내부에서 환경 변수 출력
-                    sh "docker run --rm --env-file ${env.ENV_FILE_PATH} my-django-app:${env.BUILD_ID} printenv"
-                    sh "docker run --rm -w /app/SOLoTrip --env-file ${env.ENV_FILE_PATH} my-django-app:${env.BUILD_ID} python manage.py test"
+                    sh "docker run --rm -w /app/SOLoTrip my-django-app:${env.BUILD_ID} ls -l"
+                    sh "docker run --env-file ${env.ENV_FILE_PATH} -w /app/SOLoTrip my-django-app:${env.BUILD_ID} python manage.py test"
                 }
             }
         }
