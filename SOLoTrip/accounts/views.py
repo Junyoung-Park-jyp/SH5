@@ -25,7 +25,10 @@ def signup(request):
         response = shinhan_signup(email)
         if "responseCode" in response:
             return Response(response, status=status.HTTP_409_CONFLICT)
-        data['user_key'] = response['userKey']
+        try:
+            data['user_key'] = response['userKey']
+        except:
+            return Response(response, status=status.HTTP_409_CONFLICT)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             create_demand_deposit_account(email)
