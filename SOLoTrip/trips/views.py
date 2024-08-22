@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .serializers import TripSerializer, TripDetailSerializer, MemberCreateSerializer, UserSerializer
+from .serializers import TripSerializer, TripDetailSerializer, MemberCreateSerializer
 from .models import Trip, Member
 from django.utils import timezone
+from accounts.serializers import UserSerializer
 
 
 User = get_user_model()

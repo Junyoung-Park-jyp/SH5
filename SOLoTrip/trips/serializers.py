@@ -29,9 +29,3 @@ class MemberCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = '__all__'
-        
-        
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'email']
