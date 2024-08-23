@@ -131,6 +131,8 @@ def inference(data):
 
 
 if __name__ == '__main__':
+    import time
+
     # Test
     # print(test())
 
@@ -139,5 +141,7 @@ if __name__ == '__main__':
     # result.to_csv('inferenced.csv')
 
     # Keyword
-    result = inference(preprocess_infer('피자스쿨'))
-    print(result)
+    start = time.time()
+    input_text = '피자스쿨'
+    output_text = inference(preprocess_infer(input_text))
+    print(f'Input: {input_text}, Output: {output_text} Inference Time: {time.time() - start}')
