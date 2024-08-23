@@ -310,7 +310,7 @@ const goTripMain = () => {
   left: 50%;
   /* transform: none; */
   border-radius: 0px;
-  background-color: rgba(80, 80, 80, 0.2);
+  background-color: rgba(80, 80, 80, 0.6);
   border-radius: 20px 20px 0px 0px;
 }
 

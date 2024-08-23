@@ -12,6 +12,7 @@
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
     "axios": "^1.7.4",
+    "date-fns": "^3.6.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.29",
