@@ -22,22 +22,6 @@
     <div class="bottom">
       <button class="next-btn" @click="nextStep">다 &nbsp; 음</button>
     </div>
-
-    <!-- 모달 다이얼로그 통합 -->
-    <!-- <v-dialog v-model="showCancelModal" max-width="400">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">여행 생성을 취소할까요?</span>
-        </v-card-title>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red" text @click="clearTrip">네</v-btn>
-          <v-btn text @click="closeCancelModal">아니오</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog> -->
-
     <v-dialog v-model="showCancelModal" max-width="400">
       <div class="modal-container">
         <div class="modal-message">
@@ -83,6 +67,9 @@ const clearTrip = () => {
 };
 
 const backStep = () => {
+  if (tripFormStage.value > 0) {
+    tripFormStage.value --;
+  }
 
 }
 
