@@ -1,6 +1,5 @@
 <template>
   <div class="main-container">
-
     <!-- 상단 국가/도시 선택 입력창 -->
     <div class="first">
       <v-row>
@@ -47,38 +46,125 @@
             </v-chip>
           </div>
         </v-col>
-          <div class="btn-container">
-            <button @click="addCity" class="mt-1 btn-add">
-              + 추가
-            </button>
-          </div>
+        <div class="btn-container">
+          <button @click="addCity" class="mt-1 btn-add">+ 추가</button>
+        </div>
       </v-row>
     </div>
 
     <!-- 하단 날짜 선택 입력창 -->
     <div class="second">
       <v-row>
-        <div class="question">언제 여행을 떠나시나요?</div>
+        <div class="question">
+          언제 여행을 떠나시나요?
+          <p class="subtitle">자택 출발/도착 기준</p>
+        </div>
+        <v-col cols="12">
+          <!-- 출발일시 -->
+          <v-menu
+            v-model="departureMenu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+            class="calendar"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="departureDateFormatted"
+                label="출발일시"
+                prepend-icon="mdi-calendar"
+                readonly
+                @click="departureMenu = true"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="departureDate"
+              @update:modelValue="updateDepartureDate"
+              locale="ko"
+              class="custom-picker"
+              :weekday-format="getDay"
+              :month-format="getMonth"
+              :title-date-format="getMonth"
+              :header-date-format="getHeaderTitleMonth"
+            ></v-date-picker>
+          </v-menu>
+
+          <!-- 도착일시 -->
+          <v-menu
+            v-model="arrivalMenu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+            class="calendar"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="arrivalDateFormatted"
+                label="도착일시"
+                prepend-icon="mdi-calendar"
+                readonly
+                @click="arrivalMenu = true"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="arrivalDate"
+              @update:modelValue="updateArrivalDate"
+              locale="ko"
+              class="custom-picker"
+              :weekday-format="getDay"
+              :month-format="getMonth"
+              :title-date-format="getMonth"
+              :header-date-format="getHeaderTitleMonth"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
       </v-row>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useTripStore } from '@/stores/tripStore';
+import { ref, watch } from "vue";
+import { useTripStore } from "@/stores/tripStore";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
 
 const tripStore = useTripStore();
 
-const countryInput = ref('');
-const cityInput = ref('');
+const countryInput = ref("");
+const cityInput = ref("");
 const cities = ref([]);
+
+// 출발일시 및 도착일시 관리
+const departureDate = ref(null);
+const arrivalDate = ref(null);
+const departureDateFormatted = ref("");
+const arrivalDateFormatted = ref("");
+const departureMenu = ref(false);
+const arrivalMenu = ref(false);
+
+// 날짜 포맷을 업데이트하는 함수
+const updateDepartureDate = (newDate) => {
+  departureDate.value = newDate;
+  departureDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
+  tripStore.startDate = newDate;
+  departureMenu.value = false;
+};
+
+const updateArrivalDate = (newDate) => {
+  arrivalDate.value = newDate;
+  arrivalDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
+  tripStore.endDate = newDate;
+  arrivalMenu.value = false;
+};
 
 // 도시 목록을 가져오기 위한 예제 데이터
 const cityData = {
-  '한국': ['서울', '부산', '인천', '대구'],
-  '일본': ['도쿄', '오사카', '교토', '삿포로'],
-  '미국': ['뉴욕', '로스앤젤레스', '시카고', '샌프란시스코']
+  한국: ["서울", "부산", "인천", "대구"],
+  일본: ["도쿄", "오사카", "교토", "삿포로"],
+  미국: ["뉴욕", "로스앤젤레스", "시카고", "샌프란시스코"],
 };
 
 // 사용자가 국가를 입력하면 해당 국가의 도시 목록을 가져오는 함수
@@ -94,8 +180,7 @@ const fetchCities = () => {
 const addCountry = () => {
   if (countryInput.value && !tripStore.country.includes(countryInput.value)) {
     tripStore.country.push(countryInput.value);
-    countryInput.value = '';
-    console.log("국가 목록:", tripStore.country)
+    countryInput.value = "";
   }
 };
 
@@ -103,7 +188,7 @@ const addCountry = () => {
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
-    cityInput.value = '';
+    cityInput.value = "";
   }
 };
 
@@ -120,6 +205,53 @@ const removeCity = (index) => {
 // 국가가 변경될 때마다 도시 목록을 업데이트
 watch(countryInput, fetchCities);
 
+// 날짜 포맷팅 함수
+const getDay = (date) => {
+  const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+  let i = new Date(date).getDay(date);
+  return daysOfWeek[i];
+};
+
+const getMonth = (date) => {
+  const monthName = [
+    "1월",
+    "2월",
+    "3월",
+    "4월",
+    "5월",
+    "6월",
+    "7월",
+    "8월",
+    "9월",
+    "10월",
+    "11월",
+    "12월",
+  ];
+
+  let i = new Date(date).getMonth(date);
+  return monthName[i];
+};
+
+const getHeaderTitleMonth = (date) => {
+  const monthName = [
+    "1월",
+    "2월",
+    "3월",
+    "4월",
+    "5월",
+    "6월",
+    "7월",
+    "8월",
+    "9월",
+    "10월",
+    "11월",
+    "12월",
+  ];
+  let i = new Date(date).getMonth(date);
+  const year = new Date(date).getFullYear(date);
+  const month = monthName[i];
+  return "${year}년 ${month}";
+};
 </script>
 
 <style scoped>
@@ -129,7 +261,8 @@ watch(countryInput, fetchCities);
   margin-top: 8px;
 }
 
-.first, .second {
+.first,
+.second {
   margin: 0px 10px;
 }
 
@@ -146,6 +279,22 @@ watch(countryInput, fetchCities);
   width: 90%;
 }
 
+.subtitle {
+  font-size: small;
+  padding-left: 2px;
+}
+
+.calendar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
 .btn-container {
   margin: 0px auto;
   width: 100%;
@@ -158,4 +307,65 @@ watch(countryInput, fetchCities);
   text-align: center;
   cursor: pointer;
 }
+
+/* 날짜 */
+/* .custom-picker {
+  border-radius: 10px !important;
+
+  .v-btn--active.green {
+    background-color: #edffff !important;
+
+    .v-btn__content {
+      color: #00b1bb !important;
+      font-weight: bold !important;
+    }
+  }
+
+  .v-picker__title {
+    display: none !important;
+  }
+
+  .v-date-picker-header {
+    padding-top: 10px !important;
+  }
+}
+
+.v-date-picker-table thead tr th {
+  color: #1c1c1c !important;
+  font-weight: 400 !important;
+
+  &:nth-child(1) {
+    color: #ff7451 !important;
+  }
+
+  &:nth-child(7) {
+    color: #ff7451 !important;
+  }
+}
+
+.v-date-picker-table tbody tr td {
+  &:nth-child(1) {
+    .v-btn--disabled {
+      .v-btn__content {
+        color: #ffcbbe;
+      }
+    }
+
+    .v-btn__content {
+      color: #ff7451;
+    }
+  }
+
+  &:nth-child(7) {
+    .v-btn--disabled {
+      .v-btn__content {
+        color: #ffcbbe;
+      }
+    }
+
+    .v-btn__content {
+      color: #ff7451;
+    }
+  }
+} */
 </style>
