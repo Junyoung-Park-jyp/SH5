@@ -1,53 +1,89 @@
 <template>
-  <v-container>
-    <v-row class="my-10 justify-center">
-      <h1>ㅇㅇㅇ 님</h1>
-    </v-row>
-    <v-row v-if="tripState === 0" class="py-5 my-5 justify-center">
-      <v-btn @click="makeTrip">여행 만들기</v-btn>
-    </v-row>
-    <v-row v-else-if="tripState === 1" class="background-image py-5 my-5 justify-center" @click="goProgress">
-      <v-icon icon="mdi-music"></v-icon>
-      <h2>현재 스페인 여행 준비 중</h2>
-      <v-icon icon="mdi-music"></v-icon>
-    </v-row>
-    <v-row v-else-if="tripState === 2" class="background-image py-5 my-5 justify-center" @click="goProgress">
-      <v-icon icon="mdi-music"></v-icon>
-      <h2>현재 스페인 여행 중</h2>
-      <v-icon icon="mdi-music"></v-icon>
-    </v-row>
-    <v-row v-if="tripStore.tripExperiences.length > 0" class="justify-center py-5 my-5">
-      <h2>총 {{ tripStore.tripExperiences.length }}회 SOL로 여행을 다녀오셨네요!</h2>
-      <v-container>
-        <v-row class="d-flex align-center">
-          <v-col cols="2">
-            <v-btn icon @click="prevSlide">
-              <v-icon icon="mdi-chevron-left"></v-icon>
+  <div class="main-container">
+
+    <!-- 프로필 -->
+    <div class="my-10 profile">
+      <img class="profile-img" src="../assets/img/profile.png" alt="프로필">
+      <span>ㅇㅇㅇ 님</span>
+    </div>
+
+    <!-- 미래/현재 -->
+    <div class="non-past">
+      <v-row class="d-flex align-center">
+        <v-carousel :show-arrows="true" hide-delimiters :cycle="false" class="non-past-carousel">
+          <template v-slot:prev="{ props }">
+            <v-btn
+              color="none"
+              variant="text"
+              @click="props.onClick"
+            >
+              <v-icon class="btns" icon="mdi-chevron-left" size="xx-large"></v-icon>
             </v-btn>
-          </v-col>
-          <v-col>
-            <v-carousel v-model="currentSlide" :show-arrows="false">
-              <v-carousel-item
-                v-for="(experience, index) in tripStore.tripExperiences"
-                :key="index"
-                class="background-image"
-              >
-                  <v-img :src="experience.imageUrl" class="align-center"></v-img>
-                <h2>{{ experience.city }}</h2>
-                <h2>{{ experience.cost }}</h2>
-              </v-carousel-item>
-            </v-carousel>
-          </v-col>
-          <v-col cols="2">
-            <v-btn icon @click="nextSlide">
-              <v-icon icon="mdi-chevron-right"></v-icon>
+          </template>
+          <template v-slot:next="{ props }">
+            <v-btn
+              color="none"
+              variant="text"
+              @click="props.onClick"
+            >
+              <v-icon class="btns" icon="mdi-chevron-right" size="xx-large"></v-icon>
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-row>
-  </v-container>
+          </template>
+          
+          <v-carousel-item v-for="(experience, index) in tripStore.tripExperiences" :key="index" class="background-image" @click="goTripMain">
+            <div class="info">
+              <span>
+                <v-icon icon="mdi-music"></v-icon>
+                현재 스페인 여행 준비 중
+              <v-icon icon="mdi-music"></v-icon>
+            </span>
+            </div>
+          </v-carousel-item>
+        </v-carousel>
+      </v-row>
+    </div>
+
+    <!-- 과거 -->
+    <div class="past">
+      <v-row v-if="tripStore.tripExperiences.length > 0" class="justify-center py-5 my-5">
+        <div class="record">총 {{ tripStore.tripExperiences.length }}회 SOL로 여행을 다녀오셨네요!</div>
+        <v-container>
+          <v-row class="d-flex align-center">
+            <v-col cols="3">
+              <v-btn icon @click="prevSlide">
+                <v-icon icon="mdi-chevron-left"></v-icon>
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-carousel v-model="currentSlide" :show-arrows="false" cycle interval="3000">
+                <v-carousel-item v-for="(experience, index) in tripStore.tripExperiences" :key="index"
+                  class="background-image">
+                  <div class="info">
+                    <v-img :src="experience.imageUrl" class="align-center"></v-img>
+                    <div class="city">{{ experience.city }}</div>
+                    <div class="cost">{{ experience.cost }}</div>
+                  </div>
+                </v-carousel-item>
+              </v-carousel>
+            </v-col>
+            <v-col cols="3">
+              <v-btn icon @click="nextSlide">
+                <v-icon icon="mdi-chevron-right"></v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-row>
+    </div>
+
+    <!-- 여행 만들기 -->
+    <div class="bottom" ref="bottomDiv">
+      <button class="create-btn" @click="makeTrip">여행 만들기</button>
+    </div>
+    
+  </div>
 </template>
+
 
 <script setup>
 import { useUserStore } from '@/stores/userStore';
@@ -61,19 +97,19 @@ const tripStore = useTripStore();
 
 const router = useRouter();
 
-const tripState = ref(1)  // 0: 여행 만들기 1: 여행 준비 중 2: 여행 중
-const currentSlide = ref(0)
+const currentSlide = ref(0);
+const bottomDiv = ref(null);
 
 const getImageUrl = async (countryName) => {
-  try {
-    const response = await axios.get(
-      `http://apis.data.go.kr/1262000/CountryFlagService2/getCountryFlagList2?serviceKey=vai590Q3ljVdLT1dzNoE5dEHmfwscfRSDAeUOKG%2Bl6GMUILcwCkmxrx2blG2%2FxO5ozfg4eC1ER%2B5nzpCg3Vdrw%3D%3D&pageNo=1&numOfRows=1&cond[country_nm::EQ]=${countryName}`
-    )
-    return response.data.data[0]?.download_url;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+  // try {
+  //   const response = await axios.get(
+  //     'http://apis.data.go.kr/1262000/CountryFlagService2/getCountryFlagList2?serviceKey=vai590Q3ljVdLT1dzNoE5dEHmfwscfRSDAeUOKG%2Bl6GMUILcwCkmxrx2blG2%2FxO5ozfg4eC1ER%2B5nzpCg3Vdrw%3D%3D&pageNo=1&numOfRows=1&cond[country_nm::EQ]=${countryName}'
+  //   )
+  //   return response.data.data[0]?.download_url;
+  // } catch (error) {
+  //   console.error(error);
+  //   return null;
+  // }
 };
 
 onMounted(async () => {
@@ -91,18 +127,77 @@ const nextSlide = () => {
 };
 
 const makeTrip = () => {
-  router.push({ name: 'createTrip' })
+  const bottom = bottomDiv.value;
+  bottom.classList.add('expand');
+
+  // 애니메이션이 끝난 후 페이지 이동
+  setTimeout(() => {
+    router.push({ name: 'createTrip' });
+  }, 1000); // 애니메이션 길이와 일치시켜야 함
 }
 
-const goProgress = () => {
+const goTripMain = () => {
   router.push({ name: 'tripMain' })
 }
 </script>
 
+
 <style scoped>
-.v-carousel {
-  height: 300px !important;
+.main-container {
+  height: 85vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding-bottom: 20px;
 }
+
+.profile {
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  margin: 0px auto;
+  height: 100px;
+  background-color: #f4f6fa;
+}
+
+.profile > img {
+  height: 75px;
+  margin-right: 30px;
+}
+
+.profile > span {
+  font-weight: bolder;
+  font-size: xx-large;
+}
+
+.non-past {
+  margin: 0 auto;
+}
+
+
+.past {
+  /* margin: 50px; */
+  margin: 0 auto;
+  width: 100%;
+}
+
+.record {
+  width: 100%;
+  background-color: grey;
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+}
+
+.v-carousel {
+  height: 200px !important;
+}
+
+.non-past-carousel {
+  height: 100px !important;
+}
+
 
 .background-image {
   background-image: url('@/assets/img/travel.png');
@@ -111,14 +206,60 @@ const goProgress = () => {
 }
 
 .v-carousel-item {
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
   text-align: center;
   color: black;
+}
 
+.info {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  font-size: large;
 }
 
 .v-img {
   width: 50%;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 90px;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0 auto;
+  background-color: rgba(80,80,80, 0.2);
+  border-radius: 20px 20px 0px 0px;
+  transition: height 1s ease, bottom 1s ease;
+}
+
+.bottom.expand {
+  height: 100vh;
+  bottom: 0;
+  left: 50%;
+  /* transform: none; */
+  border-radius: 0px;
+  background-color: rgba(80, 80, 80, 0.2);
+  border-radius: 20px 20px 0px 0px;
+}
+
+.create-btn {
+  width: 80%;
+  background-color: #4b72e1;
+  border-radius: 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
 }
 </style>

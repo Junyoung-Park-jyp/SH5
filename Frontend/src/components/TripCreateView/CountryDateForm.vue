@@ -1,13 +1,15 @@
 <template>
   <div class="main-container">
-    <!-- 상단 국가 입력창 -->
+
+    <!-- 상단 국가/도시 선택 입력창 -->
     <div class="first">
       <v-row>
         <div class="question">어디로 여행을 떠나시나요?</div>
         <v-col cols="12">
+          <!-- 국가 -->
           <v-text-field
             v-model="countryInput"
-            label="국가를 입력하세요"
+            label="국가"
             @keyup.enter="addCountry"
             outlined
           ></v-text-field>
@@ -23,10 +25,12 @@
               {{ country }}
             </v-chip>
           </div>
+
+          <!-- 도시 -->
           <v-select
             v-model="cityInput"
+            label="도시"
             :items="cities"
-            label="도시를 선택하세요"
             @change="addCity"
             outlined
           ></v-select>

@@ -13,7 +13,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: TripView
+      component: TripView,
     },
     {
       path: "/bridge",

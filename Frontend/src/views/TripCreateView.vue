@@ -113,15 +113,15 @@ const showLoadingSequence = () => {
     router.push({
       name: 'loadingMessage',
       params: {
-        message: '여행 생성 완료',
+        message: '생성 완료',
         status: 'success', // 여행 생성 완료 상태
       },
     });
 
     // 1.5초 후 TripView로 이동
     setTimeout(() => {
-      router.replace({ name: 'trip' });
-    }, 1500);
+      router.replace({ name: 'home' });
+    }, 1200);
   }, 2000);
 };
 </script>

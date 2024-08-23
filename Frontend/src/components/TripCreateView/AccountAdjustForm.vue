@@ -21,8 +21,8 @@
     <div class="fifth">
       <v-row>
         <div class="question">일일 정산 시간 설정하기</div>
-        <div class="explanation">지정 시간에 자동으로 PUSH알림 일일 전송</div>
-        <v-col>
+        <div class="explanation">지정 시간에 자동으로 PUSH 알림 전송</div>
+        <v-col cols="12">
           <v-text-field
             v-model="settlementTime"
             label="정산 시간 선택"
