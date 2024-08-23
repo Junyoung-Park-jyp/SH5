@@ -1,0 +1,57 @@
+DIRECTORY:
+    dataset: uncased  # uncased, cased, nonumber
+
+SEED:
+    random_seed: 2022
+    
+DATALOADER:
+    batch_size: 16
+    shuffle: True
+    drop_last: False
+    
+MODEL:
+    model_name: KoBERT  # cnn1d, KoBERT, KoELECTRA, RoBERTa
+        
+    pretrained_link: 
+        KoBERT: kykim/bert-kor-base
+        KoELECTRA: monologg/koelectra-base-v3-discriminator
+        RoBERTa: klue/roberta-base
+    
+    num_of_classes: 11
+
+TRAIN:
+    num_of_epochs: 5
+    batch_size: 16
+    max_seq_len: 26  # 26, 32
+    learning_rate:
+        pretrained: 0.00005
+        cnn1d: 0.025
+    dropout: 0.5
+    max_grad_norm: 1
+    warmup_ratio: 0.1
+    loss: CrossEntropyLoss  # CrossEntropyLoss, FocalLoss, WeightedCE
+    optimizer: AdamW
+    metric:
+        - f1score
+        - accuracy
+
+LABELING:
+    0: '교통/자동차'
+    1: '대형마트'
+    2: '미용'
+    3: '생필품'
+    4: '쇼핑몰'
+    5: '외식'
+    6: '의료/건강'
+    7: '주류/펍'
+    8: '취미/여가'
+    9: '카페'
+    10: '편의점'
+    # 0: '교육'
+    # 2: '기타소비'
+    # 5: '배달'
+    # 6: '보험'
+    # 8: '생활서비스'
+    # 9: '세금/공과금'
+    # 11: '여행/숙박'
+    # 17: '통신'
