@@ -5,6 +5,7 @@ import TripView from "@/views/TripView.vue";
 import TripCreateView from "@/views/TripCreateView.vue";
 import TripMainView from "@/views/TripMainView.vue";
 import TripDetailView from "@/views/TripDetailView.vue";
+import TripFinishView from "@/views/TripFinishView.vue";
 import LoadingMessage from '@/components/TripCreateView/LoadingMessage.vue';
 
 const router = createRouter({
@@ -36,6 +37,12 @@ const router = createRouter({
       path: "/trip/detail",
       name: "tripDetail",
       component: TripDetailView,
+    },
+    {
+      // path: "/trip/:tripId",
+      path: "/trip/finish",
+      name: "tripFinish",
+      component: TripFinishView,
     },
     {
       path: '/loading-message/:message/:status',

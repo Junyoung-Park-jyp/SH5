@@ -1,86 +1,129 @@
 <template>
   <div>
-    <div class="carousel-container">
-      <button @click="prevWeek" :disabled="currentWeek === 0">
-        <v-icon icon="mdi-chevron-left"></v-icon>
-      </button>
-      <div class="carousel">
-        <div class="carousel-track" :style="trackStyle">
-          <div v-for="(date, index) in weeks" :key="index" class="carousel-item">
-            <div v-for="(day, i) in date" :key="i" class="day-container">
-              <div class="month">{{ formatMonth(day) }}</div>
-              <div class="day">{{ formatDay(day) }}</div>
-              <div class="weekday">{{ formatWeekday(day) }}</div>
+    <h1>
+      최한진 님은 스페인 여행 {{ tripState }} 중
+    </h1>
+
+    <v-container>
+      <v-row>
+        <!-- ALL -->
+        <v-col cols="1">
+          <div>A</div>
+          <div>ALL</div>
+        </v-col>
+        <!-- 준비 -->
+        <v-col cols="1">
+          <div>P</div>
+          <div>준비</div>
+        </v-col>
+        <!-- 날짜 캐러셀 -->
+        <v-col class="carousel-container" cols="9">
+          <!-- 왼쪽 버튼 -->
+          <v-btn density="compact" icon="mdi-chevron-left" @click="prevWeek" :disabled="currentWeekIndex === 0"></v-btn>
+          <!-- 날짜 -->
+          <div class="carousel">
+            <div class="carousel-track" :style="trackStyle">
+              <div v-for="(date, index) in weeks" :key="index" class="carousel-item">
+                <div v-for="(day, i) in date" :key="i" class="day-container">
+                  <div>{{ format(day, 'EEE') }}</div>
+                  <div :class="{ 'today-circle': isToday(day) }">{{ format(day, 'dd') }}</div>
+                  <div>{{ format(day, 'M') }}월</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <button @click="nextWeek" :disabled="currentWeek === weeksLength - 1">
-        <v-icon icon="mdi-chevron-right"></v-icon>
-      </button>
-    </div>
+          <!-- 오른쪽 버튼 -->
+          <v-btn density="compact" icon="mdi-chevron-right" @click="nextWeek"
+            :disabled="currentWeekIndex === weeks.length - 1"></v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <DetailReady v-if="tripState === '준비'" />
+    <DetailProgress v-else />
+
+    <v-btn @click="goFinish">정산하기</v-btn>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router'
 import { eachDayOfInterval, format } from 'date-fns';
 
-const startDate = ref(new Date(2024, 7, 30));
-const endDate = ref(new Date(2024, 8, 20));
+import DetailReady from '@/components/TripDetailView/DetailReady.vue';
+import DetailProgress from '@/components/TripDetailView/DetailProgress.vue';
 
-const dateRange = computed(() => {
-  return eachDayOfInterval({
-    start: startDate.value,
-    end: endDate.value,
-  });
+const router = useRouter();
+
+// 오늘 날짜
+const today = new Date();
+
+// 여행 날짜
+const startDate = new Date(2024, 7, 26);  // 2024년 8월 10일
+const endDate = new Date(2024, 8, 27);  // 2024년 8월 27일
+
+// 여행 날짜의 범위
+const tripRange = eachDayOfInterval({
+  start: startDate,
+  end: endDate,
 });
 
-const weeks = computed(() => {
-  const tmp = [];
-  for (let i = 0; i < dateRange.value.length; i+=7) {
-    tmp.push(dateRange.value.slice(i, i + 7));
+// 여행 상태
+const tripState = ref('준비')
+
+// 현재 날짜의 주차 인덱스
+const currentWeekIndex = ref(0);
+
+// 여행 날짜의 범위를 6일 단위로 구분
+const weeks = [];
+for (let i = 0; i < tripRange.length; i += 5) {
+  const tmp = tripRange.slice(i, i + 5);
+  weeks.push(tmp);
+  if (tmp[0] <= today && today <= tmp[tmp.length - 1]) {
+    currentWeekIndex.value = i / 5
+    tripState.value = ''
   }
-  return tmp;
-});
-
-const currentWeek = ref(0);
-
-const weeksLength = computed(() => weeks.value.length);
-
-// 날짜 포맷팅 함수들
-const formatDay = (date) => format(date, 'dd');
-const formatMonth = (date) => format(date, 'MMM');
-const formatWeekday = (date) => format(date, 'EEE');
+}
 
 const prevWeek = () => {
-  if (currentWeek.value > 0) {
-    currentWeek.value--;
+  if (currentWeekIndex.value > 0) {
+    currentWeekIndex.value--;
   }
 };
 
 const nextWeek = () => {
-  if (currentWeek.value < weeksLength.value - 1) {
-    currentWeek.value++;
+  if (currentWeekIndex.value < weeks.length - 1) {
+    currentWeekIndex.value++;
   }
 };
 
-// 캐러셀 트랙의 스타일 계산
+// 오늘 날짜인지를 판별
+const isToday = (day) => {
+  if (day.getFullYear() === today.getFullYear() && day.getMonth() === today.getMonth() && day.getDate() === today.getDate()) {
+    return true
+  } else {
+    return false
+  }
+}
+
 const trackStyle = computed(() => ({
-  transform: `translateX(-${currentWeek.value * 100}%)`,
+  transform: `translateX(-${currentWeekIndex.value * 100}%)`,
 }));
+
+const goFinish = () => {
+  return router.push({ name: 'tripFinish' })
+}
 </script>
 
 <style scoped>
 .carousel-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .carousel {
   overflow: hidden;
-  width: 70%;
 }
 
 .carousel-track {
@@ -99,31 +142,22 @@ const trackStyle = computed(() => ({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0 10px;
+  margin: 0 6px;
 }
 
-.month {
-  font-size: 0.8rem;
-  color: gray;
-}
-
-.day {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.weekday {
-  font-size: 0.8rem;
-  color: gray;
-}
-
-button {
-  padding: 5px 10px;
+.v-btn {
   cursor: pointer;
 }
 
-button:disabled {
+.v-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.today-circle {
+  background-color: #4b72e1;
+  color: white;
+  border-radius: 24px;
+  padding: 5px 10px;
 }
 </style>
