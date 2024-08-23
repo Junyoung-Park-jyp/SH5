@@ -1,13 +1,15 @@
 <template>
   <div class="main-container">
-    <!-- 상단 국가 입력창 -->
+
+    <!-- 상단 국가/도시 선택 입력창 -->
     <div class="first">
       <v-row>
         <div class="question">어디로 여행을 떠나시나요?</div>
         <v-col cols="12">
+          <!-- 국가 -->
           <v-text-field
             v-model="countryInput"
-            label="국가를 입력하세요"
+            label="국가"
             @keyup.enter="addCountry"
             outlined
           ></v-text-field>
@@ -23,10 +25,12 @@
               {{ country }}
             </v-chip>
           </div>
+
+          <!-- 도시 -->
           <v-select
             v-model="cityInput"
+            label="도시"
             :items="cities"
-            label="도시를 선택하세요"
             @change="addCity"
             outlined
           ></v-select>
@@ -43,11 +47,6 @@
             </v-chip>
           </div>
         </v-col>
-          <div class="btn-container">
-            <button @click="addCity" class="mt-1 btn-add">
-              + 추가
-            </button>
-          </div>
       </v-row>
     </div>
 
@@ -56,13 +55,69 @@
       <v-row>
         <div class="question">언제 여행을 떠나시나요?</div>
       </v-row>
+      <v-row>
+        <v-col cols="12" sm="6">
+          <!-- 시작일 선택 -->
+          <v-menu
+            v-model="menu1"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="formattedStartDate"
+                label="시작일"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="startDate" @input="selectStartDate"></v-date-picker>
+          </v-menu>
+        </v-col>
+
+        <v-col cols="12" sm="6">
+          <!-- 종료일 선택 -->
+          <v-menu
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="formattedEndDate"
+                label="종료일"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="endDate" @input="selectEndDate"></v-date-picker>
+          </v-menu>
+        </v-col>
+      </v-row>
+      <!-- 선택된 날짜를 텍스트로 표시 -->
+      <v-row>
+        <v-col cols="12">
+          <p>선택된 기간: {{ formattedStartDate }} ~ {{ formattedEndDate }}</p>
+        </v-col>
+      </v-row>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useTripStore } from '@/stores/tripStore';
+import { format } from 'date-fns';
 
 const tripStore = useTripStore();
 
@@ -91,7 +146,6 @@ const addCountry = () => {
   if (countryInput.value && !tripStore.country.includes(countryInput.value)) {
     tripStore.country.push(countryInput.value);
     countryInput.value = '';
-    console.log("국가 목록:", tripStore.country)
   }
 };
 
@@ -116,6 +170,45 @@ const removeCity = (index) => {
 // 국가가 변경될 때마다 도시 목록을 업데이트
 watch(countryInput, fetchCities);
 
+// 메뉴 상태와 날짜 관리
+
+const menu1 = ref(false);
+const menu2 = ref(false);
+
+const startDate = computed({
+  get: () => tripStore.startDate,
+  set: (value) => {
+    tripStore.startDate = value;
+  },
+});
+
+const endDate = computed({
+  get: () => tripStore.endDate,
+  set: (value) => {
+    tripStore.endDate = value;
+  },
+});
+
+// 포맷팅된 시작일과 종료일을 계산
+const formattedStartDate = computed(() => {
+  return startDate.value ? format(new Date(startDate.value), 'yyyy-MM-dd') : '';
+});
+
+const formattedEndDate = computed(() => {
+  return endDate.value ? format(new Date(endDate.value), 'yyyy-MM-dd') : '';
+});
+
+// 선택한 시작일을 store에 저장하는 함수
+const selectStartDate = (date) => {
+  startDate.value = date;
+  menu1.value = false;
+};
+
+// 선택한 종료일을 store에 저장하는 함수
+const selectEndDate = (date) => {
+  endDate.value = date;
+  menu2.value = false;
+};
 </script>
 
 <style scoped>

@@ -3,6 +3,8 @@ import axiosInstance from '@/axios';
 
 export const useTripStore = defineStore('trip', {
   state: () => ({
+    pastTrips: [],
+    futureTrips: [],
     tripId: null,
     country: [],
     city: [],
