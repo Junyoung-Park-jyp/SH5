@@ -85,8 +85,15 @@
                       :src="experience.imageUrl"
                       class="align-center"
                     ></v-img>
-                    <div class="city">{{ experience.city }}</div>
-                    <div class="cost">{{ experience.cost }}</div>
+                    <div class="trip-name">{{ experience.tripName }}</div>
+                    <div class="city">
+                      {{
+                        Array.isArray(experience.city)
+                          ? experience.city.join(", ")
+                          : experience.city
+                      }}
+                    </div>
+                    <div class="cost">{{ formatCost(experience.cost) }}</div>
                   </div>
                 </v-carousel-item>
               </v-carousel>
@@ -165,6 +172,11 @@ const makeTrip = () => {
 
 const goTripMain = () => {
   router.push({ name: "tripMain" });
+};
+
+// cost 포맷팅
+const formatCost = (cost) => {
+  return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
 </script>
 
@@ -272,7 +284,7 @@ const goTripMain = () => {
   justify-content: center;
   align-items: center;
   font-size: large;
-  height: 70%;
+  height: 75%;
 }
 
 .info * {
@@ -280,8 +292,18 @@ const goTripMain = () => {
   font-weight: bolder;
 }
 
-.info2 * {
+.trip-name {
   font-size: xx-large;
+  font-weight: 500;
+}
+
+.city {
+  font-size: large;
+  font-weight: 500;
+}
+
+.cost {
+  font-size: x-large;
   font-weight: 500;
 }
 
