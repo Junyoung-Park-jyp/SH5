@@ -45,7 +45,10 @@
 
     <!-- 여행자 보험 -->
     <div>
-      <h2>여행자 보험</h2>
+      <div class="d-flex justify-space-between">
+        <h2>여행자 보험</h2>
+        <v-btn>함께 가입하기</v-btn>
+      </div>
       <div>
         친구와 함께 가족과 함께<br>
         2인 가입 시 5% 할인<br>
