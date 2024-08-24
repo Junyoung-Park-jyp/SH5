@@ -1,5 +1,13 @@
 <template>
   <div class="main-container">
+    <!-- 수정 -->
+    <div class="modify" @click="modifyTrip">
+      <button class="icon-btn">
+        <v-icon icon="mdi-pencil" size="medium"></v-icon>
+        <span>수정</span>
+      </button>
+    </div>
+
     <!-- 프로필 -->
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
@@ -10,19 +18,12 @@
       >
     </div>
 
-    <!-- 수정 -->
-    <div class="modify" @click="modifyTrip">
-      <button class="icon-btn">
-        <v-icon icon="mdi-pencil" size="large"></v-icon>
-        <span>수정</span>
-      </button>
-    </div>
-
     <!-- 날짜 -->
     <div class="trip date">
-      <div class="d-flex justify-space-between">
-        <div class="title">날짜</div>
-        <div v-if="tripState === '준비'">
+      <div class="title d-flex justify-space-between">
+        날짜
+        <v-spacer></v-spacer>
+        <div class="dday" v-if="tripState === '준비'">
           D-{{ Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)) }}
         </div>
       </div>
@@ -393,6 +394,20 @@ const goDetail = () => {
   background-color: #f4f6fa;
 }
 
+/* 수정 */
+.modify {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 10px 10px 20px 20px;
+  margin: 0px auto -52px auto;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+}
+
 /* 프로필 */
 .profile {
   display: flex;
@@ -424,21 +439,6 @@ const goDetail = () => {
   text-decoration-skip-ink: none;
 }
 
-/* 수정 */
-.modify {
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-top: -70px;
-  margin-bottom: -20px;
-  padding: 20px;
-}
-
-.icon-btn {
-  display: flex;
-  align-items: end;
-}
-
 /* 구획 나누기 */
 .trip {
   margin: 20px auto;
@@ -463,6 +463,11 @@ const goDetail = () => {
 /* 날짜 */
 .date > .content {
   padding-left: 35px;
+}
+
+.dday {
+  font-size: large;
+  margin: auto;
 }
 
 /* 멤버 */
@@ -491,7 +496,7 @@ const goDetail = () => {
   text-align: center;
   padding: 10px 0;
   margin: 0 auto;
-  padding: 20px 0;
+  padding: 20px 0 50px 0;
 }
 
 .detail-btn {
@@ -531,7 +536,7 @@ const goDetail = () => {
 }
 
 .currency {
-  width: 5%;
+  width: 15%;
 }
 
 .symbol-box {
@@ -563,11 +568,15 @@ const goDetail = () => {
 
 /* 여행자 보험 */
 .insurance {
-  padding-top: 20px;
+  padding-top: 30px;
+}
+
+.insurance > .content {
+  margin-top: 5px;
 }
 
 .invite-btn {
-  width: 44%;
+  width: 42%;
   background-color: #4b72e1;
   border-radius: 15px;
   color: white;
@@ -576,7 +585,7 @@ const goDetail = () => {
   border: none;
   cursor: pointer;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 500;
   text-align: center;
 }
 
