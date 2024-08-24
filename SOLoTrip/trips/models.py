@@ -5,7 +5,8 @@ from django.conf import settings
 class Trip(models.Model):
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField()
-    budget = models.IntegerField()
+    # budget = models.IntegerField()
+    trip_name = models.CharField(max_length=30)
     
     
 class Member(models.Model):
