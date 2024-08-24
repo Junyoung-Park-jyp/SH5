@@ -78,9 +78,10 @@ if (country === '대한민국') {
 
 // 오늘 날짜
 const today = new Date();
+today.setHours(0, 0, 0, 0)
 
 // 여행 날짜
-const startDate = new Date(2024, 7, 26);  // 2024년 8월 10일
+const startDate = new Date(2024, 7, 10);  // 2024년 8월 10일
 const endDate = new Date(2024, 7, 27);  // 2024년 8월 27일
 
 // 여행 상태

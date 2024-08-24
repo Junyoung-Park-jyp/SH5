@@ -33,12 +33,30 @@
           ₩ 1,219,064
         </div>
       </div>
-      <div v-for="(reservation, index) in reservations" :key="index" class="d-flex align-center">
-        <div>
+      <div v-for="(reservation, index) in reservations" :key="index">
+        <div class="d-flex">
+          <!-- 체크 버튼 -->
           <v-btn @click="toggleCheck(index)" density="compact"
             :icon="reservation.checked ? 'mdi-check-circle' : 'mdi-checkbox-blank-circle-outline'"></v-btn>
-          {{ reservation.cost }} {{ reservation.name }} {{ reservation.date }}
-          <!-- 사람 선택이 4명 이상일 경우도 있는데, 이 부분에 대해서 어떻게 처리해야 할까요? -->
+          <!-- 지출 아이콘 -->
+          <v-icon icon="mdi-airplane"></v-icon>
+          <!-- 지출 가격과 내역 -->
+          <div>
+            <div>{{ reservation.cost }}</div>
+            <div>{{ reservation.name }}</div>
+          </div>
+          <!-- 정산 해당 인원 -->
+          <v-container>
+            <v-row v-for="(group, groupIndex) in groupMembers" :key="groupIndex">
+              <div v-for="(member, memberIndex) in group" :key="memberIndex" class="name-symbol d-flex justify-center align-center">
+                {{ member.name.slice(0, 1) }}
+              </div>
+            </v-row>
+          </v-container>
+          <!-- 정산 날짜 -->
+          <div>
+            {{ reservation.date }}
+          </div>
         </div>
       </div>
     </div>
@@ -95,4 +113,11 @@ const toggleCheck = (index) => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.name-symbol {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+</style>

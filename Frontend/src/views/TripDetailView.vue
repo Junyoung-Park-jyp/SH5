@@ -58,10 +58,11 @@ const router = useRouter();
 
 // 오늘 날짜
 const today = new Date();
+today.setHours(0, 0, 0, 0)
 
 // 여행 날짜
-const startDate = new Date(2024, 7, 26);  // 2024년 8월 10일
-const endDate = new Date(2024, 8, 27);  // 2024년 8월 27일
+const startDate = new Date(2024, 7, 10);  // 2024년 8월 10일
+const endDate = new Date(2024, 7, 27);  // 2024년 8월 27일
 
 // 여행 날짜의 범위
 const tripRange = eachDayOfInterval({
