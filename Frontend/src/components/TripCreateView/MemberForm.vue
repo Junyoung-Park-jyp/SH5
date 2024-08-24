@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <!-- 여행 멤버 선택창 -->
-    <div class="third">
+    <div class="first">
       <v-row>
         <div class="question">누구와 여행을 떠나시나요?</div>
         <div class="explanation">
@@ -37,6 +37,24 @@
         </div>
       </v-row>
     </div>
+
+    <!-- 여행 별칭 입력창 -->
+    <div class="second">
+      <v-row>
+        <div class="question">여행 별칭 정하기</div>
+        <!-- <div class="explanation"></div> -->
+        <v-col cols="12">
+          <!-- 여행이름 입력 필드 -->
+          <v-text-field
+            label="여행 이름"
+            placeholder="여행 이름"
+            outlined
+            type="text"
+            v-model="tripName"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -49,9 +67,10 @@ const userStore = useUserStore();
 const tripStore = useTripStore();
 const userName = ref("");
 const email = ref("");
+const tripName = ref("");
 
 const addMember = async () => {
-  const userData = await userStore.getUser(email.value);
+  const userData = await userStore.getransformUser(email.value);
 
   if (userData) {
     tripStore.members.push(userData);
@@ -62,11 +81,12 @@ const addMember = async () => {
 </script>
 
 <style scoped>
-.third {
+.first,
+.second {
   margin: 0px 10px;
 }
 
-.third {
+.first {
   margin-top: 30px;
   margin-bottom: 70px;
 }
