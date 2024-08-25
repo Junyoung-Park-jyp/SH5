@@ -2,12 +2,10 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-
 from shinhan_api.request import post
 from shinhan_api.common import make_header
 from pprint import pprint
 import random
-
 
 
 def create_demand_deposit(email, bankcode, bankname):
@@ -105,15 +103,15 @@ def inquire_demand_deposit_account_balance():
     return post(url, body)
 
 
-def update_demand_deposit_account_withdrawal():
+def update_demand_deposit_account_withdrawal(bank_account, transactionBalance):
     """
     2.4.8 계좌 출금
     """
     url = "edu/demandDeposit/updateDemandDepositAccountWithdrawal"
     body = make_header(url.split('/')[-1])
-    body['accountNo'] = "0886248123734384"
-    body['transactionBalance'] = "100000"
-    body['transactionSummary'] = "메모"
+    body['accountNo'] = bank_account
+    body['transactionBalance'] = transactionBalance
+    body['transactionSummary'] = ""
     '''
     '''
     return post(url, body)
@@ -150,15 +148,15 @@ def update_demand_deposit_account_Transfer():
     return post(url, body)
 
 
-def inquire_transaction_history_list():
+def inquire_transaction_history_list(bank_account, start_date, end_date):
     """
     2.4.12 계좌 거래 내역 조회
     """
     url = "edu/demandDeposit/inquireTransactionHistoryList"
     body = make_header(url.split('/')[-1])
-    body['accountNo'] = "0886248123734384"
-    body['startDate'] = "20240815"
-    body['endDate'] = "20240817"
+    body['accountNo'] = bank_account
+    body['startDate'] = start_date
+    body['endDate'] = end_date
     body['transactionType'] = "A"
     body['orderByType'] = "DESC"
     '''
@@ -167,14 +165,14 @@ def inquire_transaction_history_list():
     return post(url, body)
 
 
-def inquire_transaction_history():
+def inquire_transaction_history(bank_account, transaction_unique_number):
     """
     2.4.13 계좌 거래 내역 조회 (단건)
     """
     url = "edu/demandDeposit/inquireTransactionHistory"
     body = make_header(url.split('/')[-1])
-    body['accountNo'] = "0886248123734384"
-    body['transactionUniqueNo'] = '120'
+    body['accountNo'] = bank_account
+    body['transactionUniqueNo'] = transaction_unique_number
     '''
     'REC': {'transactionUniqueNo': '116', 'transactionDate': '20240817', 'transactionTime': '182749', 'transactionType': '2', 'transactionTypeName': '출금(이체)', 'transactionAccountNo': '0885900744426778', 'transactionBalance': '100000000', 'transactionAfterBalance': '4899900000', 'transactionSummary': '1억 줌', 'transactionMemo': ''}
     '''
@@ -210,12 +208,13 @@ if __name__ == "__main__":
     # create_demand_deposit("oodeng98@naver.com")
     # inquire_demand_deposit_list("oodeng98@naver.com")
     # create_demand_deposit_account("oodeng98@naver.com")
-    inquire_demand_deposit_account_list("oodeng98@naver.com")
+    # inquire_demand_deposit_account_list("oodeng98@naver.com")
     # inquire_demand_deposit_account()
     # inquire_demand_deposit_account_holder_name()
     # inquire_demand_deposit_account_balance()
-    # update_demand_deposit_account_withdrawal()
+    pprint(update_demand_deposit_account_withdrawal("0817158183605808", 10000))
     # update_demand_deposit_account_deposit()
     # update_demand_deposit_account_Transfer()
-    # inquire_transaction_history_list()
+    print()
+    pprint(inquire_transaction_history_list("0817158183605808"))
     # inquire_transaction_history()

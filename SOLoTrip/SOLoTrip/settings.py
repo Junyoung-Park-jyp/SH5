@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'corsheaders', 
     'accounts', 
     'bank_accounts', 
-    'trips', 
+    'trips',
+    'payments', 
 ]
 
 MIDDLEWARE = [
