@@ -10,6 +10,7 @@ export const useBalanceStore = defineStore('balance', {
     accountNum: null,
     withdrawal: null, // 출금
     deposit: null, // 입금
+    payments: [], // 결제 내역
   }),
   getters: {
     userAccounts(state) {
@@ -106,5 +107,21 @@ export const useBalanceStore = defineStore('balance', {
         console.error('계좌 리스트 조회 실패:', error);
       }
     },
+
+    // 결제
+    async makePayment(paymentData) {
+      try {
+        const response = await axiosInstance.post('/payments/', { paymentData })
+
+        if (response.data) {
+          this.payments.push(response.data)
+        } else {
+          console.error('데이터가 잘못 전송되었습니다.')
+        }
+
+      } catch(error) {
+        console.error("결제 실패: ", error)
+      }
+    }
   },
 });
