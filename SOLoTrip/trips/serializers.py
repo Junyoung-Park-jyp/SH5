@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, Member, Location
+from .models import Trip, Location, Member
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -9,65 +9,66 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields = ['country', 'city']
 
-
 class MemberNameSerializer(serializers.ModelSerializer):
-    member = serializers.CharField(source='user.username')
-
+    username = serializers.CharField(source='user.username')
     class Meta:
         model = Member
-        fields = ['member']
-
+        fields = ['username', 'bank_account']
 
 class TripCreateSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, write_only=True)
     members = MemberNameSerializer(many=True, write_only=True)
-    bank_account = serializers.CharField(write_only=True)
 
     class Meta:
         model = Trip
-        fields = ['trip_name', 'start_date', 'end_date', 'bank_account', 'locations', 'members']
+        fields = ['trip_name', 'start_date', 'end_date', 'locations', 'members']
 
     def create(self, validated_data):
-        # Trip 데이터를 먼저 생성
         locations_data = validated_data.pop('locations')
         members_data = validated_data.pop('members')
-        bank_account = validated_data.pop('bank_account')
 
+        # Trip 객체 생성
         trip = Trip.objects.create(**validated_data)
-        print(validated_data)
+
+        # Location 데이터 생성
         for location_data in locations_data:
             Location.objects.create(trip=trip, **location_data)
 
+        # Member 데이터 생성
         for member_data in members_data:
-            username = member_data['user']['username']
+            username = member_data['username']
+            bank_account = member_data['bank_account']
             try:
                 user = User.objects.get(username=username)
                 Member.objects.create(trip=trip, user=user, bank_account=bank_account)
             except User.DoesNotExist:
                 continue
 
-        request_user = self.context['request'].user
-        Member.objects.create(trip=trip, user=request_user, bank_account=bank_account)
-
         return trip
-    
+
     def update(self, instance, validated_data):
+        print(validated_data)
+        # 기존 Location과 Member 삭제
         Location.objects.filter(trip=instance).delete()
         Member.objects.filter(trip=instance).delete()
 
         locations_data = validated_data.pop('locations')
         members_data = validated_data.pop('members')
-        bank_account = validated_data.pop('bank_account')
 
+        # Trip의 기본 필드를 업데이트
+        instance.trip_name = validated_data.get('trip_name', instance.trip_name)
         instance.start_date = validated_data.get('start_date', instance.start_date)
         instance.end_date = validated_data.get('end_date', instance.end_date)
         instance.save()
 
+        # 새로운 Location 데이터 추가
         for location_data in locations_data:
             Location.objects.create(trip=instance, **location_data)
 
+        # 새로운 Member 데이터 추가
         for member_data in members_data:
             username = member_data['user']['username']
+            bank_account = member_data['bank_account']
             try:
                 user = User.objects.get(username=username)
                 Member.objects.create(trip=instance, user=user, bank_account=bank_account)

@@ -50,7 +50,7 @@ def create_demand_deposit_account(email):
         body['accountTypeUniqueNo'] = accountTypeUniqueNo
         response = post(url, body)
         accountNo = response['REC']['accountNo']
-        update_demand_deposit_account_deposit(email, accountNo)
+        initial_deposit(email, accountNo)
     return
 
 
@@ -117,14 +117,28 @@ def update_demand_deposit_account_withdrawal(bank_account, transactionBalance):
     return post(url, body)
 
 
-def update_demand_deposit_account_deposit(email, accountNo):
+def update_demand_deposit_account_deposit(email, accountNo, transactionBalance):
     """
     2.4.9 계좌 입금
     """
     url = "edu/demandDeposit/updateDemandDepositAccountDeposit"
     body = make_header(url.split('/')[-1], email)
     body['accountNo'] = accountNo
-    body['transactionBalance'] = random.randrange(100000, 2000000)
+    body['transactionBalance'] = transactionBalance
+    body['transactionSummary'] = ""
+    '''
+    '''
+    return post(url, body)
+
+
+def initial_deposit(email, accountNo):
+    """
+    초기 잔액 생성용
+    """
+    url = "edu/demandDeposit/updateDemandDepositAccountDeposit"
+    body = make_header(url.split('/')[-1], email)
+    body['accountNo'] = accountNo
+    body['transactionBalance'] = random.randrange(300000, 10000000)
     body['transactionSummary'] = "초기 잔액 입금"
     '''
     '''

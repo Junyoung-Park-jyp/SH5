@@ -34,15 +34,15 @@ def create_trip(request):
             return Response({'data': {"id": trip.pk}}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        trip_id = request.data.get('trip_id')
-        try:
-            trip = Trip.objects.get(pk=trip_id)
-        except Trip.DoesNotExist:
-            return Response({'error': 'Trip not found'}, status=status.HTTP_404_NOT_FOUND)
-        trip_name = trip.username
-        trip.delete()
-        return Response({"message": f"{trip_name} 여행이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+    # elif request.method == 'DELETE':
+    #     trip_id = request.data.get('trip_id')
+    #     try:
+    #         trip = Trip.objects.get(pk=trip_id)
+    #     except Trip.DoesNotExist:
+    #         return Response({'error': 'Trip not found'}, status=status.HTTP_404_NOT_FOUND)
+    #     trip_name = trip.username
+    #     trip.delete()
+    #     return Response({"message": f"{trip_name} 여행이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         
 
 @api_view(['GET'])

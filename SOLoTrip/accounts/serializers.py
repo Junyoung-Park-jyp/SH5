@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from shinhan_api.demand_deposit import inquire_demand_deposit_account_list
 
 User = get_user_model()
 
@@ -8,6 +9,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username']
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['account_list'] = [{"bank_name": i['bankName'], 
+                                           "bank_account": i["accountNo"], 
+                                           "balance": i['accountBalance']} 
+                                          for i in inquire_demand_deposit_account_list(representation['email'])['REC']] 
+        return representation
 
 class UserCreationSerializer(serializers.ModelSerializer):
     class Meta:

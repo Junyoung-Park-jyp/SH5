@@ -4,9 +4,9 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .models import Payment
+from trips.models import Member
 from .serializers import PaymentCreateSerializer, PaymentDetailSerializer
 from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal as withdrawal
-from shinhan_api.demand_deposit import inquire_transaction_history_list as transaction_list
 
 
 User = get_user_model()
@@ -32,15 +32,18 @@ def pay(request):
 @login_required
 def pay_list(request):
     if request.method == 'GET':
-        # start_date~finish_date 까지의 bank_account 계좌의 거래 내역을 조회한다
-        # http://127.0.0.1:8000/payments/list?bank_account=0817158183605808&start_date=2024-08-12&end_date=2024-12-12
-        bank_account = request.GET.get('bank_account')
+        # start_date~finish_date 까지의 trip_id와 연계된 bank_account 계좌'들'의 거래 내역을 조회한다
+        # http://127.0.0.1:8000/payments/list?trip_id=11&start_date=2024-08-12&end_date=2024-12-12
+        trip_id = request.GET.get('trip_id')
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
+        
+        members = Member.objects.filter(trip_id=trip_id)
+        bank_accounts = members.values_list('bank_account', flat=True)
         payments = Payment.objects.filter(
             pay_date__gte=start_date, 
             pay_date__lte=end_date, 
-            bank_account=bank_account
+            bank_account__in=bank_accounts
         )
         serializer = PaymentDetailSerializer(payments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
