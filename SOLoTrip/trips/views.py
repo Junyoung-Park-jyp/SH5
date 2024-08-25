@@ -115,4 +115,16 @@ def member(request):
         serializer = MemberDetailSerializer(members, many=True)
         data = serializer.data
         return Response({'data': data}, status=status.HTTP_201_CREATED)
+    
+    
+@api_view(['PUT'])
+@login_required
+def budget(request):
+    if request.method == 'PUT':
+        trip_id = request.data.get('trip_id')
+        budget = request.data.get('budget')
+        member = Member.objects.get(trip_id=trip_id, user=request.user)
+        member.budget = budget
+        member.save()
+        return Response({'data': {'budget': budget}}, status=status.HTTP_202_ACCEPTED)
         

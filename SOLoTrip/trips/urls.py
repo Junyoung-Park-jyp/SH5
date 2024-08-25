@@ -9,4 +9,5 @@ urlpatterns = [
     path('finish/', finish), 
     path('main/', trip_main), 
     path('member/', member), 
+    path('budget/', budget)
 ]
