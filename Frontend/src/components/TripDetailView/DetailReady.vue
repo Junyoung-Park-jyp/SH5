@@ -5,15 +5,15 @@
       <div class="title d-flex justify-space-between">
         <div class="prepare">준비</div>
         <div class="line">&nbsp;|&nbsp;</div>
-        <div class="budjet">예산</div>
+        <div class="budget">예산</div>
         <v-spacer></v-spacer>
         <div class="sum" @click="toggleCurrency">
           {{ formattedTotalBalance }}
         </div>
       </div>
-      <div class="content">
+      <div class="budget-content">
         <div class="left-detail">
-          <v-icon icon="mdi-wallet-outline" size="30px"></v-icon>
+          <v-icon icon="mdi-wallet-outline" color="grey" size="30px"></v-icon>
         </div>
         <div class="right-detail">
           <div
@@ -38,47 +38,71 @@
 
     <!-- 사전 예약 -->
     <div class="booking-container">
-      <div class="d-flex justify-space-between">
-        <div>준비 | 사전 예약</div>
-        <div>₩ 1,219,064</div>
+      <div class="title d-flex justify-space-between">
+        <div class="prepare">준비</div>
+        <div class="line">&nbsp;|&nbsp;</div>
+        <div class="booking">사전 예약</div>
+        <v-spacer></v-spacer>
+        <div class="sum" @click="toggleCurrency">
+          {{ formattedTotalCost }}
+        </div>
       </div>
-      <div v-for="(reservation, index) in reservations" :key="index">
-        <div class="d-flex">
+      <div class="book-content">
+        <div
+          class="payment"
+          v-for="(reservation, index) in reservations"
+          :key="index"
+        >
           <!-- 체크 버튼 -->
-          <v-btn
-            @click="toggleCheck(index)"
-            density="compact"
-            :icon="
-              reservation.checked
-                ? 'mdi-check-circle'
-                : 'mdi-checkbox-blank-circle-outline'
-            "
-          ></v-btn>
-          <!-- 지출 아이콘 -->
-          <v-icon icon="mdi-airplane"></v-icon>
-          <!-- 지출 가격과 내역 -->
-          <div>
-            <div>{{ reservation.cost }}</div>
-            <div>{{ reservation.name }}</div>
+          <div class="check-area">
+            <v-btn
+              @click="toggleCheck(index)"
+              variant="text"
+              :color="reservation.checked ? 'primary' : 'grey'"
+              :icon="
+                reservation.checked
+                  ? 'mdi-check-circle'
+                  : 'mdi-checkbox-blank-circle-outline'
+              "
+            ></v-btn>
           </div>
-          <!-- 정산 해당 인원 -->
-          <v-container>
-            <v-row
-              v-for="(group, groupIndex) in groupMembers"
-              :key="groupIndex"
+
+          <!-- 카테고리 -->
+          <div class="category-area">
+            <v-icon icon="mdi-airplane" color="grey" size="x-large"></v-icon>
+          </div>
+
+          <!-- 결제 금액 및 내역 -->
+          <div class="cost-area">
+            <div class="cost" @click="toggleCurrency">
+              {{ formattedCost(reservation.cost) }}
+            </div>
+            <div class="name">{{ reservation.name }}</div>
+          </div>
+
+          <!-- 정산 대상 -->
+          <div class="person-area">
+            <div
+              v-for="(member, index) in tripMembers"
+              :key="index"
+              class="person-info"
             >
               <div
-                v-for="(member, memberIndex) in group"
-                :key="memberIndex"
-                class="name-symbol d-flex justify-center align-center"
+                class="person-symbol d-flex justify-center align-center"
+                :style="personStyle(member.name, reservation.members, index)"
+                @click="personClick(member.name)"
               >
-                {{ member.name.slice(0, 1) }}
+                <div class="person-familyname">
+                  {{ member.name.slice(0, 1) }}
+                </div>
               </div>
-            </v-row>
-          </v-container>
-          <!-- 정산 날짜 -->
-          <div>
-            {{ reservation.date }}
+            </div>
+          </div>
+
+          <!-- 결제 날짜 -->
+          <div class="date-area">
+            {{ formatDate(reservation.pay_date) }}
+            {{ formatTime(reservation.pay_time) }}
           </div>
         </div>
       </div>
@@ -105,6 +129,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
+import { format } from "date-fns";
 import {
   exchangeArray,
   convertCurrency,
@@ -211,42 +236,128 @@ const formattedMemberBalance = (balance) => {
 const reservations = ref([
   {
     name: "에어프랑스",
-    cost: 1062,
+    cost: 1806200,
     members: ["최한진", "박준영"],
-    date: "5월 10일",
+    pay_date: "2024-05-10",
+    pay_time: "16:21:00",
     checked: false,
   },
   {
     name: "대한한공",
-    cost: 1420,
+    cost: 2420000,
     members: ["임광영", "정태완"],
-    date: "5월 17일",
+    pay_date: "2024-05-17",
+    pay_time: "17:24:00",
     checked: false,
   },
   {
     name: "Hotel Le Relais Du Louvre",
-    cost: 201,
+    cost: 910000,
     members: ["최한진", "박준영", "임광영", "정태완"],
-    date: "6월 30일",
+    pay_date: "2024-06-30",
+    pay_time: "09:19:00",
     checked: false,
   },
   {
     name: "Hertz Rental Car",
-    cost: 450,
+    cost: 450000,
     members: ["최한진", "박준영", "임광영"],
-    date: "7월 15일",
+    pay_date: "2024-07-15",
+    pay_time: "22:24:00",
     checked: false,
   },
 ]);
 
-// 체크 상태 토글
+// 항목 체크 상태 토글
 const toggleCheck = (index) => {
   reservations.value[index].checked = !reservations.value[index].checked;
+};
+
+// 예약 금액의 합계를 계산하는 computed property
+const totalCost = computed(() => {
+  return reservations.value.reduce(
+    (sum, reservation) => sum + reservation.cost,
+    0
+  );
+});
+
+// 총 예약 금액의 변환된 값
+const formattedTotalCost = computed(() => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    totalCost.value,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+});
+
+// 각 예약의 금액을 변환된 값으로 표시하는 함수
+const formattedCost = (cost) => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    cost,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+};
+
+// 정산 대상 스타일 적용 함수
+const personStyle = (memberName, reservationMembers, index) => {
+  // 현재 멤버가 예약 멤버에 포함되어 있는지 확인
+  if (reservationMembers.includes(memberName)) {
+    // 포함되어 있으면 해당 멤버의 색상을 배경에 적용
+    return {
+      backgroundColor: rgbaColor(memberColors.value[index], 0.7),
+      border: "none",
+    };
+  } else {
+    // 포함되어 있지 않으면 배경을 흰색으로 설정하고 기존 색상으로 테두리 적용
+    return {
+      backgroundColor: "#ffffff",
+      border: `1px solid ${memberColors.value[index]}`,
+    };
+  }
+};
+
+// 정산 대상 선별 클릭 함수
+const personClick = (memberName) => {
+  reservations.value.forEach((reservation) => {
+    if (reservation.members.includes(memberName)) {
+      // 이미 포함된 멤버라면 리스트에서 제거
+      reservation.members = reservation.members.filter(
+        (name) => name !== memberName
+      );
+    } else {
+      // 포함되지 않은 멤버라면 리스트에 추가
+      reservation.members.push(memberName);
+    }
+  });
+};
+const formatDate = (date) => {
+  return format(new Date(date), "M월 d일");
+};
+
+const formatTime = (time) => {
+  return format(new Date(`1970-01-01T${time}`), "HH:mm");
 };
 </script>
 
 <style scoped>
-/* 준비 | 예산 */
+/* ------------ 준비 | 예산 ------------ */
 .budget-container {
   width: 100%;
 }
@@ -258,7 +369,7 @@ const toggleCheck = (index) => {
   color: grey;
 }
 
-.content {
+.budget-content {
   display: flex;
   background-color: #ffffff;
   width: 100%;
@@ -317,5 +428,133 @@ const toggleCheck = (index) => {
 .member-balance {
   font-size: 1rem;
   color: rgb(78, 160, 120);
+}
+
+/* ------------ 준비 | 사전 예약 ------------ */
+.booking-container {
+  width: 100%;
+}
+
+.book-content {
+  display: flex;
+  flex-direction: column;
+  /* border: 1px solid blue; */
+}
+
+.payment {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  margin: auto;
+  /* border: 1px solid green; */
+}
+
+.check-area {
+  width: 15%;
+}
+
+.category-area {
+  width: 15%;
+}
+
+.cost-area {
+  width: 40%;
+}
+
+.person-area {
+  width: 15%;
+}
+
+.date-area {
+  width: 15%;
+}
+
+/* 체크 버튼 */
+.check-area {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  /* border: 1px solid black; */
+}
+
+/* 카테고리 */
+.category-area {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  /* border: 1px solid black; */
+}
+
+/* 결제 금액 및 내역 */
+.cost-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: auto;
+  padding-left: 20px;
+  /* border: 1px solid black; */
+}
+
+.cost {
+  color: rgb(214, 72, 72);
+}
+
+.name {
+  font-size: 0.7rem;
+  font-weight: 300;
+}
+
+/* 정산 대상 */
+.person-area {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  /* border: 1px solid blue; */
+}
+
+.person-info {
+  width: calc(50% - 5px);
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin: 2px 0; */
+  padding: 2px 0;
+  /* border: 1px solid red; */
+}
+
+.person-symbol {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  /* margin: 0 15px 0 20px; */
+  justify-content: center;
+  align-items: center;
+}
+
+.person-familyname {
+  font-size: 0.8rem;
+  color: inherit;
+}
+
+/* 결제 날짜 */
+.date-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.6rem;
+  color: grey;
+  font-weight: 300;
 }
 </style>
