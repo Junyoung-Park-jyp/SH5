@@ -9,7 +9,7 @@
             v-model="selectedAccount"
             :items="accounts"
             label="계좌 선택"
-            item-text="bank" 
+            item-text="bank"
             item-value="accountNo"
             outlined
           ></v-select>
@@ -36,9 +36,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useBalanceStore } from '@/stores/balanceStore';
-import { useTripStore } from '@/stores/tripStore';
+import { ref } from "vue";
+import { useBalanceStore } from "@/stores/balanceStore";
+import { useTripStore } from "@/stores/tripStore";
 
 const balanceStore = useBalanceStore();
 const tripStore = useTripStore();
@@ -51,7 +51,8 @@ const accounts = balanceStore.userAccounts;
 </script>
 
 <style scoped>
-.fourth, .fifth {
+.fourth,
+.fifth {
   margin: 0px 10px;
 }
 
