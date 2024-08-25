@@ -19,7 +19,10 @@ def pay(request):
         data = request.data
         bank_account = data.get('bank_account')
         amount = data.get('amount')
-        response = withdrawal(bank_account, amount)
+        
+        member = Member.objects.filter(bank_account=bank_account)[0]
+        email = member.user.email
+        response = withdrawal(bank_account, amount, email)
         data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
         data['transaction_type'] = '출금'
         serializer = PaymentCreateSerializer(data=data)
@@ -40,6 +43,7 @@ def pay_list(request):
         
         members = Member.objects.filter(trip_id=trip_id)
         bank_accounts = members.values_list('bank_account', flat=True)
+        
         payments = Payment.objects.filter(
             pay_date__gte=start_date, 
             pay_date__lte=end_date, 
@@ -47,3 +51,10 @@ def pay_list(request):
         )
         serializer = PaymentDetailSerializer(payments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+@api_view(["POST"])
+@login_required
+def settle(request):
+    if request.method == 'POST':
+        pass

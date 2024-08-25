@@ -9,15 +9,17 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields = ['country', 'city']
 
-class MemberNameSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
+class MemberEmailSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email')
+    
     class Meta:
         model = Member
-        fields = ['username', 'bank_account']
+        fields = ['email', 'bank_account']
+
 
 class TripCreateSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, write_only=True)
-    members = MemberNameSerializer(many=True, write_only=True)
+    members = MemberEmailSerializer(many=True, write_only=True)
 
     class Meta:
         model = Trip
@@ -35,14 +37,14 @@ class TripCreateSerializer(serializers.ModelSerializer):
             Location.objects.create(trip=trip, **location_data)
 
         # Member 데이터 생성
+        print(members_data)
         for member_data in members_data:
-            username = member_data['username']
-            bank_account = member_data['bank_account']
+            email = member_data['user']['email']
             try:
-                user = User.objects.get(username=username)
-                Member.objects.create(trip=trip, user=user, bank_account=bank_account)
+                user = User.objects.get(email=email)
+                Member.objects.create(trip=trip, user=user)
             except User.DoesNotExist:
-                continue
+                continue  # 사용자 존재하지 않을 시 다음 멤버로 넘어감
 
         return trip
 
@@ -66,11 +68,12 @@ class TripCreateSerializer(serializers.ModelSerializer):
             Location.objects.create(trip=instance, **location_data)
 
         # 새로운 Member 데이터 추가
+        print(members_data)
         for member_data in members_data:
-            username = member_data['user']['username']
+            email = member_data['user']['email']
             bank_account = member_data['bank_account']
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(email=email)
                 Member.objects.create(trip=instance, user=user, bank_account=bank_account)
             except User.DoesNotExist:
                 continue

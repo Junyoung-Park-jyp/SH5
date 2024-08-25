@@ -16,8 +16,9 @@ User = get_user_model()
 def create_trip(request):
     if request.method == 'POST':
         serializer = TripCreateSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             trip = serializer.save()
+            Member.objects.create(trip=trip, user=request.user, bank_account=request.data.get('bank_account'))
             return Response({'data': {"id": trip.pk}}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -29,7 +30,7 @@ def create_trip(request):
             return Response({'error': 'Trip not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = TripCreateSerializer(trip, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             trip = serializer.save()
             return Response({'data': {"id": trip.pk}}, status=status.HTTP_200_OK)
         else:
@@ -100,11 +101,11 @@ def member(request):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'POST':
-        username = request.data.get('username')
+        email = request.data.get('email')
         trip_id = request.data.get('trip_id')
 
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({'error': '해당 사용자를 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
         trip = Trip.objects.get(pk=trip_id)

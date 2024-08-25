@@ -22,13 +22,13 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['amount', 'pay_date', 'pay_time', 'mutual', 'category', 'bank_account', 'transaction_type', 'account_owner']
+        fields = ['amount', 'pay_date', 'pay_time', 'mutual', 'category', 'bank_account', 'transaction_type', 'account_owner', 'transaction_unique_number']
 
     def get_account_owner(self, obj):
         # 해당 Payment의 bank_account와 연결된 Member를 통해 사용자를 찾습니다.
         try:
-            member = Member.objects.get(bank_account=obj.bank_account)
-            return member.user.username  # 여기서 사용자의 이름이나 원하는 정보를 반환합니다.
+            member = Member.objects.filter(bank_account=obj.bank_account)[0]
+            return member.user.email  # 여기서 사용자의 이름이나 원하는 정보를 반환합니다.
         except Member.DoesNotExist:
             return None  # 해당 bank_account를 가진 Member가 없을 경우 None 반환
 
@@ -41,7 +41,11 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         representation.pop('transaction_unique_number')
 
         # balance 추가
-        representation['balance'] = transaction(bank_account, transaction_unique_number)['REC']['transactionAfterBalance']
+        email = Member.objects.filter(bank_account=bank_account)[0].user.email
+        print(email)
+        response = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
+        print(response)
+        representation['balance'] = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
         return representation
 
         

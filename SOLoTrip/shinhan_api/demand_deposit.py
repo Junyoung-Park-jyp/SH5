@@ -103,12 +103,12 @@ def inquire_demand_deposit_account_balance():
     return post(url, body)
 
 
-def update_demand_deposit_account_withdrawal(bank_account, transactionBalance):
+def update_demand_deposit_account_withdrawal(bank_account, transactionBalance, email):
     """
     2.4.8 계좌 출금
     """
     url = "edu/demandDeposit/updateDemandDepositAccountWithdrawal"
-    body = make_header(url.split('/')[-1])
+    body = make_header(url.split('/')[-1], email)
     body['accountNo'] = bank_account
     body['transactionBalance'] = transactionBalance
     body['transactionSummary'] = ""
@@ -179,12 +179,12 @@ def inquire_transaction_history_list(bank_account, start_date, end_date):
     return post(url, body)
 
 
-def inquire_transaction_history(bank_account, transaction_unique_number):
+def inquire_transaction_history(bank_account, transaction_unique_number, email):
     """
     2.4.13 계좌 거래 내역 조회 (단건)
     """
     url = "edu/demandDeposit/inquireTransactionHistory"
-    body = make_header(url.split('/')[-1])
+    body = make_header(url.split('/')[-1], email)
     body['accountNo'] = bank_account
     body['transactionUniqueNo'] = transaction_unique_number
     '''
@@ -222,13 +222,13 @@ if __name__ == "__main__":
     # create_demand_deposit("oodeng98@naver.com")
     # inquire_demand_deposit_list("oodeng98@naver.com")
     # create_demand_deposit_account("oodeng98@naver.com")
-    # inquire_demand_deposit_account_list("oodeng98@naver.com")
+    pprint(inquire_demand_deposit_account_list("seonjae97@gmail.com"))
     # inquire_demand_deposit_account()
     # inquire_demand_deposit_account_holder_name()
     # inquire_demand_deposit_account_balance()
-    pprint(update_demand_deposit_account_withdrawal("0817158183605808", 10000))
+    # pprint(update_demand_deposit_account_withdrawal("0817158183605808", 10000))
     # update_demand_deposit_account_deposit()
     # update_demand_deposit_account_Transfer()
     print()
-    pprint(inquire_transaction_history_list("0817158183605808"))
+    # pprint(inquire_transaction_history_list("0817158183605808"))
     # inquire_transaction_history()
