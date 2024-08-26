@@ -1,8 +1,8 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from .models import Payment, Calculate
 from trips.models import Member
 from .serializers import PaymentCreateSerializer, PaymentDetailSerializer, CalculateCreateSerializer
@@ -13,7 +13,7 @@ from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal 
 User = get_user_model()
 
 @api_view(['POST'])
-@login_required
+@permission_classes([IsAuthenticated])
 def pay(request):
     # pay_date, pay_time에 bank_account 계좌에서 brand_name에서 결제한 amount가 출금된다
     if request.method == 'POST':
@@ -33,7 +33,7 @@ def pay(request):
 
 
 @api_view(['GET'])
-@login_required
+@permission_classes([IsAuthenticated])
 def pay_list(request):
     if request.method == 'GET':
         # start_date~finish_date 까지의 trip_id와 연계된 bank_account 계좌'들'의 거래 내역을 조회한다
@@ -55,7 +55,7 @@ def pay_list(request):
     
     
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def adjustment(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 정산할 수 있고, 멤버별 값을 결정할 수 있다.
@@ -67,7 +67,7 @@ def adjustment(request):
         
         
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def objection(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 취소할 수 있다.

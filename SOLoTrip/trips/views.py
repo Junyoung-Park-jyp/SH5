@@ -1,10 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from .serializers import TripCreateSerializer, TripSerializer, TripMainSerializer, MemberDetailSerializer
-from .models import Trip, Member, Location
+from .models import Trip, Member
 from django.utils import timezone
 from accounts.serializers import UserSerializer
 
@@ -12,7 +12,7 @@ from accounts.serializers import UserSerializer
 User = get_user_model()
 
 @api_view(['POST', 'PUT'])
-@login_required
+@permission_classes([IsAuthenticated])
 def create_trip(request):
     if request.method == 'POST':
         serializer = TripCreateSerializer(data=request.data, context={'request': request})
@@ -47,7 +47,7 @@ def create_trip(request):
         
 
 @api_view(['GET'])
-@login_required
+@permission_classes([IsAuthenticated])
 def ongoing(request):
     if request.method == 'GET':
         current_date = timezone.now().date()
@@ -62,7 +62,7 @@ def ongoing(request):
 
 
 @api_view(['GET'])
-@login_required
+@permission_classes([IsAuthenticated])
 def finish(request):
     if request.method == 'GET':
         current_date = timezone.now().date()
@@ -77,7 +77,7 @@ def finish(request):
 
 
 @api_view(['GET'])
-@login_required
+@permission_classes([IsAuthenticated])
 def trip_main(request):
     if request.method == 'GET':
         trip_id = request.GET.get('trip_id')
@@ -90,7 +90,7 @@ def trip_main(request):
 
 
 @api_view(['GET', 'POST'])
-@login_required
+@permission_classes([IsAuthenticated])
 def member(request):
     if request.method == 'GET':
         email = request.GET.get('email')
@@ -119,7 +119,7 @@ def member(request):
     
     
 @api_view(['PUT'])
-@login_required
+@permission_classes([IsAuthenticated])
 def budget(request):
     if request.method == 'PUT':
         trip_id = request.data.get('trip_id')
