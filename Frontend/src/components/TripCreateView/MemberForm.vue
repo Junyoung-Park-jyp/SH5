@@ -53,6 +53,9 @@
             v-model="tripName"
           ></v-text-field>
         </v-col>
+        <div class="btn-container">
+          <button @click="addTripName" class="mt-1 btn-add">저장</button>
+        </div>
       </v-row>
     </div>
   </div>
@@ -78,6 +81,17 @@ const addMember = async () => {
     console.error("멤버 추가 실패");
   }
 };
+
+const addTripName = async () => {
+  if (tripName.value != "") {
+    tripStore.tripName = tripName.value
+    alert("여행 이름이 저장되었습니다.")
+    console.log(tripStore.tripName)
+  } else {
+    alert("여행 이름을 입력해주세요.")
+  }
+}
+
 </script>
 
 <style scoped>

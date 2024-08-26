@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
+import axios from 'axios'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -54,9 +55,12 @@ export const useUserStore = defineStore('user', {
           email: userData.email,
 
         });
-        if (response.message) {
+        if (response) {
           this.email = userData.email;
           this.isLogin = true;
+          this.name = response.data.data.username
+          console.log('data', response.data.data.username)
+          console.log("로그인 여부", this.isLogin, this.name)
         }
         
 
@@ -67,16 +71,18 @@ export const useUserStore = defineStore('user', {
 
     async getUser(email) {
       try {
-        const response = await axiosInstance.get('/users', {
-          email: email
-        })
-
-        if (response.data) {
-          return response.data
-        } else {
-          console.error('사용자가 존재하지 않습니다')
-          return null
+        if (this.isLogin) {
+          const response = await axiosInstance.get('/trips/member/', { params: { email: email } })
+          console.log(response.data)
+          if (response.data) {
+            return response.data
+          } else {
+            console.error('사용자가 존재하지 않습니다')
+            return null
+          }
         }
+
+        
       } catch(error) {
         console.error('사용자 검색 실패:', error)
         return null
@@ -92,4 +98,13 @@ export const useUserStore = defineStore('user', {
 
 
   },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'userStore',
+        storage: localStorage,
+      },
+    ],
+  },  
 });

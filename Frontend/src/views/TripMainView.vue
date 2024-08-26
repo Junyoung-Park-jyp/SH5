@@ -178,7 +178,7 @@ const formatDay = (date) => {
 
 // 여행 멤버와 계좌번호
 const tripMembers = [
-  { name: "최한진", account: "신한 0276524561730773" },
+  { name: "박준영", account: "신한 0276524561730773" },
   { name: "임광영", account: "국민 000-000-000" },
   { name: "정태완", account: "우리 000-000-000" },
   { name: "최한진", account: "계좌 미등록" },

@@ -3,7 +3,8 @@
     <!-- 프로필 -->
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>최한진 님</span>
+      <span>{{ userStore.name}} 님</span>
+    
     </div>
 
     <!-- 미래/현재 -->
@@ -118,13 +119,12 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
-
 const router = useRouter();
 
 const currentSlide = ref(0);

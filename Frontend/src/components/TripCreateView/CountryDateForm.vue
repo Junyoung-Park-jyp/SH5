@@ -124,7 +124,7 @@
       <!-- 선택된 날짜를 텍스트로 표시 -->
       <v-row>
         <v-col cols="12">
-          <p>선택된 기간: {{ formattedStartDate }} ~ {{ formattedEndDate }}</p>
+          <p>선택된 기간: {{ departureDateFormatted }} ~ {{ arrivalDateFormatted }}</p>
         </v-col>
       </v-row>
     </div>
@@ -194,6 +194,7 @@ const addCountry = () => {
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
+    tripStore.location.push({ country: countryInput.value, city: cityInput.value})
     cityInput.value = "";
   }
 };

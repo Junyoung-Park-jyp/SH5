@@ -9,6 +9,7 @@ export const useTripStore = defineStore("trip", {
     tripName: null,
     country: [],
     city: [],
+    locations: [],
     exchangeRate: null,
     members: [],
     startDate: null,
@@ -76,6 +77,7 @@ export const useTripStore = defineStore("trip", {
       this.tripName = null;
       this.country = [];
       this.city = [];
+      this.location = [];
       this.exchangeRate = null;
       this.members = [];
       this.startDate = null;
@@ -85,7 +87,7 @@ export const useTripStore = defineStore("trip", {
 
     setTrip(tripData) {
       this.tripName = tripData.tripName;
-      this.country = tripData.country;
+      this.loaction = tripData.location
       this.members = tripData.members;
       this.startDate = tripData.startDate;
       this.endDate = tripData.endDate;
@@ -97,7 +99,8 @@ export const useTripStore = defineStore("trip", {
         const response = await axiosInstance.post("/trips/", {
           tripData,
         });
-        if (response.data.REC) {
+        if (response) {
+          console.log(response.data)
           const tripId = response.data;
           this.tripId = tripId;
           this.setTrip(travelData);
@@ -132,6 +135,18 @@ export const useTripStore = defineStore("trip", {
         }
       } catch (error) {
         console.error("여행 정보 수정 실패:", error);
+      }
+    },
+
+    async getTrip(tripId) {
+      try {
+        const response = await axiosInstance.get(`/trips/main/`, { params:{ trip_id : tripId } });
+
+        if (response) {
+          console.log(response.data)
+        }
+      } catch (error) {
+        console.error("여행 정보 조회 실패:", error);
       }
     },
   },
