@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from openai import OpenAI
 
 # 환경 변수나 설정 파일에서 API 키를 가져오는 것이 안전합니다.
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = ''
 
 # openai.api_key = OPENAI_API_KEY
 
