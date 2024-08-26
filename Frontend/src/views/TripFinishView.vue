@@ -6,23 +6,34 @@
     <!-- 입금/출금 -->
     <div class="type">
       <div class="deposit">
-        <div class="deposit-img"><img src="@/assets/img/deposit.png" alt="입금"></div>
-        입금
+        <div class="deposit-img">
+          <img src="@/assets/img/deposit.png" alt="입금" />
+        </div>
+        <div class="deposit-list">
+          <div>박준영님에게 172,860원 출금</div>
+          <div>임광영님에게 252,440원 출금</div>
+        </div>
       </div>
       <div class="withdraw">
-        <div class="withdraw-img"><img src="@/assets/img/withdraw.png" alt="출금"></div>
-        출금
+        <div class="withdraw-img">
+          <img src="@/assets/img/withdraw.png" alt="출금" />
+        </div>
+        <div class="withdraw-list">
+          <div>이선재님으로부터 375,988원 입금</div>
+          <div>최한진님으로부터 82,350원 입금</div>
+        </div>
       </div>
     </div>
 
     <!-- 정산완료 -->
     <div class="complete">
-      <div class="img"><img src="@/assets/img/check.png" alt="체크"></div>
+      <div class="img"><img src="@/assets/img/check.png" alt="체크" /></div>
       <div class="message">정 산 완 료</div>
     </div>
 
     <!-- 상세내역 -->
-    <div class="explanation">
+    <div class="detail">
+      <div class="explanation">개인별 잔액 = 예산 - 총 지출액</div>
       <table class="settlement-table">
         <thead>
           <tr>
@@ -33,17 +44,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(member, index) in members" :key="index">
+          <tr v-for="(member, index) in tripMembers" :key="index">
             <td>
-              <div class="member">
-                <div :class="`circle circle-${index}`">{{ member.initial }}</div>
+              <div
+                class="member-symbol member d-flex justify-center align-center"
+                :style="{
+                  backgroundColor: rgbaColor(memberColors[index], 0.7),
+                }"
+              >
+                <div class="member-familyname">
+                  {{ member.name.slice(0, 1) }}
+                </div>
               </div>
             </td>
-            <td>{{ member.expense }}</td>
-            <td :class="{'positive': member.adjustment > 0, 'negative': member.adjustment < 0}">
-              {{ member.adjustment > 0 ? '+' : '' }}{{ member.adjustment }}
+            <td>{{ formatWithComma(member.expense) }}</td>
+            <td
+              :class="{
+                positive: member.adjustment > 0,
+                negative: member.adjustment < 0,
+              }"
+            >
+              {{ member.adjustment > 0 ? "+" : "" }}
+              {{ formatWithComma(member.adjustment) }}
             </td>
-            <td>{{ member.balance }}</td>
+            <td>{{ formatWithComma(member.balance) }}</td>
           </tr>
         </tbody>
       </table>
@@ -51,23 +75,49 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useMemberColors } from "@/stores/colorStore";
+import { formatWithComma } from "@/stores/currencyStore";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 const amount = route.query.amount;
 
-// Example data (You will replace this with real data)
-const members = ref([
-  { name: '최', initial: '최', expense: '₩ 426,864', adjustment: 24125, balance: '₩ 1,426,864' },
-  { name: '박', initial: '박', expense: '₩ 526,864', adjustment: -174698, balance: '₩ 3,426,864' },
-  { name: '임', initial: '임', expense: '₩ 726,864', adjustment: 37243, balance: '₩ 2,426,864' },
-  { name: '정', initial: '정', expense: '₩ 326,864', adjustment: 89775, balance: '₩ 4,426,864' },
-]);
-</script>
+const tripMembers = [
+  {
+    name: "박준영",
+    expense: 426864,
+    adjustment: 24125,
+    balance: 1426864,
+  },
+  {
+    name: "이선재",
+    expense: 526864,
+    adjustment: -174698,
+    balance: 3426864,
+  },
+  {
+    name: "임광영",
+    expense: 726864,
+    adjustment: 37243,
+    balance: 2426864,
+  },
+  {
+    name: "정태완",
+    expense: 326864,
+    adjustment: 89775,
+    balance: 4426864,
+  },
+  {
+    name: "최한진",
+    expense: 286864,
+    adjustment: 89775,
+    balance: 5426864,
+  },
+];
 
+const { memberColors, rgbaColor } = useMemberColors(tripMembers);
+</script>
 
 <style scoped>
 .main-container {
@@ -85,14 +135,14 @@ const members = ref([
   height: 150px;
   display: flex;
   justify-content: center;
-  align-items: end;
+  align-items: center;
   text-align: center;
   /* border: 1px solid black; */
   color: #4b72e1;
   font-size: xx-large;
   font-weight: bolder;
   margin: 0px auto;
-  padding-bottom: 30px;
+  /* padding-bottom: 30px; */
 }
 
 .type {
@@ -109,7 +159,8 @@ const members = ref([
   font-size: large;
 }
 
-.withdraw, .deposit {
+.withdraw,
+.deposit {
   height: 50%;
   width: 100%;
   display: flex;
@@ -121,19 +172,27 @@ const members = ref([
   /* border: 1px solid green; */
 }
 
-.withdraw-img, .deposit-img {
+.withdraw-img,
+.deposit-img {
   width: 70px;
-  margin: auto 30px;
+  margin: auto 15px auto 30px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.withdraw-img img, .deposit-img img {
+.withdraw-img img,
+.deposit-img img {
   height: 55px;
   width: 40px;
   /* border: 1px solid black; */
   margin: auto;
+}
+
+.withdraw-list,
+.deposit-list {
+  text-align: left;
+  font-size: 15px;
 }
 
 .complete {
@@ -159,11 +218,20 @@ const members = ref([
   font-weight: bolder;
 }
 
+.detail {
+  width: 100%;
+  height: 70%;
+  background-color: #ffffff;
+  margin: auto;
+  padding: 5px;
+}
+
 .explanation {
   width: 100%;
-  height: 60%;
-  background-color: #ffffff;
-  padding: 20px;
+  margin: 50px auto 0px auto;
+  text-align: right;
+  padding-right: 10px;
+  font-size: 0.8rem;
 }
 
 .settlement-table {
@@ -171,46 +239,35 @@ const members = ref([
   border-collapse: collapse;
   text-align: center;
   font-size: 1.2rem;
+  margin: 5px auto;
+}
+
+.settlement-table thead tr th {
+  font-weight: bold;
 }
 
 .settlement-table th,
 .settlement-table td {
   padding: 10px;
+  border: 1px dashed lightgrey;
 }
 
+.settlement-table td {
+  font-size: 15px;
+}
 
 .settlement-table .member {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: large;
 }
 
-.circle {
-  width: 30px;
-  height: 30px;
+.member-symbol {
+  border: 1px solid black;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  color: white;
-  font-weight: bold;
-}
-
-.circle-0 {
-  background-color: #a7c7e7;
-}
-
-.circle-1 {
-  background-color: #e7a7e7;
-}
-
-.circle-2 {
-  background-color: #a7e7a7;
-}
-
-.circle-3 {
-  background-color: #e7c7a7;
+  width: 35px;
+  height: 35px;
 }
 
 .positive {
