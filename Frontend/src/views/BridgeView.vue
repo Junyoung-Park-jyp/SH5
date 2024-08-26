@@ -2,20 +2,30 @@
   <div class="main-container">
     <v-card class="py-8 px-10 upper-card">
       <v-card-text class="pt-5 title">SOL로 여행으로</v-card-text>
-      <v-card-text class="pt-2 text">여행의 시작부터 끝까지<br>지출 관리와 정산으로 편리하게!</v-card-text>
+      <v-card-text class="pt-2 text"
+        >여행의 시작부터 끝까지<br />지출 관리와 정산으로 편리하게!</v-card-text
+      >
       <div class="mt-5 btn-container">
         <button class="btn-click" @click="goToTrip">여행 시작</button>
       </div>
     </v-card>
-    
+
     <div class="mt-10 px-7 pb-7">
       <div class="my-5">
-        <div class="my-5" style="font-size:large; font-weight:bold;">여행 짐만큼 중요한 혜택 챙기기</div>
+        <div class="my-5" style="font-size: large; font-weight: bold">
+          여행 짐만큼 중요한 혜택 챙기기
+        </div>
         <v-btn-toggle v-model="selectedCardType" mandatory class="toggle">
-          <v-btn value="체크카드" :color="selectedCardType === '체크카드' ? '#4b72e1' : 'grey'">
+          <v-btn
+            value="체크카드"
+            :color="selectedCardType === '체크카드' ? '#4b72e1' : 'grey'"
+          >
             체크카드
           </v-btn>
-          <v-btn value="신용카드" :color="selectedCardType === '신용카드' ? '#4b72e1' : 'grey'">
+          <v-btn
+            value="신용카드"
+            :color="selectedCardType === '신용카드' ? '#4b72e1' : 'grey'"
+          >
             신용카드
           </v-btn>
         </v-btn-toggle>
@@ -24,9 +34,14 @@
       <div class="card">
         <div class="benefit-title">SOL트래블 {{ selectedCardType }} 혜택</div>
         <div class="benefit-list">
-          <div class="benefit-item" v-for="(benefit, index) in benefits[selectedCardType]" :key="index">
+          <div
+            class="benefit-item"
+            v-for="(benefit, index) in benefits[selectedCardType]"
+            :key="index"
+          >
             <div class="benefit-item-title">
-              <span class="benefit-idx">{{ index + 1 }}</span><span v-html="benefit"></span>
+              <span class="benefit-idx">{{ index + 1 }}</span
+              ><span v-html="benefit"></span>
             </div>
           </div>
         </div>
@@ -39,32 +54,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 // 카드 타입 상태 관리
-const selectedCardType = ref('체크카드');
+const selectedCardType = ref("체크카드");
 const router = useRouter();
 
 // 카드별 혜택 목록 정의
 const benefits = {
-  '체크카드': [
+  체크카드: [
     '42종 통화 <span class="text-blue font-weight-bold">100% 환율 우대</span>',
     '해외에서 결제, ATM 이용 시 <span class="text-blue font-weight-bold">수수료 면제</span>',
     '전세계 공항 <span class="text-blue font-weight-bold">라운지 무료 입장</span>(연 2회)',
     '국내 4대 <span class="text-blue font-weight-bold">편의점 5% 캐시백</span>',
   ],
-  '신용카드': [
+  신용카드: [
     '42종 통화 <span class="text-blue font-weight-bold">100% 환율 우대</span>',
     '해외에서 결제, ATM 이용 시 <span class="text-blue font-weight-bold">수수료 면제</span>',
-    '국내 · 해외 이용 <span class="text-blue font-weight-bold">최대 2%적립</span>',
+    '<span class="text-blue font-weight-bold">국내 · 해외 이용 최대 2%적립</span>',
     '전세계 공항 <span class="text-blue font-weight-bold">라운지 무료 입장</span>(연 3회)',
   ],
 };
 
 // 여행 시작 페이지 이동 함수
 function goToTrip() {
-  router.push({ name: 'home' });
+  router.push({ name: "home" });
 }
 </script>
 
@@ -126,15 +141,20 @@ function goToTrip() {
 
 /* card */
 .card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   border: 1px solid black;
   border-radius: 10px;
-  padding: 30px;
+  padding: 30px 10px;
+  margin: auto;
   margin-top: 30px;
 }
 
 .benefit-title {
   font-weight: bold;
   font-size: 1.5rem;
+  margin: 10px auto 0px auto;
 }
 
 .benefit-list {
@@ -176,5 +196,4 @@ function goToTrip() {
   width: 100%;
   background-color: #ffffff;
 }
-
 </style>

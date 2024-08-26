@@ -3,10 +3,28 @@
     <div class="main-container">
       <v-toolbar class="px-5 py-1">
         <!-- 커스텀 스위치 버튼 -->
-        <div class="custom-switch d-flex align-center rounded-xl" @click="toggleSwitch">
-          <div :class="{ active: !isTraveling, 'home-mode': !isTraveling }" class="px-4" style="z-index: 1; font-weight: 500;">홈</div>
-          <div :class="{ active: isTraveling, 'travel-mode': isTraveling }" class="px-4" style="z-index: 1; font-weight: 500;">여행</div>
-          <div class="switch-thumb rounded-xl" :class="{ active: isTraveling }"></div>
+        <div
+          class="custom-switch d-flex align-center rounded-xl"
+          @click="toggleSwitch"
+        >
+          <div
+            :class="{ active: !isTraveling, 'home-mode': !isTraveling }"
+            class="px-4"
+            style="z-index: 1; font-weight: 500"
+          >
+            홈
+          </div>
+          <div
+            :class="{ active: isTraveling, 'travel-mode': isTraveling }"
+            class="px-4"
+            style="z-index: 1; font-weight: 500"
+          >
+            여행
+          </div>
+          <div
+            class="switch-thumb rounded-xl"
+            :class="{ active: isTraveling }"
+          ></div>
         </div>
 
         <v-spacer></v-spacer>
@@ -14,18 +32,18 @@
         <!-- 오른쪽 아이콘 그룹 -->
         <div class="icon-group">
           <button class="icon-btn">
-            <v-icon icon="mdi-message-processing-outline" size="xx-large"></v-icon>
+            <v-icon icon="mdi-message-processing-outline" size="large"></v-icon>
           </button>
           <button class="icon-btn">
-            <v-icon icon="mdi-microphone-outline" size="xx-large"></v-icon>
+            <v-icon icon="mdi-microphone-outline" size="large"></v-icon>
           </button>
           <!-- HomeView에서는 멤버 아이콘 -->
           <button v-if="!isTraveling" class="icon-btn">
-            <v-icon icon="mdi-account-outline" size="xx-large"></v-icon>
+            <v-icon icon="mdi-account-outline" size="large"></v-icon>
           </button>
           <!-- HomeView 이외는 홈 아이콘 -->
           <button v-if="isTraveling" class="icon-btn">
-            <v-icon icon="mdi-home-outline" size="xx-large"></v-icon>
+            <v-icon icon="mdi-home-outline" size="large"></v-icon>
           </button>
         </div>
       </v-toolbar>
@@ -36,21 +54,21 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useStateStore } from '@/stores/stateStore';
-import { useUserStore } from './stores/userStore';
-import HomeView from './views/HomeView.vue';
-import './assets/base.css';
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useStateStore } from "@/stores/stateStore";
+import { useUserStore } from "./stores/userStore";
+import HomeView from "./views/HomeView.vue";
+import "./assets/base.css";
 
 const stateStore = useStateStore();
 const userStore = useUserStore();
 const route = useRoute();
-const isTraveling = computed(() => stateStore.travel)
+const isTraveling = computed(() => stateStore.travel);
 // 토글 스위치 함수
 const toggleSwitch = () => {
-  console.log(isTraveling.value, stateStore.isTraveling)
-  stateStore.toggleTrip()
+  console.log(isTraveling.value, stateStore.isTraveling);
+  stateStore.toggleTrip();
 };
 
 // onMounted(
@@ -99,7 +117,7 @@ const toggleSwitch = () => {
 /* 아이콘 그룹 스타일 */
 .icon-group {
   display: flex;
-  gap: 0px; 
+  gap: 0px;
 }
 
 .icon-btn {
@@ -115,5 +133,4 @@ const toggleSwitch = () => {
 .travel-mode {
   color: white;
 }
-
 </style>
