@@ -20,18 +20,22 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         
 class PaymentDetailSerializer(serializers.ModelSerializer):
     account_owner = serializers.SerializerMethodField()
+    is_completed = serializers.SerializerMethodField()
 
     class Meta:
         model = Payment
         fields = "__all__"
 
     def get_account_owner(self, obj):
-        # 해당 Payment의 bank_account와 연결된 Member를 통해 사용자를 찾습니다.
         try:
-            member = Member.objects.filter(bank_account=obj.bank_account)[0]
-            return member.user.email  # 여기서 사용자의 이름이나 원하는 정보를 반환합니다.
+            member = Member.objects.filter(bank_account=obj.bank_account).first()
+            return member.user.email if member else None
         except Member.DoesNotExist:
-            return None  # 해당 bank_account를 가진 Member가 없을 경우 None 반환
+            return None
+
+    def get_is_completed(self, obj):
+        # Calculate 객체가 존재하는지 확인
+        return 1 if Calculate.objects.filter(payment=obj).exists() else 0
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -42,10 +46,11 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         representation.pop('transaction_unique_number')
 
         # balance 추가
-        email = Member.objects.filter(bank_account=bank_account)[0].user.email
-        response = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
+        email = Member.objects.filter(bank_account=bank_account).first().user.email
         representation['balance'] = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
+
         return representation
+
 
 
 class CalculateSerializer(serializers.ModelSerializer):
@@ -98,5 +103,4 @@ class CalculateCreateSerializer(serializers.Serializer):
             )
             calculate_instances.append(calculate_instance)
             response = transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
-            print(response)
         return calculate_instances
