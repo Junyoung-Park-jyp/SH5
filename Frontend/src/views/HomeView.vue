@@ -3,13 +3,13 @@
     <div class="menu-container">
       <v-row>
         <v-col cols="12">
-          <v-card class="account-card pa-10">
+          <v-card class="account-card pa-10 pr-5">
             <v-row no-gutters>
               <v-col class="text-left p-3">
                 <div class="mb-2 account-name">OOO님</div>
                 <div class="account-num">
                   <span>신한</span>
-                  <span class="mx-1">110-</span>
+                  <span class="mx-2">12345678</span>
                 </div>
                 <div class="account-balance">
                   <span>잔액</span>
@@ -20,7 +20,7 @@
                 <img
                   src="../assets/img/account.png"
                   alt="account"
-                  style="max-width: 100px"
+                  style="width: 70%"
                 />
               </v-col>
             </v-row>
@@ -33,7 +33,7 @@
           <v-card class="menu-card green-card pa-4" outlined>
             <div class="text-left menu">SOL트래블</div>
             <div class="menu-icon">
-              <img src="../assets/img/menu1.png" alt="menu1" /> 
+              <img src="../assets/img/menu1.png" alt="menu1" />
             </div>
           </v-card>
         </v-col>
@@ -139,14 +139,14 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useStateStore } from "@/stores/stateStore";
-import '../assets/base.css';
+import "../assets/base.css";
 
 // 라우터 훅 설정
 const router = useRouter();
 const stateStore = useStateStore();
 // BridgeView로 라우팅하는 함수
 const navigateToBridge = () => {
-  stateStore.toggleTrip()
+  stateStore.toggleTrip();
   router.push({ name: "bridge" });
 };
 </script>
@@ -159,7 +159,8 @@ const navigateToBridge = () => {
   padding: 0px 15px;
 }
 
-.menu-container, .sticky-container {
+.menu-container,
+.sticky-container {
   width: 100%;
   margin: 0px auto;
 }
@@ -176,6 +177,11 @@ const navigateToBridge = () => {
 .account-name {
   font-size: xx-large;
   font-weight: bolder;
+}
+
+.account-num,
+.account-balance {
+  font-size: medium;
 }
 
 .menu-card {
@@ -263,7 +269,6 @@ const navigateToBridge = () => {
 .footer-label.active {
   color: #1976d2;
 }
-
 
 .v-btn {
   padding: 0;
