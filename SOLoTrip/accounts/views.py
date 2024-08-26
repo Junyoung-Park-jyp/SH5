@@ -6,6 +6,7 @@ from .serializers import UserCreationSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
+from django.contrib.auth import authenticate
 from shinhan_api.member import signup as shinhan_signup, search
 from shinhan_api.demand_deposit import create_demand_deposit_account
 
@@ -38,14 +39,15 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return Response({"error": "확인되지 않는 사용자 이메일입니다."}, status=status.HTTP_404_NOT_FOUND)
+    password = 'rkskekfk'
     
-    auth_login(request, user)
-    serializer = UserSerializer(user)
-    return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+    user = authenticate(email=email, password=password)
+    
+    if user is not None:
+        auth_login(request, user)
+        serializer = UserSerializer(user)
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
