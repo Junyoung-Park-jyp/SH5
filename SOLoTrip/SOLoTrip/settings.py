@@ -69,7 +69,7 @@ MIDDLEWARE = [
 ]
 
 # CSRF 보호 비활성화
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://52.79.246.151:80']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://52.79.246.151:80', 'http://127.0.0.1:5173']
 CSRF_COOKIE_SECURE = False
 CSRF_USE_SESSIONS = False
 
@@ -153,25 +153,19 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'accounts.User'  # Django 프로젝트의 User를 나타내는 데 사용하는 모델을 지정
+AUTH_USER_MODEL = 'accounts.User'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
 }
-# CSRF 보호 비활성화
 CORS_ORIGIN_ALLOW_ALL = True  # 모든 도메인에 대해 허용
-# 또는 특정 도메인만 허용할 경우
-# CORS_ORIGIN_WHITELIST = [
-#    'http://localhost:3000',
-#    'https://yourfrontenddomain.com',
-# ]
