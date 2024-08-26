@@ -145,15 +145,17 @@ def initial_deposit(email, accountNo):
     return post(url, body)
 
 
-def update_demand_deposit_account_Transfer():
+def update_demand_deposit_account_Transfer(email, deposit_bank_account, withdrawal_bank_account, transaction_balance):
     """
     2.4.10 계좌 이체
     """
     url = "edu/demandDeposit/updateDemandDepositAccountTransfer"
-    body = make_header(url.split('/')[-1])
-    body['depositAccountNo'] = "0885900744426778"
-    body['transactionBalance'] = "100000000"
-    body['withdrawalAccountNo'] = "0886248123734384"
+    print(email, deposit_bank_account, withdrawal_bank_account, transaction_balance)
+    pprint(inquire_demand_deposit_account_list(email)['REC'])
+    body = make_header(url.split('/')[-1], email)
+    body['depositAccountNo'] = deposit_bank_account
+    body['transactionBalance'] = transaction_balance
+    body['withdrawalAccountNo'] = withdrawal_bank_account
     
     body['depositTransactionSummary'] = "1억 받음"
     body['withdrawalTransactionSummary'] = "1억 줌"
@@ -222,13 +224,13 @@ if __name__ == "__main__":
     # create_demand_deposit("oodeng98@naver.com")
     # inquire_demand_deposit_list("oodeng98@naver.com")
     # create_demand_deposit_account("oodeng98@naver.com")
-    pprint(inquire_demand_deposit_account_list("seonjae97@gmail.com"))
+    # pprint(inquire_demand_deposit_account_list("seonjae97@gmail.com"))
     # inquire_demand_deposit_account()
     # inquire_demand_deposit_account_holder_name()
     # inquire_demand_deposit_account_balance()
     # pprint(update_demand_deposit_account_withdrawal("0817158183605808", 10000))
     # update_demand_deposit_account_deposit()
-    # update_demand_deposit_account_Transfer()
+    pprint(update_demand_deposit_account_Transfer("email1@naver.com", "0817158183605808", "0880493544778029", 3000))
     print()
     # pprint(inquire_transaction_history_list("0817158183605808"))
     # inquire_transaction_history()
