@@ -70,7 +70,9 @@
 
 <script setup>
 import { ref } from "vue";
-
+import { useTripStore } from "@/stores/tripStore";
+import { useBalanceStore } from "@/stores/balanceStore";
+import { useUserStore } from "@/stores/userStore";
 // 멤버별 예산 더미 데이터
 const members = [
   { name: "최한진", balance: 3500 },
@@ -78,6 +80,8 @@ const members = [
   { name: "임광영", balance: 3500 },
   { name: "정태완", balance: 3500 },
 ];
+
+// const members = tripStore.members
 
 // 2명씩 그룹으로 묶기
 const groupMembers = [];

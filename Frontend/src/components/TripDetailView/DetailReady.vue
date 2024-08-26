@@ -154,18 +154,6 @@ const totalBalance = computed(() => {
   return tripMembers.reduce((total, member) => total + member.balance, 0);
 });
 
-<<<<<<< HEAD
-// const members = tripStore.members
-
-
-// 2명씩 그룹으로 묶기
-const groupMembers = [];
-for (let i = 0; i < tripMembers.length; i += 2) {
-  groupMembers.push(tripMembers.slice(i, i + 2));
-}
-
-=======
->>>>>>> develop-front
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
 
 // 현재 보여줄 통화 인덱스

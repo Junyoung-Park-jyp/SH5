@@ -4,6 +4,7 @@ import axios from 'axios'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
+    token: '',
     name: '',
     email: '',
     userKey: '',
@@ -59,7 +60,8 @@ export const useUserStore = defineStore('user', {
           this.email = userData.email;
           this.isLogin = true;
           this.name = response.data.data.username
-          console.log('data', response.data.data.username)
+          this.token = response.data.token
+          console.log('data', response.data)
           console.log("로그인 여부", this.isLogin, this.name)
         }
         

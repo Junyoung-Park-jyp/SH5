@@ -7,6 +7,7 @@ import TripMainView from "@/views/TripMainView.vue";
 import TripDetailView from "@/views/TripDetailView.vue";
 import TripFinishView from "@/views/TripFinishView.vue";
 import LoadingMessage from '@/components/TripCreateView/LoadingMessage.vue';
+import GalleryView from "@/views/GalleryView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,12 @@ const router = createRouter({
       component: LoadingMessage,
       props: true,
     },
+    {
+      path: '/gallery',
+      name: 'gallery',
+      component: GalleryView,
+      props: true,
+    }
   ]
 });
 

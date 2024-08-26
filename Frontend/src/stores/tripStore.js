@@ -149,5 +149,17 @@ export const useTripStore = defineStore("trip", {
         console.error("여행 정보 조회 실패:", error);
       }
     },
+
+    async getPastTrips() {
+      try {
+        const response = await axiosInstance.get('/trips/finish/')
+
+        if (response) {
+          console.log(response.data)
+
+          this.pastTrips = response.data
+        }
+      }
+    }
   },
 });
