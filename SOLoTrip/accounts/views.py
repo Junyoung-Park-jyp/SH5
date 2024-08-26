@@ -39,14 +39,16 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
+    username = User.objects.get(email=email).username
     password = 'rkskekfk'
     
-    user = authenticate(email=email, password=password)
+    user = authenticate(username=username, password=password)
     
     if user is not None:
         auth_login(request, user)
         serializer = UserSerializer(user)
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+    return Response({'error': "로그인 실패"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
