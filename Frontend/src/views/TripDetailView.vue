@@ -42,7 +42,12 @@
       <div class="arrow">></div>
     </div>
 
-    <Detail :selectedDate="selectedDate" :showAllContainers="showAllContainers" :showBudgetAndBookingOnly="showBudgetAndBookingOnly" />
+    <Detail 
+      :selectedDate="selectedDate" 
+      :showAllContainers="showAllContainers" 
+      :showBudgetAndBookingOnly="showBudgetAndBookingOnly"
+      @updateCheckedCost="updateCheckedCost"
+    />
 
     <!-- 정산하기 -->
     <div class="adjustment">
@@ -185,11 +190,20 @@ const stopDrag = () => {
   }
 };
 
+const checkedCost = ref(""); 
+
+const updateCheckedCost = (cost) => {
+  checkedCost.value = cost; // Update when Detail.vue emits
+};
+
 const finishTrip = () => {
   adjustmentDiv.value.style.transform = `translateX(100%)`;
 
   setTimeout(() => {
-    router.push({ name: "tripFinish" });
+    router.push({
+      name: "tripFinish",
+      query: { amount: checkedCost.value }  // Use query instead of params
+    });
   }, 300);
 };
 </script>

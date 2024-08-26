@@ -200,7 +200,7 @@
 
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { format } from "date-fns";
 import {
@@ -219,6 +219,9 @@ const props = defineProps({
   showAllContainers: Boolean,
   showBudgetAndBookingOnly: Boolean,
 });
+
+// Emits
+const emit = defineEmits(['updateCheckedCost']);
 
 // 결제 데이터를 스토어에서 불러오기
 const paymentStore = usePaymentStore();
@@ -355,9 +358,12 @@ const formattedCheckedCost = computed(() => {
     currencies.value[currencyIndex.value] === "KRW"
       ? "₩"
       : currencyText[currencies.value[currencyIndex.value]];
-  return `${currencySymbol} ${formatWithComma(
-    formatToTwoDecimal(convertedValue)
-  )}`;
+      const formattedCost = `${currencySymbol} ${formatWithComma(formatToTwoDecimal(convertedValue))}`;
+      return formattedCost;
+});
+
+watch(formattedCheckedCost, (newCost) => {
+  emit('updateCheckedCost', newCost);
 });
 
 const toggleCheck = (index, type) => {
