@@ -36,18 +36,21 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useBalanceStore } from "@/stores/balanceStore";
 import { useTripStore } from "@/stores/tripStore";
+import { useUserStore } from "@/stores/userStore";
 
 const balanceStore = useBalanceStore();
 const tripStore = useTripStore();
+const userStore = useUserStore();
 
+const accounts = computed(() => { balanceStore.accounts })
 const selectedAccount = ref(null);
 
 const settlementTime = ref(null);
 
-const accounts = balanceStore.userAccounts;
+onMounted(balanceStore.getAccounts(userStore.email))
 </script>
 
 <style scoped>

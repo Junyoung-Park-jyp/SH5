@@ -10,6 +10,7 @@ export const useBalanceStore = defineStore('balance', {
     accountNum: null,
     withdrawal: null, // 출금
     deposit: null, // 입금
+    payments: [], // 결제 내역
   }),
   getters: {
     userAccounts(state) {
@@ -35,17 +36,6 @@ export const useBalanceStore = defineStore('balance', {
     },
 
     // 계좌 리스트 조회 데이터 처리
-    setAccounts(accountsData) {
-      this.accounts = accountsData
-      .filter(account => account.accountTypeCode === "1")
-      .map(account => ({
-        bankName: account.bankName,
-        userName: account.userName,
-        accountNo: account.accountNo,
-        accountBalance: account.accountBalance
-      }));
-    },
-
     // 계좌 잔액 갱신
     async refreshBalance(accountNum) {
       try {
@@ -61,15 +51,13 @@ export const useBalanceStore = defineStore('balance', {
     },
 
     // 계좌 리스트 조회
-    async getAccounts() {
-      const userStore = useUserStore()
-      const userKey = userStore.userKey
+    async getAccounts(userEmail) {
       try {
       
-        const response = await axiosInstance.post('/edu/demandDeposit/inquireDemandDepositAccountList',);
+        const response = await axiosInstance.post('/bank_accounts/', { email: userEmail });
 
-        if (response.data && response.data.REC) {
-          this.setAccounts(response.data.REC);
+        if (response.data) {
+          this.accounts = response.data
         } else {
           console.error('올바르지 않은 응답 구조:', response.data);
         }
@@ -119,5 +107,21 @@ export const useBalanceStore = defineStore('balance', {
         console.error('계좌 리스트 조회 실패:', error);
       }
     },
+
+    // 결제
+    async makePayment(paymentData) {
+      try {
+        const response = await axiosInstance.post('/payments/', { paymentData })
+
+        if (response.data) {
+          this.payments.push(response.data)
+        } else {
+          console.error('데이터가 잘못 전송되었습니다.')
+        }
+
+      } catch(error) {
+        console.error("결제 실패: ", error)
+      }
+    }
   },
 });

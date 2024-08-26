@@ -82,26 +82,6 @@ const backStep = () => {
   }
 }
 
-// handleMakeTrip 함수 추가
-const handleMakeTrip = async () => {
-  try {
-    // tripStore의 makeTrip 메서드 호출
-    await tripStore.makeTrip({
-      trip_name: tripStore.tripName,
-      location: tripStore.location,
-      startDate: tripStore.startDate,
-      endDate: tripStore.endDate,
-      members: tripStore.members,
-      bank: balanceStore.bank,
-      // 필요한 다른 데이터 추가
-    });
-    console.log("handleMakeTrip: 여행 생성 성공");
-  } catch (error) {
-    console.error("handleMakeTrip: 여행 생성 실패:", error);
-    alert("여행 생성에 실패했습니다. 다시 시도해 주세요.");
-  }
-};
-
 const nextStep = () => {
   if (tripFormStage.value == 0) {
     if (

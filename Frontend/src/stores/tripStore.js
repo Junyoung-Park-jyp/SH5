@@ -15,7 +15,7 @@ export const useTripStore = defineStore("trip", {
     startDate: null,
     endDate: null,
     adjustTime: null,
-
+    payments: [],
     // 다녔던 여행들 더미 데이터
     experiences: [
       {
@@ -147,6 +147,20 @@ export const useTripStore = defineStore("trip", {
         }
       } catch (error) {
         console.error("여행 정보 조회 실패:", error);
+      }
+    },
+
+    async getPastTrips() {
+      try {
+        const response = await axiosInstance.get('/trips/finish/')
+
+        if (response) {
+          console.log(response.data)
+
+          this.pastTrips = response.data
+        }
+      } catch(error) {
+        console.error('과거 여행 조회 실패', error)
       }
     },
   },
