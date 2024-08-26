@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -69,7 +69,7 @@ MIDDLEWARE = [
 ]
 
 # CSRF 보호 비활성화
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://52.79.246.151:80']
 CSRF_COOKIE_SECURE = False
 CSRF_USE_SESSIONS = False
 
@@ -160,7 +160,8 @@ MEDIA_URL = '/media/'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -168,7 +169,6 @@ REST_FRAMEWORK = {
     ),
 }
 # CSRF 보호 비활성화
-CSRF_TRUSTED_ORIGINS = []
 CORS_ORIGIN_ALLOW_ALL = True  # 모든 도메인에 대해 허용
 # 또는 특정 도메인만 허용할 경우
 # CORS_ORIGIN_WHITELIST = [
