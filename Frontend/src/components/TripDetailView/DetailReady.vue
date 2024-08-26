@@ -13,7 +13,7 @@
       </div>
       <div class="budget-content">
         <div class="left-detail">
-          <v-icon icon="mdi-wallet-outline" color="grey" size="30px"></v-icon>
+          <v-icon icon="mdi-wallet-outline" color="grey" size="28px"></v-icon>
         </div>
         <div class="right-detail">
           <div
@@ -50,13 +50,13 @@
       <div class="book-content">
         <div
           class="payment"
-          v-for="(reservation, index) in reservations"
-          :key="index"
+          v-for="(reservation, reservationIndex) in reservations"
+          :key="reservationIndex"
         >
           <!-- 체크 버튼 -->
           <div class="check-area">
             <v-btn
-              @click="toggleCheck(index)"
+              @click="toggleCheck(reservationIndex)"
               variant="text"
               :color="reservation.checked ? 'primary' : 'grey'"
               :icon="
@@ -69,7 +69,7 @@
 
           <!-- 카테고리 -->
           <div class="category-area">
-            <v-icon icon="mdi-airplane" color="grey" size="x-large"></v-icon>
+            <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
           </div>
 
           <!-- 결제 금액 및 내역 -->
@@ -90,7 +90,7 @@
               <div
                 class="person-symbol d-flex justify-center align-center"
                 :style="personStyle(member.name, reservation.members, index)"
-                @click="personClick(member.name)"
+                @click="personClick(reservationIndex, member.name)"
               >
                 <div class="person-familyname">
                   {{ member.name.slice(0, 1) }}
@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <v-container>
+    <div class="summary">
       <v-row>
         <v-col cols="6">
           <div>쓴 돈</div>
@@ -122,7 +122,7 @@
         </v-col>
       </v-row>
       <v-row> 737353 원 정산하기 </v-row>
-    </v-container>
+    </div>
   </div>
 </template>
 
@@ -152,12 +152,6 @@ const tripMembers = [
 const totalBalance = computed(() => {
   return tripMembers.reduce((total, member) => total + member.balance, 0);
 });
-
-// 2명씩 그룹으로 묶기
-const groupMembers = [];
-for (let i = 0; i < tripMembers.length; i += 2) {
-  groupMembers.push(tripMembers.slice(i, i + 2));
-}
 
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
 
@@ -334,19 +328,20 @@ const personStyle = (memberName, reservationMembers, index) => {
 };
 
 // 정산 대상 선별 클릭 함수
-const personClick = (memberName) => {
-  reservations.value.forEach((reservation) => {
-    if (reservation.members.includes(memberName)) {
-      // 이미 포함된 멤버라면 리스트에서 제거
-      reservation.members = reservation.members.filter(
-        (name) => name !== memberName
-      );
-    } else {
-      // 포함되지 않은 멤버라면 리스트에 추가
-      reservation.members.push(memberName);
-    }
-  });
+const personClick = (reservationIndex, memberName) => {
+  const reservation = reservations.value[reservationIndex];
+
+  if (reservation.members.includes(memberName)) {
+    // 이미 포함된 멤버라면 리스트에서 제거
+    reservation.members = reservation.members.filter(
+      (name) => name !== memberName
+    );
+  } else {
+    // 포함되지 않은 멤버라면 리스트에 추가
+    reservation.members.push(memberName);
+  }
 };
+
 const formatDate = (date) => {
   return format(new Date(date), "M월 d일");
 };
@@ -433,11 +428,14 @@ const formatTime = (time) => {
 /* ------------ 준비 | 사전 예약 ------------ */
 .booking-container {
   width: 100%;
+  margin: 30px auto;
 }
 
 .book-content {
   display: flex;
   flex-direction: column;
+  padding: 5px 10px;
+  background-color: #ffffff;
   /* border: 1px solid blue; */
 }
 
@@ -452,23 +450,23 @@ const formatTime = (time) => {
 }
 
 .check-area {
-  width: 15%;
+  width: 12%;
 }
 
 .category-area {
-  width: 15%;
+  width: 12%;
 }
 
 .cost-area {
-  width: 40%;
+  width: 50%;
 }
 
 .person-area {
-  width: 15%;
+  width: 16%;
 }
 
 .date-area {
-  width: 15%;
+  width: 12%;
 }
 
 /* 체크 버튼 */
@@ -504,6 +502,7 @@ const formatTime = (time) => {
 }
 
 .cost {
+  font-size: 0.9rem;
   color: rgb(214, 72, 72);
 }
 
