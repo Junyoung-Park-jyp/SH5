@@ -57,7 +57,7 @@ import { useBalanceStore } from "@/stores/balanceStore";
 
 const tripStore = useTripStore();
 const balanceStore = useBalanceStore();
-const tripFormStage = ref(0); // 초기 스테이지 설정
+const tripFormStage = ref(1); // 초기 스테이지 설정
 const showCancelModal = ref(false);
 const router = useRouter();
 
@@ -80,8 +80,27 @@ const backStep = () => {
   if (tripFormStage.value > 0) {
     tripFormStage.value --;
   }
-
 }
+
+// handleMakeTrip 함수 추가
+const handleMakeTrip = async () => {
+  try {
+    // tripStore의 makeTrip 메서드 호출
+    await tripStore.makeTrip({
+      trip_name: tripStore.tripName,
+      location: tripStore.location,
+      startDate: tripStore.startDate,
+      endDate: tripStore.endDate,
+      members: tripStore.members,
+      bank: balanceStore.bank,
+      // 필요한 다른 데이터 추가
+    });
+    console.log("handleMakeTrip: 여행 생성 성공");
+  } catch (error) {
+    console.error("handleMakeTrip: 여행 생성 실패:", error);
+    alert("여행 생성에 실패했습니다. 다시 시도해 주세요.");
+  }
+};
 
 const nextStep = () => {
   if (tripFormStage.value == 0) {
@@ -92,31 +111,41 @@ const nextStep = () => {
     ) {
       alert("도착일자가 출발일자보다 빠릅니다. 다시 선택해주세요.");
     } else if (
-      tripStore.country != "" &&
+      tripStore.location != [] &&
       tripStore.startDate != null &&
       tripStore.endDate != null
     ) {
       tripFormStage.value++;
     } else {
+      console.log(tripStore.location, tripStore.startDate, tripStore.endDate)
       alert("누락된 정보가 있습니다!");
-      tripFormStage.value++; // 정보가 누락되었어도 다음 단계로 진행
+      // tripFormStage.value++; 
     }
   } else if (tripFormStage.value == 1) {
-    if (tripStore.members.length > 0) {
+    if (tripStore.members.length > 0 && tripStore.tripName != null) {
       tripFormStage.value++;
     } else {
-      // alert('누락된 정보가 있습니다!');
-      tripFormStage.value++; // 정보가 누락되었어도 다음 단계로 진행
+      alert('누락된 정보가 있습니다!');
+      // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 2) {
     if (balanceStore.bank) {
+      tripStore.makeTrip({
+        trip_name: tripStore.tripName,
+        locations: tripStore.locations,
+        start_date: tripStore.startDate,
+        end_date: tripStore.endDate,
+        bank_account: balanceStore.accountNum,
+        members: tripStore.members,
+      })
       showLoadingSequence(); // 여행 생성 중 -> 여행 생성 완료 -> 이동 시퀀스 시작
     } else {
-      // alert('누락된 정보가 있습니다!');
-      showLoadingSequence(); // 정보가 누락되었어도 시퀀스 실행
+      alert('누락된 정보가 있습니다!');
+      // showLoadingSequence();
     }
   }
 };
+
 
 const showLoadingSequence = () => {
   // "여행 생성 중" 페이지로 이동

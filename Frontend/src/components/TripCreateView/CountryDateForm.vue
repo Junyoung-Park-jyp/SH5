@@ -121,59 +121,10 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12" sm="6">
-          <!-- 시작일 선택 -->
-          <v-menu
-            v-model="menu1"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="formattedStartDate"
-                label="시작일"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="startDate" @input="selectStartDate"></v-date-picker>
-          </v-menu>
-        </v-col>
-
-        <v-col cols="12" sm="6">
-          <!-- 종료일 선택 -->
-          <v-menu
-            v-model="menu2"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="formattedEndDate"
-                label="종료일"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="endDate" @input="selectEndDate"></v-date-picker>
-          </v-menu>
-        </v-col>
-      </v-row>
       <!-- 선택된 날짜를 텍스트로 표시 -->
       <v-row>
         <v-col cols="12">
-          <p>선택된 기간: {{ formattedStartDate }} ~ {{ formattedEndDate }}</p>
+          <p>선택된 기간: {{ departureDateFormatted }} ~ {{ arrivalDateFormatted }}</p>
         </v-col>
       </v-row>
     </div>
@@ -243,6 +194,7 @@ const addCountry = () => {
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
+    tripStore.location.push({ country: countryInput.value, city: cityInput.value})
     cityInput.value = "";
   }
 };

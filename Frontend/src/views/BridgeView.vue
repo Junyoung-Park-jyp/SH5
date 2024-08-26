@@ -65,7 +65,14 @@ const benefits = {
 // 여행 시작 페이지 이동 함수
 function goToTrip() {
   router.push({ name: 'home' });
+  userStore.signIn({ email: 'email9629@naver.com' })
 }
+
+// 테스트용 로그인 코드
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore';
+const userStore = useUserStore()
+
 </script>
 
 <style scoped>
