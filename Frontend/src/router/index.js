@@ -7,6 +7,7 @@ import TripMainView from "@/views/TripMainView.vue";
 import TripDetailView from "@/views/TripDetailView.vue";
 import TripFinishView from "@/views/TripFinishView.vue";
 import LoadingMessage from '@/components/TripCreateView/LoadingMessage.vue';
+import InsuranceView from '@/views/InsuranceView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,11 @@ const router = createRouter({
       name: 'loadingMessage',
       component: LoadingMessage,
       props: true,
+    },
+    {
+      path: '/insurance',
+      name: 'insurance',
+      component: InsuranceView,
     },
   ]
 });
