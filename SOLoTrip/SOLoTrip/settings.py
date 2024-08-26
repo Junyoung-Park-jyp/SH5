@@ -175,3 +175,6 @@ CORS_ORIGIN_ALLOW_ALL = True  # 모든 도메인에 대해 허용
 #    'http://localhost:3000',
 #    'https://yourfrontenddomain.com',
 # ]
+
+# ChatGPT API KEY
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')

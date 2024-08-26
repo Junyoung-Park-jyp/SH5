@@ -7,7 +7,7 @@ from .models import Payment
 from trips.models import Member
 from .serializers import PaymentCreateSerializer, PaymentDetailSerializer
 from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal as withdrawal
-
+from chatgpt_api.api import categorize
 
 User = get_user_model()
 
@@ -25,6 +25,10 @@ def pay(request):
         response = withdrawal(bank_account, amount, email)
         data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
         data['transaction_type'] = '출금'
+
+        # ChatGPT API를 이용하여 결제 내역의 카테고리를 저장한다
+        data['category'] = categorize(data.get('brand_name'))
+
         serializer = PaymentCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
