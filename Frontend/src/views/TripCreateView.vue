@@ -3,10 +3,20 @@
     <!-- 뒤로가기 / 취소하기 -->
     <div class="header my-2">
       <div class="back">
-        <v-icon class="btns" icon="mdi-arrow-left" size="xx-large" @click="backStep"></v-icon>
+        <v-icon
+          class="btns"
+          icon="mdi-arrow-left"
+          size="xx-large"
+          @click="backStep"
+        ></v-icon>
       </div>
       <div class="cancel">
-        <v-icon class="btns" icon="mdi-window-close" size="xx-large" @click="cancelTrip"></v-icon>
+        <v-icon
+          class="btns"
+          icon="mdi-window-close"
+          size="xx-large"
+          @click="cancelTrip"
+        ></v-icon>
       </div>
     </div>
 
@@ -17,7 +27,7 @@
       <MemberForm v-if="tripFormStage == 1" />
       <AccountAdjustForm v-if="tripFormStage == 2" />
     </div>
-    
+
     <!-- 다음으로 -->
     <div class="bottom">
       <button class="next-btn" @click="nextStep">다 &nbsp; 음</button>
@@ -29,7 +39,7 @@
         </div>
         <div class="modal-btns">
           <button class="modal-btn" @click="clearTrip">네</button>
-          <button class="modal-btn"@click="closeCancelModal">아니오</button>
+          <button class="modal-btn" @click="closeCancelModal">아니오</button>
         </div>
       </div>
     </v-dialog>
@@ -37,17 +47,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import CountryDateForm from '@/components/TripCreateView/CountryDateForm.vue';
-import MemberForm from '@/components/TripCreateView/MemberForm.vue';
-import AccountAdjustForm from '@/components/TripCreateView/AccountAdjustForm.vue';
-import { useTripStore } from '@/stores/tripStore';
-import { useBalanceStore } from '@/stores/balanceStore';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import CountryDateForm from "@/components/TripCreateView/CountryDateForm.vue";
+import MemberForm from "@/components/TripCreateView/MemberForm.vue";
+import AccountAdjustForm from "@/components/TripCreateView/AccountAdjustForm.vue";
+import { useTripStore } from "@/stores/tripStore";
+import { useBalanceStore } from "@/stores/balanceStore";
 
 const tripStore = useTripStore();
 const balanceStore = useBalanceStore();
-const tripFormStage = ref(0) // 초기 스테이지 설정
+const tripFormStage = ref(0); // 초기 스테이지 설정
 const showCancelModal = ref(false);
 const router = useRouter();
 
@@ -61,9 +71,9 @@ const closeCancelModal = () => {
 
 const clearTrip = () => {
   tripStore.clearTrip();
-  tripFormStage.value = 0
-  showCancelModal.value = false
-  router.replace({ name: 'home' });
+  tripFormStage.value = 0;
+  showCancelModal.value = false;
+  router.replace({ name: "home" });
 };
 
 const backStep = () => {
@@ -75,10 +85,20 @@ const backStep = () => {
 
 const nextStep = () => {
   if (tripFormStage.value == 0) {
-    if (tripStore.country != '' && tripStore.startDate != null && tripStore.endDate != null) {
+    if (
+      tripStore.startDate instanceof Date &&
+      tripStore.endDate instanceof Date &&
+      tripStore.endDate < tripStore.startDate
+    ) {
+      alert("도착일자가 출발일자보다 빠릅니다. 다시 선택해주세요.");
+    } else if (
+      tripStore.country != "" &&
+      tripStore.startDate != null &&
+      tripStore.endDate != null
+    ) {
       tripFormStage.value++;
     } else {
-      // alert('누락된 정보가 있습니다!');
+      alert("누락된 정보가 있습니다!");
       tripFormStage.value++; // 정보가 누락되었어도 다음 단계로 진행
     }
   } else if (tripFormStage.value == 1) {
@@ -101,26 +121,26 @@ const nextStep = () => {
 const showLoadingSequence = () => {
   // "여행 생성 중" 페이지로 이동
   router.push({
-    name: 'loadingMessage',
+    name: "loadingMessage",
     params: {
-      message: '여행 생성 중...',
-      status: 'loading', // 여행 생성 중 상태
+      message: "여행 생성 중...",
+      status: "loading", // 여행 생성 중 상태
     },
   });
 
   // 2초 후 "여행 생성 완료" 메시지로 변경
   setTimeout(() => {
     router.push({
-      name: 'loadingMessage',
+      name: "loadingMessage",
       params: {
-        message: '생성 완료',
-        status: 'success', // 여행 생성 완료 상태
+        message: "생성 완료",
+        status: "success", // 여행 생성 완료 상태
       },
     });
 
     // 1.5초 후 TripView로 이동
     setTimeout(() => {
-      router.replace({ name: 'home' });
+      router.replace({ name: "home" });
     }, 1200);
   }, 2000);
 };
@@ -181,6 +201,7 @@ const showLoadingSequence = () => {
   margin: 0px auto;
   width: 90%;
   height: 150px;
+  color: black;
 }
 
 .modal-message {
@@ -202,8 +223,8 @@ const showLoadingSequence = () => {
   border-radius: 10px;
 }
 
-.modal-btn:hover, .modal-btn:click {
+.modal-btn:hover,
+.modal-btn:click {
   background-color: grey;
 }
-
 </style>

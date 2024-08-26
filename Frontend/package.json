@@ -13,9 +13,15 @@
     "@date-io/dayjs": "^3.0.0",
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
+<<<<<<< HEAD
     "axios": "^1.7.4",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.13",
+=======
+    "axios": "^1.7.5",
+    "data-fns": "^1.1.0",
+    "date-fns": "^3.6.0",
+>>>>>>> 814f9103d96d151ccd2646b04c834421f4b88ef3
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.29",
