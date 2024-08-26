@@ -125,6 +125,7 @@ body {
   overflow-x: hidden;
   background: white;
   /* overflow-y: hidden; */
+  scrollbar-width: none;
 }
 
 #app {

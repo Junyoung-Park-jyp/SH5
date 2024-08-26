@@ -3,24 +3,24 @@
     <!-- 프로필 -->
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span
-        >최한진 님은
+      <span>
+        최한진 님은
         <span class="profile-destination">{{ destination }}</span> 여행
-        {{ tripState }} 중</span
-      >
+        {{ tripState }} 중
+      </span>
     </div>
 
     <div class="pick-container">
       <!-- ALL -->
-      <div class="all">
+      <div class="all" @click="handleAllClick">
         <div class="upper">&nbsp;</div>
-        <div class="middle">A</div>
+        <div class="middle" :class="{ 'pick-circle': selectedView === 'all'}">A</div>
         <div class="bottom">ALL</div>
       </div>
       <!-- 준비 -->
-      <div class="prepare">
+      <div class="prepare" @click="handlePrepareClick">
         <div class="upper">&nbsp;</div>
-        <div class="middle">P</div>
+        <div class="middle" :class="{ 'pick-circle': selectedView === 'prepare'}">P</div>
         <div class="bottom">준비</div>
       </div>
 
@@ -28,11 +28,10 @@
       <div class="line">|</div>
 
       <!-- 날짜 스크롤 -->
-      <!-- <div v-for="(date, index) in weeks" :key="index"> -->
       <div class="day-scroll">
-        <div v-for="(day, i) in date" :key="i" class="day-container">
+        <div v-for="(day, i) in date" :key="i" class="day-container" @click="handleDayClick(day)">
           <div class="upper">{{ format(day, "EEE") }}</div>
-          <div class="middle" :class="{ 'today-circle': isToday(day) }">
+          <div class="middle" :class="{ 'pick-circle': isSelectedDay(day) }">
             {{ format(day, "d") }}
           </div>
           <div class="bottom">{{ format(day, "M") }}월</div>
@@ -41,116 +40,107 @@
 
       <!-- 구분선 -->
       <div class="arrow">></div>
-
-      <!-- 날짜 캐러셀 by 광영 -->
-      <!-- <v-row>
-        <v-col class="carousel-container" cols="9">
-
-          <v-btn
-            variant="text"
-            icon="mdi-chevron-left"
-            @click="prevWeek"
-            :disabled="currentWeekIndex === 0"
-          ></v-btn>
-
-          <div class="carousel">
-            <div class="carousel-track" :style="trackStyle">
-              <div
-                v-for="(date, index) in weeks"
-                :key="index"
-                class="carousel-item"
-              >
-                <div v-for="(day, i) in date" :key="i" class="day-container">
-                  <div class="upper">{{ format(day, "EEE") }}</div>
-                  <div :class="{ 'today-circle': isToday(day) }" class="middle">
-                    {{ format(day, "dd") }}
-                  </div>
-                  <div class="bottom">{{ format(day, "M") }}월</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <v-btn
-            variant="text"
-            icon="mdi-chevron-right"
-            @click="nextWeek"
-            :disabled="currentWeekIndex === weeks.length - 1"
-          ></v-btn>
-        </v-col> -->
-      <!-- </v-row> -->
     </div>
 
-    <DetailReady v-if="tripState === '준비'" />
-    <DetailProgress v-else />
+    <Detail :selectedDate="selectedDate" :showAllContainers="showAllContainers" :showBudgetAndBookingOnly="showBudgetAndBookingOnly" />
 
-    <v-btn @click="goFinish">정산하기</v-btn>
+    <!-- 정산하기 -->
+    <div class="adjustment">
+      <div class="adjust-background">
+        <button
+          class="adjust-btn"
+          @mousedown="startDrag"
+          @mousemove="onDrag"
+          @mouseup="stopDrag"
+          @touchstart="startDrag"
+          @touchmove="onDrag"
+          @touchend="stopDrag"
+          ref="adjustmentDiv"
+        >
+          정 산 하 기
+        </button>
+        <button class="slide-btn">> > ></button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { eachDayOfInterval, format } from "date-fns";
+import { eachDayOfInterval, format, isSameDay } from "date-fns";
+import Detail from "@/components/TripDetailView/Detail.vue";
+import { usePaymentStore } from "@/stores/paymentStore";
 
-import DetailReady from "@/components/TripDetailView/DetailReady.vue";
-import DetailProgress from "@/components/TripDetailView/DetailProgress.vue";
+// 여행 상태 (예: "준비", "진행 중", "완료")
+const tripState = ref("준비"); // 예시로 "준비"로 초기화
 
 const router = useRouter();
+const adjustmentDiv = ref(null);
+const isDragging = ref(false);
+const startX = ref(0);
+const currentX = ref(0);
 
-// 여행 목적지
 const country = "대한민국";
 const city = "부산";
+const destination = ref(country === "대한민국" ? city : country);
 
-// 대한민국 여행일 경우 목적지는 도시로 설정
-const destination = ref(country);
-if (country === "대한민국") {
-  destination.value = city;
-}
-
-// 오늘 날짜
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-// 오늘 날짜인지를 판별
-const isToday = (day) => {
-  if (
-    day.getFullYear() === today.getFullYear() &&
-    day.getMonth() === today.getMonth() &&
-    day.getDate() === today.getDate()
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
+const selectedDate = ref(today);
+const selectedView = ref('all'); 
 
-// 여행 날짜
-const startDate = new Date(2024, 7, 10); // 2024년 8월 10일
-const endDate = new Date(2024, 7, 27); // 2024년 8월 27일
+const startDate = new Date(2024, 7, 10);
+const endDate = new Date(2024, 7, 30);
 
-// 여행 날짜의 범위
 const date = eachDayOfInterval({
   start: startDate,
   end: endDate,
 });
 
-// 오늘 날짜의 인덱스 찾기
+const paymentStore = usePaymentStore();
+const payments = computed(() => paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd")));
+
+const isToday = (day) => isSameDay(day, today);
+
+const showAllContainers = ref(true);
+const showBudgetAndBookingOnly = ref(false);
+
+const handleDayClick = (day) => {
+  selectedDate.value = day;
+  selectedView.value = 'date';
+  showAllContainers.value = false;
+  showBudgetAndBookingOnly.value = false;
+};
+
+const handleAllClick = () => {
+  selectedView.value = 'all';
+  showAllContainers.value = true;
+  showBudgetAndBookingOnly.value = false;
+};
+
+const handlePrepareClick = () => {
+  selectedView.value = 'prepare';
+  showAllContainers.value = false;
+  showBudgetAndBookingOnly.value = true;
+};
+
+const isSelectedDay = (day) => {
+  return selectedView.value === 'date' && isSameDay(day, selectedDate.value);
+};
+
 const todayIndex = date.findIndex((day) => isToday(day));
 
-// 컴포넌트가 마운트된 후 스크롤을 이동
 onMounted(() => {
   const dayScrollContainer = document.querySelector(".day-scroll");
   const todayElement = dayScrollContainer.children[todayIndex];
 
   if (todayElement) {
     dayScrollContainer.scrollLeft =
-      todayElement.offsetLeft -
-      dayScrollContainer.clientWidth / 2 +
-      todayElement.clientWidth / 2;
+      todayElement.offsetLeft - dayScrollContainer.clientWidth / 2 + todayElement.clientWidth / 2;
   }
 
-  // 스크롤 가능 여부에 따라 화살표 표시
   const arrowElement = document.querySelector(".arrow");
   if (dayScrollContainer.scrollWidth > dayScrollContainer.clientWidth) {
     arrowElement.style.display = "block";
@@ -159,57 +149,60 @@ onMounted(() => {
   }
 });
 
-// const tripRange = eachDayOfInterval({
-//   start: startDate,
-//   end: endDate,
-// });
 
-// 여행 상태
-const tripState = ref("준비");
+const startDrag = (event) => {
+  isDragging.value = true;
+  startX.value = event.clientX || event.touches[0].clientX;
+  currentX.value = startX.value;
+};
 
-// 현재 날짜의 주차 인덱스
-const currentWeekIndex = ref(0);
+const onDrag = (event) => {
+  if (isDragging.value) {
+    const x = event.clientX || event.touches[0].clientX;
+    const deltaX = x - startX.value;
 
-// 여행 날짜의 범위를 6일 단위로 구분
-// const weeks = [];
-// for (let i = 0; i < tripRange.length; i += 5) {
-//   const tmp = tripRange.slice(i, i + 5);
-//   weeks.push(tmp);
-//   if (tmp[0] <= today && today <= tmp[tmp.length - 1]) {
-//     currentWeekIndex.value = i / 5;
-//     tripState.value = "";
-//   }
-// }
+    const maxDragDistance = adjustmentDiv.value.parentElement.offsetWidth - adjustmentDiv.value.offsetWidth;
 
-const prevWeek = () => {
-  if (currentWeekIndex.value > 0) {
-    currentWeekIndex.value--;
+    if (deltaX > 0 && deltaX <= maxDragDistance) {
+      adjustmentDiv.value.style.transform = `translateX(${deltaX}px)`;
+      currentX.value = x;
+    }
   }
 };
 
-const nextWeek = () => {
-  if (currentWeekIndex.value < weeks.length - 1) {
-    currentWeekIndex.value++;
+const stopDrag = () => {
+  if (isDragging.value) {
+    isDragging.value = false;
+
+    const dragDistance = currentX.value - startX.value;
+    const threshold = adjustmentDiv.value.offsetWidth / 2;
+
+    if (dragDistance > threshold) {
+      finishTrip();
+    } else {
+      adjustmentDiv.value.style.transform = `translateX(0)`;
+    }
   }
 };
 
-const trackStyle = computed(() => ({
-  transform: `translateX(-${currentWeekIndex.value * 100}%)`,
-}));
+const finishTrip = () => {
+  adjustmentDiv.value.style.transform = `translateX(100%)`;
 
-const goFinish = () => {
-  return router.push({ name: "tripFinish" });
+  setTimeout(() => {
+    router.push({ name: "tripFinish" });
+  }, 300);
 };
 </script>
 
+
 <style scoped>
 .main-container {
-  height: 92vh;
+  height: 95vh;
   overflow-y: auto;
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 0px;
   background-color: #f4f6fa;
 }
 
@@ -321,14 +314,18 @@ const goFinish = () => {
   display: none; /* 웹킷 브라우저에서 스크롤바 숨김 */
 }
 
-.today-circle {
+.pick-circle {
   background-color: #4b72e1;
   color: white;
-  font-size: 0.8rem;
-  width: 22px;
-  height: 22px;
+  font-size: 0.7rem;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px auto; /* Center horizontally */
 }
 
 /* .carousel-container {
@@ -351,12 +348,75 @@ const goFinish = () => {
   justify-content: center;
 } */
 
-.v-btn {
+/* .v-btn {
   cursor: pointer;
 }
 
 .v-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+} */
+
+/* 정산하기 */
+.adjustment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 90px;
+  margin: auto;
+  /* margin-bottom: -20px; */
+  background-color: #ffffff;
+  /* border: 1px solid black; */
+}
+
+.adjust-background {
+  width: 80%;
+  height: 60%;
+  background-color: lightgrey;
+  border-radius: 30px;
+  margin: 8px 20px;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.adjust-btn {
+  width: 60%;
+  height: 100%;
+  background-color: #4b72e1;
+  border-radius: 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  transition: transform 0.3s ease; /* 슬라이딩 애니메이션 */
+  position: relative;
+  z-index: 1;
+}
+
+.slide-btn {
+  width: 40%;
+  height: 100%;
+  border-radius: 30px;
+  color: rgb(78, 78, 78);
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  position: absolute;
+  right: 0;
+  z-index: 0;
 }
 </style>

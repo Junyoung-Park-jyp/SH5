@@ -1,7 +1,8 @@
 <template>
   <div class="main-container">
+    <div class="content-container">
     <!-- 예산 -->
-    <div class="budget-container">
+    <div v-if="showAllContainers || showBudgetAndBookingOnly" class="budget-container">
       <div class="title d-flex justify-space-between">
         <div class="prepare">준비</div>
         <div class="line">&nbsp;|&nbsp;</div>
@@ -37,7 +38,7 @@
     </div>
 
     <!-- 준비 | 사전 예약 -->
-    <div v-if="bookingPayments.length" class="booking-container">
+    <div v-if="bookingPayments.length && (showAllContainers || showBudgetAndBookingOnly)" class="booking-container">
       <div class="title d-flex justify-space-between">
         <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
         <v-spacer></v-spacer>
@@ -107,18 +108,18 @@
     </div>
 
     <!-- 결제 | 지출 -->
-    <div v-if="paymentsDuringTrip.length" class="pay-container">
+    <div v-if="filteredPayments.length && (showAllContainers || !showBudgetAndBookingOnly)" class="pay-container">
       <div class="title d-flex justify-space-between">
         <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
         <v-spacer></v-spacer>
         <div class="sum" @click="toggleCurrency">
-          {{ formattedTotalCost(paymentsDuringTrip) }}
+          {{ formattedTotalCost(filteredPayments) }}
         </div>
       </div>
       <div class="pay-content">
         <div
           class="payment"
-          v-for="(payment, paymentIndex) in paymentsDuringTrip"
+          v-for="(payment, paymentIndex) in filteredPayments"
           :key="paymentIndex"
         >
           <!-- 체크 버튼 -->
@@ -194,11 +195,12 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { format } from "date-fns";
 import {
@@ -210,6 +212,16 @@ import {
   fetchExchangeRates,
 } from "@/stores/currencyStore";
 import { usePaymentStore } from "@/stores/paymentStore"; // 스토어 불러오기
+
+// Props
+const props = defineProps({
+  selectedDate: Date,
+  showAllContainers: Boolean,
+  showBudgetAndBookingOnly: Boolean,
+});
+
+// 결제 데이터를 스토어에서 불러오기
+const paymentStore = usePaymentStore();
 
 // 멤버별 예산 더미 데이터
 const tripMembers = [
@@ -288,74 +300,6 @@ const formattedMemberBalance = (balance) => {
   )}`;
 };
 
-// 결제 더미 데이터
-const payments = ref([
-  {
-    name: "점심 Viana",
-    cost: 86200,
-    members: ["정태완", "박준영"],
-    pay_date: "2024-08-25",
-    pay_time: "17:21:00",
-    checked: false,
-  },
-  {
-    name: "사그라다 파밀리아 입장료",
-    cost: 20000,
-    members: ["임광영", "정태완"],
-    pay_date: "2024-08-26",
-    pay_time: "09:33:00",
-    checked: false,
-  },
-  {
-    name: "선크림",
-    cost: 15000,
-    members: ["최한진", "박준영", "임광영", "정태완"],
-    pay_date: "2024-08-27",
-    pay_time: "09:19:00",
-    checked: false,
-  },
-  {
-    name: "Monoprix",
-    cost: 56789,
-    members: ["최한진", "박준영", "임광영"],
-    pay_date: "2024-08-25",
-    pay_time: "22:24:00",
-    checked: false,
-  },
-  {
-    name: "에어프랑스",
-    cost: 1806200,
-    members: ["최한진", "박준영"],
-    pay_date: "2024-05-10",
-    pay_time: "16:21:00",
-    checked: false,
-  },
-  {
-    name: "대한한공",
-    cost: 2420000,
-    members: ["임광영", "정태완"],
-    pay_date: "2024-05-17",
-    pay_time: "17:24:00",
-    checked: false,
-  },
-  {
-    name: "Hotel Le Relais Du Louvre",
-    cost: 910000,
-    members: ["최한진", "박준영", "임광영", "정태완"],
-    pay_date: "2024-06-30",
-    pay_time: "09:19:00",
-    checked: false,
-  },
-  {
-    name: "Hertz Rental Car",
-    cost: 450000,
-    members: ["최한진", "박준영", "임광영"],
-    pay_date: "2024-07-15",
-    pay_time: "22:24:00",
-    checked: false,
-  },
-]);
-
 const startDate = new Date(2024, 7, 10); // 여행 시작일
 
 // 결제 데이터를 날짜와 시간에 따라 정렬하는 함수
@@ -367,14 +311,27 @@ const sortPaymentsByDateTime = (paymentsArray) => {
   });
 };
 
+// 사전 예약 결제 내역을 스토어에서 가져오기
 const bookingPayments = computed(() => {
-  const filteredPayments = payments.value.filter(payment => new Date(payment.pay_date) < startDate);
+  const filteredPayments = paymentStore.payments.filter(
+    (payment) => new Date(payment.pay_date) < startDate
+  );
   return sortPaymentsByDateTime(filteredPayments);
 });
 
+// 여행 중 결제 내역을 스토어에서 가져오기
 const paymentsDuringTrip = computed(() => {
-  const filteredPayments = payments.value.filter(payment => new Date(payment.pay_date) >= startDate);
+  const filteredPayments = paymentStore.payments.filter(
+    (payment) => new Date(payment.pay_date) >= startDate
+  );
   return sortPaymentsByDateTime(filteredPayments);
+});
+
+// 선택된 날짜에 해당하는 지출 내역 필터링
+const filteredPayments = computed(() => {
+  return paymentsDuringTrip.value.filter((payment) =>
+    new Date(payment.pay_date).toDateString() === props.selectedDate.toDateString()
+  );
 });
 
 const totalCheckedCost = computed(() => {
@@ -406,8 +363,11 @@ const formattedCheckedCost = computed(() => {
 const toggleCheck = (index, type) => {
   if (type === 'booking') {
     bookingPayments.value[index].checked = !bookingPayments.value[index].checked;
-  } else {
-    paymentsDuringTrip.value[index].checked = !paymentsDuringTrip.value[index].checked;
+  } else if (type === 'trip') {
+    // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
+    const payment = filteredPayments.value[index];
+    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
+    paymentsDuringTrip.value[actualIndex].checked = !paymentsDuringTrip.value[actualIndex].checked;
   }
 };
 
@@ -464,13 +424,19 @@ const personStyle = (memberName, reservationMembers, index) => {
 };
 
 const personClick = (index, memberName, type) => {
-  const paymentList = type === 'booking' ? bookingPayments.value : paymentsDuringTrip.value;
+  const paymentList = type === 'booking' ? bookingPayments.value : filteredPayments.value;
   const payment = paymentList[index];
 
   if (payment.members.includes(memberName)) {
     payment.members = payment.members.filter(name => name !== memberName);
   } else {
     payment.members.push(memberName);
+  }
+
+  // paymentsDuringTrip의 실제 항목 업데이트
+  if (type === 'trip') {
+    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
+    paymentsDuringTrip.value[actualIndex] = payment;
   }
 };
 
@@ -483,12 +449,21 @@ const formatTime = (time) => {
 };
 </script>
 
-
 <style scoped>
 .main-container {
-  /* border: 1px solid red; */
   width: 100%;
   height: 100%;
+  height: 95vh;
+  overflow-y: auto;
+  background-color: #f4f6fa;
+  margin: 0px auto;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-container {
+  flex-grow: 1;
 }
 
 /* ------------ 준비 | 예산 ------------ */
@@ -517,7 +492,6 @@ const formatTime = (time) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid blue; */
 }
 
 .right-detail {
@@ -525,43 +499,39 @@ const formatTime = (time) => {
   height: 60px;
   margin: 10px auto;
   display: flex;
-  flex-wrap: wrap; /* 여러 줄에 걸쳐 배치되도록 설정 */
+  flex-wrap: wrap; 
   align-items: center;
-  justify-content: flex-start; /* 아이템 간의 공간 조절 */
+  justify-content: flex-start;
   overflow-y: auto;
   gap: 2px;
   -webkit-overflow-scrolling: touch;
   margin-right: 5px;
-  /* border: 1px solid red; */
 }
 
 .right-detail::-webkit-scrollbar {
-  width: 7px; /* 스크롤바 너비 설정 */
+  width: 7px;
 }
 .right-detail::-webkit-scrollbar-thumb {
-  background-color: #757575; /* 스크롤바 색상 */
-  border-radius: 4px; /* 스크롤바 둥근 모서리 */
+  background-color: #757575;
+  border-radius: 4px;
 }
 
 .right-detail::-webkit-scrollbar-track {
-  background-color: #f0f0f0; /* 스크롤바 트랙 색상 */
+  background-color: #f0f0f0;
   border-radius: 4px;
 }
 
 /* 멤버 */
 .member-info {
-  width: calc(50% - 5px); /* 두 개가 한 줄에 배치되도록 너비 설정 */
+  width: calc(50% - 5px);
   height: 30px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  /* margin: 2px 0; */
   padding: 2px 0;
-  /* border: 1px solid green; */
 }
 
 .member-symbol {
-  /* border: 1px solid black; */
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -577,9 +547,9 @@ const formatTime = (time) => {
 .member-balance {
   font-size: 1rem;
   color: rgb(78, 160, 120);
-  white-space: nowrap;       /* 텍스트를 한 줄로 유지 */
-  overflow: hidden;          /* 넘치는 텍스트 숨기기 */
-  text-overflow: ellipsis;   /* 넘치는 텍스트에 '...' 표시 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ------------ 준비 | 사전 예약 ------------ */
@@ -593,7 +563,6 @@ const formatTime = (time) => {
   flex-direction: column;
   padding: 5px 10px;
   background-color: #ffffff;
-  /* border: 1px solid blue; */
 }
 
 .payment {
@@ -603,7 +572,6 @@ const formatTime = (time) => {
   width: 100%;
   height: 65px;
   margin: auto;
-  /* border: 1px solid green; */
 }
 
 .check-area {
@@ -633,7 +601,6 @@ const formatTime = (time) => {
   justify-content: center;
   align-items: center;
   margin: auto;
-  /* border: 1px solid black; */
 }
 
 /* 카테고리 */
@@ -643,7 +610,6 @@ const formatTime = (time) => {
   justify-content: center;
   align-items: center;
   margin: auto;
-  /* border: 1px solid black; */
 }
 
 /* 결제 금액 및 내역 */
@@ -655,7 +621,6 @@ const formatTime = (time) => {
   align-items: flex-start;
   margin: auto;
   padding-left: 20px;
-  /* border: 1px solid black; */
 }
 
 .cost {
@@ -666,9 +631,9 @@ const formatTime = (time) => {
 .cost-area .name {
   font-size: 0.7rem;
   font-weight: 300;
-  white-space: nowrap;       /* 텍스트를 한 줄로 유지 */
-  overflow: hidden;          /* 넘치는 텍스트 숨기기 */
-  text-overflow: ellipsis;   /* 넘치는 텍스트에 '...' 표시 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* 정산 대상 */
 .person-area {
@@ -680,20 +645,19 @@ const formatTime = (time) => {
   flex-wrap: wrap;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* border: 1px solid blue; */
 }
 
 .person-area::-webkit-scrollbar {
-  width: 3px; /* 스크롤바 너비 설정 */
+  width: 3px;
   
 }
 .person-area::-webkit-scrollbar-thumb {
-  background-color: #757575; /* 스크롤바 색상 */
-  border-radius: 4px; /* 스크롤바 둥근 모서리 */
+  background-color: #757575;
+  border-radius: 4px;
 }
 
 .person-area::-webkit-scrollbar-track {
-  background-color: #f0f0f0; /* 스크롤바 트랙 색상 */
+  background-color: #f0f0f0;
   border-radius: 4px;
 }
 
@@ -703,9 +667,7 @@ const formatTime = (time) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin: 2px 0; */
   padding: 2px 0;
-  /* border: 1px solid red; */
 }
 
 .person-symbol {
@@ -713,7 +675,6 @@ const formatTime = (time) => {
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  /* margin: 0 15px 0 20px; */
   justify-content: center;
   align-items: center;
 }
@@ -733,9 +694,20 @@ const formatTime = (time) => {
   color: grey;
   font-weight: 300;
   height: 100%;
-  /* border: 1px solid red; */
   margin-left: 5px;
   margin-right: -5px;
+}
+
+.pay-container {
+  width: 100%;
+  margin: 30px auto 0px auto;
+}
+
+.pay-content {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  background-color: #ffffff;
 }
 
 /* 요약 */
@@ -746,9 +718,9 @@ const formatTime = (time) => {
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin: auto;
+  margin: 0 auto;
   /* border: 1px solid black; */
-  padding: 20px 0px;
+  padding: 40px 0px;
 }
 
 /* 쓴 돈 */
@@ -783,30 +755,17 @@ const formatTime = (time) => {
   width: 100%;
   height: 90px;
   display: flex;
-  flex-direction: center;
   justify-content: center;
   align-items: center;
   text-align: center;
   background-color: #ffffff;
   color: #4b72e1;
-  padding-top: 20px;
+  /* padding-top: 20px; */
+  margin: 0 auto;
 }
 
 .result {
   font-weight: bold;
   font-size: 1.2rem;
-}
-
-.pay-container {
-  width: 100%;
-  margin: 30px auto 0px auto;
-}
-
-.pay-content {
-  display: flex;
-  flex-direction: column;
-  padding: 5px 10px;
-  background-color: #ffffff;
-  /* border: 1px solid blue; */
 }
 </style>
