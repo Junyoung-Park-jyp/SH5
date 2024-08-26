@@ -127,7 +127,7 @@ const isToday = (day) => {
 
 // 여행 날짜
 const startDate = new Date(2024, 7, 10); // 2024년 8월 10일
-const endDate = new Date(2024, 8, 23); // 2024년 8월 27일
+const endDate = new Date(2024, 7, 27); // 2024년 8월 27일
 
 // 여행 날짜의 범위
 const date = eachDayOfInterval({
@@ -143,9 +143,11 @@ onMounted(() => {
   const dayScrollContainer = document.querySelector(".day-scroll");
   const todayElement = dayScrollContainer.children[todayIndex];
 
-  // 오늘 날짜를 왼쪽에 맞추기
   if (todayElement) {
-    dayScrollContainer.scrollLeft = todayElement.offsetLeft;
+    dayScrollContainer.scrollLeft =
+      todayElement.offsetLeft -
+      dayScrollContainer.clientWidth / 2 +
+      todayElement.clientWidth / 2;
   }
 
   // 스크롤 가능 여부에 따라 화살표 표시

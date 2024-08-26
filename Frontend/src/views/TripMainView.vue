@@ -46,10 +46,10 @@
           :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           @click="changeColor(index)"
         >
-          <div class="member-familyname">{{ member[0].slice(0, 1) }}</div>
+          <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
         </div>
-        <div class="member-name">{{ member[0] }}</div>
-        <div class="member-account">{{ member[1] }}</div>
+        <div class="member-name">{{ member.name }}</div>
+        <div class="member-account">{{ member.account }}</div>
       </div>
     </div>
 
@@ -67,6 +67,7 @@
           class="currency"
           v-model="selectCurrency"
           :items="currencies"
+          @change="updateCurrencyRate"
         ></v-select>
       </div>
       <div class="content">
@@ -131,10 +132,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { format } from "date-fns";
-import axios from "axios";
+import { useMemberColors } from "@/stores/colorStore";
+import {
+  exchangeArray,
+  formatToTwoDecimal,
+  formatWithComma,
+  convertCurrency,
+  currencyIcons,
+  currencyText,
+  fetchExchangeRates,
+} from "@/stores/currencyStore";
 
 const router = useRouter();
 
@@ -168,72 +178,13 @@ const formatDay = (date) => {
 
 // 여행 멤버와 계좌번호
 const tripMembers = [
-  ["박준영", "신한 0276524561730773"],
-  ["임광영", "국민 000-000-000"],
-  ["정태완", "우리 000-000-000"],
-  ["최한진", "계좌 미등록"],
+  { name: "최한진", account: "신한 0276524561730773" },
+  { name: "임광영", account: "국민 000-000-000" },
+  { name: "정태완", account: "우리 000-000-000" },
+  { name: "최한진", account: "계좌 미등록" },
 ];
 
-// 색상 배열
-const colors = [
-  "#CA7172",
-  "#FBCC98",
-  "#D5FB98",
-  "#98D1FB",
-  "#98B4FB",
-  "#B598FB",
-  "#FB98F1",
-  "#ACACAC",
-];
-
-// 멤버별 색상 배열 초기화
-const memberColors = ref([]);
-
-// 로컬 스토리지에서 색상 불러오기
-const loadColors = () => {
-  const storedColors = JSON.parse(localStorage.getItem("memberColors"));
-  if (storedColors && storedColors.length === tripMembers.length) {
-    memberColors.value = storedColors;
-  } else {
-    memberColors.value = tripMembers.map(
-      (_, index) => colors[index % colors.length]
-    );
-  }
-};
-
-// 로컬 스토리지에 색상 저장
-const saveColors = () => {
-  localStorage.setItem("memberColors", JSON.stringify(memberColors.value));
-};
-
-// 색상을 변경하는 함수
-const changeColor = (index) => {
-  const currentColor = memberColors.value[index];
-  const currentColorIndex = colors.indexOf(currentColor);
-  const nextColorIndex = (currentColorIndex + 1) % colors.length;
-  memberColors.value[index] = colors[nextColorIndex];
-  saveColors(); // 변경된 색상을 저장
-};
-
-// Hex 색상을 RGBA로 변환하여 투명도를 조절하는 함수
-const rgbaColor = (hex = "#d3d3d3;", alpha = 1) => {
-  if (!hex || typeof hex !== "string" || hex.length !== 7) {
-    // 기본값 또는 잘못된 hex 값 처리
-    hex = "#d3d3d3;"; // 기본값 설정
-  }
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
-// 페이지 로드 시 색상 로드
-onMounted(() => {
-  loadColors();
-});
-
-// 색상 변경 감지하여 자동 저장
-watch(memberColors, saveColors, { deep: true });
+const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
 
 // 선택한 통화
 const selectCurrency = ref("USD");
@@ -241,137 +192,62 @@ const selectCurrency = ref("USD");
 // 지원하는 통화 배열
 const currencies = ["USD", "EUR", "JPY", "CNY", "GBP", "CHF", "CAD"];
 
-// 환율 GET 요청
-const exchangeArray = ref([]);
-// onMounted(() => {
-//   axios({
-//     url: 'http://52.79.246.151:8000/exchange_rate/',
-//     method: 'get'
-//   })
-//     .then(res => {
-//       exchangeArray.value = res.data
-//       console.log(res)
-//     })
-//     .catch(err => console.log(err))
-// })
-exchangeArray.value = [
-  {
-    id: 5399,
-    currency: "CAD",
-    exchangeRate: "980.82",
-    exchangeMin: "140",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5400,
-    currency: "CHF",
-    exchangeRate: "1,566.15",
-    exchangeMin: "100",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5401,
-    currency: "CNY",
-    exchangeRate: "186.91",
-    exchangeMin: "800",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5402,
-    currency: "EUR",
-    exchangeRate: "1,486.49",
-    exchangeMin: "100",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5403,
-    currency: "GBP",
-    exchangeRate: "1,744.64",
-    exchangeMin: "80",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5404,
-    currency: "JPY",
-    exchangeRate: "919.63",
-    exchangeMin: "100",
-    created: "2024-08-22 16:31:47",
-  },
-  {
-    id: 5406,
-    currency: "USD",
-    exchangeRate: "1,332.4",
-    exchangeMin: "100",
-    created: "2024-08-22 16:31:47",
-  },
-];
-
 // 환율 계산
 const foreignCurrency = ref(1);
-const koreaCurrency = computed(() => {
-  const selectedExchange = exchangeArray.value.find(
+
+const selectedExchange = computed(() => {
+  return exchangeArray.value.find(
     (item) => item.currency === selectCurrency.value
-  );
-  return (
-    parseFloat(selectedExchange.exchangeRate.replace(/,/g, "")) *
-    foreignCurrency.value
   );
 });
 
-// 통화에 따른 버튼 아이콘
-const currencyIcons = {
-  CAD: "mdi-currency-usd",
-  CHF: "mdi-currency-fra",
-  CNY: "mdi-currency-cny",
-  EUR: "mdi-currency-eur",
-  GBP: "mdi-currency-gbp",
-  JPY: "mdi-currency-jpy",
-  USD: "mdi-currency-usd",
-};
-
-// 통화에 따른 텍스트
-const currencyText = {
-  CAD: "$",
-  CHF: "₣",
-  CNY: "¥",
-  EUR: "€",
-  GBP: "£",
-  JPY: "¥",
-  USD: "$",
-};
+const koreaCurrency = computed(() => {
+  if (!selectedExchange.value) {
+    return 0; // selectedExchange가 없을 경우 기본값으로 0 반환
+  }
+  const exchangeRate = parseFloat(
+    selectedExchange.value.exchangeRate.replace(/,/g, "")
+  );
+  return convertCurrency(foreignCurrency.value, exchangeRate, false);
+});
 
 // 외화 금액 포맷팅을 위한 computed property
 const formattedForeignCurrency = computed({
   get() {
-    // 세 자리마다 콤마를 추가
-    return String(foreignCurrency.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return formatWithComma(formatToTwoDecimal(foreignCurrency.value));
   },
   set(value) {
-    // 콤마를 제거한 후 저장
-    foreignCurrency.value = value.replace(/,/g, "");
+    foreignCurrency.value = parseFloat(value.replace(/,/g, "")) || 0;
   },
 });
 
 // 원화 금액 포맷팅을 위한 computed property
-const formattedKoreaCurrency = computed({
-  get() {
-    // 세 자리마다 콤마를 추가
-    return String(koreaCurrency.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  },
-  set(value) {
-    // 콤마를 제거한 후 저장
-    koreaCurrency.value = value.replace(/,/g, "");
-  },
+const formattedKoreaCurrency = computed(() => {
+  return selectedExchange.value
+    ? formatWithComma(formatToTwoDecimal(koreaCurrency.value))
+    : "N/A"; // selectedExchange가 없을 경우 "N/A" 반환
 });
 
 // 1 단위의 외국 통화를 한국 원화로 변환하여 보여줄 값
 const formattedOneUnitKoreaCurrency = computed(() => {
-  const selectedExchange = exchangeArray.value.find(
-    (item) => item.currency === selectCurrency.value
+  if (!selectedExchange.value) {
+    return "N/A"; // selectedExchange가 없을 경우 "N/A" 반환
+  }
+  const exchangeRate = parseFloat(
+    selectedExchange.value.exchangeRate.replace(/,/g, "")
   );
-  return String(
-    parseFloat(selectedExchange.exchangeRate.replace(/,/g, ""))
-  ).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return formatWithComma(formatToTwoDecimal(exchangeRate));
+});
+
+// 선택된 통화에 따른 환율 업데이트 메서드
+function updateCurrencyRate() {
+  foreignCurrency.value = 1; // 외화를 기본 1로 설정하여 한화 환율을 표시
+}
+
+// 환율 데이터 가져오기
+onMounted(() => {
+  fetchExchangeRates();
+  updateCurrencyRate();
 });
 
 const modifyTrip = () => {

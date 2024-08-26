@@ -14,7 +14,7 @@ export const useTripStore = defineStore("trip", {
     startDate: null,
     endDate: null,
     adjustTime: null,
-
+    payments: [],
     // 다녔던 여행들 더미 데이터
     experiences: [
       {
