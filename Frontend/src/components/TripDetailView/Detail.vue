@@ -1,0 +1,777 @@
+<template>
+  <div class="main-container">
+    <div class="content-container">
+    <!-- 예산 -->
+    <div v-if="showAllContainers || showBudgetAndBookingOnly" class="budget-container">
+      <div class="title d-flex justify-space-between">
+        <div class="prepare">준비</div>
+        <div class="line">&nbsp;|&nbsp;</div>
+        <div class="budget">예산</div>
+        <v-spacer></v-spacer>
+        <div class="sum" @click="toggleCurrency">
+          {{ formattedTotalBalance }}
+        </div>
+      </div>
+      <div class="budget-content">
+        <div class="left-detail">
+          <v-icon icon="mdi-wallet-outline" color="grey" size="28px"></v-icon>
+        </div>
+        <div class="right-detail">
+          <div
+            v-for="(member, index) in tripMembers"
+            :key="index"
+            class="member-info"
+          >
+            <div
+              class="member-symbol d-flex justify-center align-center"
+              :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+              @click="changeColor(index)"
+            >
+              <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+            </div>
+            <div class="member-balance" @click="toggleCurrency">
+              {{ formattedMemberBalance(member.balance) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 준비 | 사전 예약 -->
+    <div v-if="bookingPayments.length && (showAllContainers || showBudgetAndBookingOnly)" class="booking-container">
+      <div class="title d-flex justify-space-between">
+        <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
+        <v-spacer></v-spacer>
+        <div class="sum" @click="toggleCurrency">
+          {{ formattedTotalCost(bookingPayments) }}
+        </div>
+      </div>
+      <div class="book-content">
+        <div
+          class="payment"
+          v-for="(payment, paymentIndex) in bookingPayments"
+          :key="paymentIndex"
+        >
+          <!-- 체크 버튼 -->
+          <div class="check-area">
+            <v-btn
+              @click="toggleCheck(paymentIndex, 'booking')"
+              variant="text"
+              :color="payment.checked ? 'primary' : 'grey'"
+              :icon="
+                payment.checked
+                  ? 'mdi-check-circle'
+                  : 'mdi-checkbox-blank-circle-outline'
+              "
+            ></v-btn>
+          </div>
+
+          <!-- 카테고리 -->
+          <div class="category-area">
+            <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
+          </div>
+
+          <!-- 결제 금액 및 내역 -->
+          <div class="cost-area">
+            <div class="cost" @click="toggleCurrency">
+              {{ formattedCost(payment.cost) }}
+            </div>
+            <div class="name">{{ payment.name }}</div>
+          </div>
+
+          <!-- 정산 대상 -->
+          <div class="person-area">
+            <div
+              v-for="(member, index) in tripMembers"
+              :key="index"
+              class="person-info"
+            >
+              <div
+                class="person-symbol d-flex justify-center align-center"
+                :style="personStyle(member.name, payment.members, index)"
+                @click="personClick(paymentIndex, member.name, 'booking')"
+              >
+                <div class="person-familyname">
+                  {{ member.name.slice(0, 1) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 결제 날짜 -->
+          <div class="date-area">
+            {{ formatDate(payment.pay_date) }}
+            {{ formatTime(payment.pay_time) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결제 | 지출 -->
+    <div v-if="filteredPayments.length && (showAllContainers || !showBudgetAndBookingOnly)" class="pay-container">
+      <div class="title d-flex justify-space-between">
+        <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
+        <v-spacer></v-spacer>
+        <div class="sum" @click="toggleCurrency">
+          {{ formattedTotalCost(filteredPayments) }}
+        </div>
+      </div>
+      <div class="pay-content">
+        <div
+          class="payment"
+          v-for="(payment, paymentIndex) in filteredPayments"
+          :key="paymentIndex"
+        >
+          <!-- 체크 버튼 -->
+          <div class="check-area">
+            <v-btn
+              @click="toggleCheck(paymentIndex, 'trip')"
+              variant="text"
+              :color="payment.checked ? 'primary' : 'grey'"
+              :icon="
+                payment.checked
+                  ? 'mdi-check-circle'
+                  : 'mdi-checkbox-blank-circle-outline'
+              "
+            ></v-btn>
+          </div>
+
+          <!-- 카테고리 -->
+          <div class="category-area">
+            <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
+          </div>
+
+          <!-- 결제 금액 및 내역 -->
+          <div class="cost-area">
+            <div class="cost" @click="toggleCurrency">
+              {{ formattedCost(payment.cost) }}
+            </div>
+            <div class="name">{{ payment.name }}</div>
+          </div>
+
+          <!-- 정산 대상 -->
+          <div class="person-area">
+            <div
+              v-for="(member, index) in tripMembers"
+              :key="index"
+              class="person-info"
+            >
+              <div
+                class="person-symbol d-flex justify-center align-center"
+                :style="personStyle(member.name, payment.members, index)"
+                @click="personClick(paymentIndex, member.name, 'trip')"
+              >
+                <div class="person-familyname">
+                  {{ member.name.slice(0, 1) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 결제 날짜 -->
+          <div class="date-area">
+            {{ formatDate(payment.pay_date) }} {{ formatTime(payment.pay_time) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="spend">
+        <div class="type">쓴 돈</div>
+        <div class="today">₩ 4057</div>
+        <div class="total">₩ 426864</div>
+      </div>
+      <div class="remain">
+        <div class="type">남은 돈</div>
+        <div class="today">₩ 6024</div>
+        <div class="total">₩ 426864</div>
+      </div>
+    </div>
+
+    <div class="calculation">
+      <div class="result" @click="toggleCurrencyInResult">
+        {{ formattedCheckedCost }}
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+
+<script setup>
+import { ref, computed, onMounted, watch } from "vue";
+import { useMemberColors } from "@/stores/colorStore";
+import { format } from "date-fns";
+import {
+  exchangeArray,
+  convertCurrency,
+  formatToTwoDecimal,
+  formatWithComma,
+  currencyText,
+  fetchExchangeRates,
+} from "@/stores/currencyStore";
+import { usePaymentStore } from "@/stores/paymentStore"; // 스토어 불러오기
+
+// Props
+const props = defineProps({
+  selectedDate: Date,
+  showAllContainers: Boolean,
+  showBudgetAndBookingOnly: Boolean,
+});
+
+// Emits
+const emit = defineEmits(['updateCheckedCost']);
+
+// 결제 데이터를 스토어에서 불러오기
+const paymentStore = usePaymentStore();
+
+// 멤버별 예산 더미 데이터
+const tripMembers = [
+  { name: "박준영", balance: 3000000 },
+  { name: "이선재", balance: 3500000 },
+  { name: "임광영", balance: 4000000 },
+  { name: "정태완", balance: 4500000 },
+  { name: "최한진", balance: 5000000 },
+];
+
+const totalBalance = computed(() => {
+  return tripMembers.reduce((total, member) => total + member.balance, 0);
+});
+
+const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+const currencyIndex = ref(0);
+const currencies = ref(["KRW"]);
+
+onMounted(() => {
+  fetchExchangeRates(); 
+  currencies.value = [
+    "KRW",
+    ...exchangeArray.value.map((item) => item.currency),
+  ];
+});
+
+const toggleCurrency = () => {
+  currencyIndex.value = (currencyIndex.value + 1) % currencies.value.length;
+};
+
+const selectedExchange = computed(() => {
+  const selectedCurrency = currencies.value[currencyIndex.value];
+  return exchangeArray.value.find((item) => item.currency === selectedCurrency);
+});
+
+const getExchangeRate = () => {
+  if (currencies.value[currencyIndex.value] === "KRW") {
+    return 1;
+  } else if (selectedExchange.value && selectedExchange.value.exchangeRate) {
+    return parseFloat(selectedExchange.value.exchangeRate.replace(/,/g, ""));
+  } else {
+    return 1;
+  }
+};
+
+const formattedTotalBalance = computed(() => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    totalBalance.value,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+});
+
+const formattedMemberBalance = (balance) => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    balance,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+};
+
+const startDate = new Date(2024, 7, 10); // 여행 시작일
+
+// 결제 데이터를 날짜와 시간에 따라 정렬하는 함수
+const sortPaymentsByDateTime = (paymentsArray) => {
+  return paymentsArray.sort((a, b) => {
+    const dateA = new Date(`${a.pay_date}T${a.pay_time}`);
+    const dateB = new Date(`${b.pay_date}T${b.pay_time}`);
+    return dateA - dateB;
+  });
+};
+
+// 사전 예약 결제 내역을 스토어에서 가져오기
+const bookingPayments = computed(() => {
+  const filteredPayments = paymentStore.payments.filter(
+    (payment) => new Date(payment.pay_date) < startDate
+  );
+  return sortPaymentsByDateTime(filteredPayments);
+});
+
+// 여행 중 결제 내역을 스토어에서 가져오기
+const paymentsDuringTrip = computed(() => {
+  const filteredPayments = paymentStore.payments.filter(
+    (payment) => new Date(payment.pay_date) >= startDate
+  );
+  return sortPaymentsByDateTime(filteredPayments);
+});
+
+// 선택된 날짜에 해당하는 지출 내역 필터링
+const filteredPayments = computed(() => {
+  return paymentsDuringTrip.value.filter((payment) =>
+    new Date(payment.pay_date).toDateString() === props.selectedDate.toDateString()
+  );
+});
+
+const totalCheckedCost = computed(() => {
+  return [...bookingPayments.value, ...paymentsDuringTrip.value]
+    .filter(payment => payment.checked)
+    .reduce((sum, payment) => sum + payment.cost, 0);
+});
+
+const toggleCurrencyInResult = () => {
+  currencyIndex.value = (currencyIndex.value + 1) % currencies.value.length;
+};
+
+const formattedCheckedCost = computed(() => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    totalCheckedCost.value,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+      const formattedCost = `${currencySymbol} ${formatWithComma(formatToTwoDecimal(convertedValue))}`;
+      return formattedCost;
+});
+
+watch(formattedCheckedCost, (newCost) => {
+  emit('updateCheckedCost', newCost);
+});
+
+const toggleCheck = (index, type) => {
+  if (type === 'booking') {
+    bookingPayments.value[index].checked = !bookingPayments.value[index].checked;
+  } else if (type === 'trip') {
+    // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
+    const payment = filteredPayments.value[index];
+    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
+    paymentsDuringTrip.value[actualIndex].checked = !paymentsDuringTrip.value[actualIndex].checked;
+  }
+};
+
+const formattedTotalCost = (paymentArray) => {
+  const totalCost = paymentArray.reduce(
+    (sum, payment) => sum + payment.cost,
+    0
+  );
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    totalCost,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+};
+
+const formattedCost = (cost) => {
+  const exchangeRate = getExchangeRate();
+  const convertedValue = convertCurrency(
+    cost,
+    exchangeRate,
+    currencies.value[currencyIndex.value] !== "KRW"
+  );
+  const currencySymbol =
+    currencies.value[currencyIndex.value] === "KRW"
+      ? "₩"
+      : currencyText[currencies.value[currencyIndex.value]];
+  return `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+};
+
+
+const personStyle = (memberName, reservationMembers, index) => {
+  if (reservationMembers.includes(memberName)) {
+    return {
+      backgroundColor: rgbaColor(memberColors.value[index], 0.7),
+      border: "none",
+    };
+  } else {
+    return {
+      backgroundColor: "#ffffff",
+      color: "#ffffff",
+      border: `1px solid ${memberColors.value[index]}`,
+    };
+  }
+};
+
+const personClick = (index, memberName, type) => {
+  const paymentList = type === 'booking' ? bookingPayments.value : filteredPayments.value;
+  const payment = paymentList[index];
+
+  if (payment.members.includes(memberName)) {
+    payment.members = payment.members.filter(name => name !== memberName);
+  } else {
+    payment.members.push(memberName);
+  }
+
+  // paymentsDuringTrip의 실제 항목 업데이트
+  if (type === 'trip') {
+    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
+    paymentsDuringTrip.value[actualIndex] = payment;
+  }
+};
+
+const formatDate = (date) => {
+  return format(new Date(date), "M월 d일");
+};
+
+const formatTime = (time) => {
+  return format(new Date(`1970-01-01T${time}`), "HH:mm");
+};
+</script>
+
+<style scoped>
+.main-container {
+  width: 100%;
+  height: 100%;
+  height: 95vh;
+  overflow-y: auto;
+  background-color: #f4f6fa;
+  margin: 0px auto;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-container {
+  flex-grow: 1;
+}
+
+/* ------------ 준비 | 예산 ------------ */
+.budget-container {
+  width: 100%;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: bolder;
+  padding: 5px 20px;
+  color: grey;
+}
+
+.budget-content {
+  display: flex;
+  background-color: #ffffff;
+  width: 100%;
+  height: 80px;
+}
+
+.left-detail {
+  width: 20%;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-detail {
+  width: 80%;
+  height: 60px;
+  margin: 10px auto;
+  display: flex;
+  flex-wrap: wrap; 
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  gap: 2px;
+  -webkit-overflow-scrolling: touch;
+  margin-right: 5px;
+}
+
+.right-detail::-webkit-scrollbar {
+  width: 7px;
+}
+.right-detail::-webkit-scrollbar-thumb {
+  background-color: #757575;
+  border-radius: 4px;
+}
+
+.right-detail::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+/* 멤버 */
+.member-info {
+  width: calc(50% - 5px);
+  height: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.member-symbol {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin: 0 15px 0 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.member-familyname {
+  font-size: 0.8rem;
+}
+
+.member-balance {
+  font-size: 1rem;
+  color: rgb(78, 160, 120);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ------------ 준비 | 사전 예약 ------------ */
+.booking-container {
+  width: 100%;
+  margin: 30px auto 0px auto;
+}
+
+.book-content {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  background-color: #ffffff;
+}
+
+.payment {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 65px;
+  margin: auto;
+}
+
+.check-area {
+  width: 11%;
+}
+
+.category-area {
+  width: 11%;
+}
+
+.cost-area {
+  width: 50%;
+}
+
+.person-area {
+  width: 16%;
+}
+
+.date-area {
+  width: 14%;
+}
+
+/* 체크 버튼 */
+.check-area {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+/* 카테고리 */
+.category-area {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+/* 결제 금액 및 내역 */
+.cost-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: auto;
+  padding-left: 20px;
+}
+
+.cost {
+  font-size: 0.9rem;
+  color: rgb(214, 72, 72);
+}
+
+.cost-area .name {
+  font-size: 0.7rem;
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 정산 대상 */
+.person-area {
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.person-area::-webkit-scrollbar {
+  width: 3px;
+  
+}
+.person-area::-webkit-scrollbar-thumb {
+  background-color: #757575;
+  border-radius: 4px;
+}
+
+.person-area::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.person-info {
+  width: calc(50% - 5px);
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.person-symbol {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.person-familyname {
+  font-size: 0.8rem;
+  color: inherit;
+}
+
+/* 결제 날짜 */
+.date-area {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  text-align: center;
+  font-size: 0.6rem;
+  color: grey;
+  font-weight: 300;
+  height: 100%;
+  margin-left: 5px;
+  margin-right: -5px;
+}
+
+.pay-container {
+  width: 100%;
+  margin: 30px auto 0px auto;
+}
+
+.pay-content {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  background-color: #ffffff;
+}
+
+/* 요약 */
+.summary {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  /* border: 1px solid black; */
+  padding: 40px 0px;
+}
+
+/* 쓴 돈 */
+.spend {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid black;
+}
+
+/* 남은 돈 */
+.remain {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.type {
+  color: grey;
+  font-size: smaller;
+}
+
+
+/* 정산 금액 */
+.calculation {
+  width: 100%;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #ffffff;
+  color: #4b72e1;
+  /* padding-top: 20px; */
+  margin: 0 auto;
+}
+
+.result {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+</style>

@@ -188,7 +188,7 @@ const navigateToBridge = () => {
 
 .menu {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 12px;
 }
 
 .menu-icon {

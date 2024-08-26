@@ -118,7 +118,7 @@
     <div class="trip insurance">
       <div class="title d-flex justify-space-between">
         여행자 보험
-        <button class="invite-btn">함 께 &nbsp; 가 입 하 기</button>
+        <button class="invite-btn" @click="goInsurance">함 께 &nbsp; 가 입 하 기</button>
       </div>
       <div class="content">
         <div class="insurance-explanation">친구와 함께 가족과 함께</div>
@@ -179,6 +179,7 @@ const formatDay = (date) => {
 // 여행 멤버와 계좌번호
 const tripMembers = [
   { name: "박준영", account: "신한 0276524561730773" },
+  { name: "이선재", account: "신한 000-000-000" },
   { name: "임광영", account: "국민 000-000-000" },
   { name: "정태완", account: "우리 000-000-000" },
   { name: "최한진", account: "계좌 미등록" },
@@ -257,6 +258,10 @@ const modifyTrip = () => {
 const goDetail = () => {
   return router.push({ name: "tripDetail" });
 };
+
+const goInsurance = () => {
+  return router.push({ name: 'insurance' })
+}
 </script>
 
 <style scoped>
@@ -295,7 +300,7 @@ const goDetail = () => {
 
 .profile-img {
   height: 75px;
-  margin-left: 30px;
+  margin-left: 20px;
   margin-right: 20px;
 }
 
@@ -337,6 +342,10 @@ const goDetail = () => {
 }
 
 /* 날짜 */
+.date {
+  margin-top: -10px;
+}
+
 .date > .content {
   padding-left: 35px;
 }
@@ -452,7 +461,7 @@ const goDetail = () => {
 }
 
 .invite-btn {
-  width: 42%;
+  width: 150px;
   background-color: #4b72e1;
   border-radius: 15px;
   color: white;
