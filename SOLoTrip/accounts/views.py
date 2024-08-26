@@ -9,6 +9,8 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from shinhan_api.member import signup as shinhan_signup, search
 from shinhan_api.demand_deposit import create_demand_deposit_account
+from rest_framework.authtoken.models import Token
+
 
 
 User = get_user_model()
@@ -46,8 +48,12 @@ def login(request):
     
     if user is not None:
         auth_login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(user)
-        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+        return Response({
+            "token": token.key,
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
     return Response({'error': "로그인 실패"}, status=status.HTTP_404_NOT_FOUND)
 
 
