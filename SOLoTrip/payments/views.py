@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Payment, Calculate
 from trips.models import Member
 from .serializers import PaymentCreateSerializer, PaymentDetailSerializer, CalculateCreateSerializer
+from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal as withdrawal
 
 
 
