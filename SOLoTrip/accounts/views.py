@@ -12,7 +12,6 @@ from shinhan_api.demand_deposit import create_demand_deposit_account
 from rest_framework.authtoken.models import Token
 
 
-
 User = get_user_model()
 
 @api_view(['POST'])
@@ -30,9 +29,9 @@ def signup(request):
     else:
         data['user_key'] = search(email)['userKey']
 
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         user = serializer.save()
-        create_demand_deposit_account(email)
+        response = create_demand_deposit_account(email)
         serializer = UserSerializer(user)
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
     else:
