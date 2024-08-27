@@ -13,7 +13,7 @@
     </div>
 
     <!-- MAIN -->
-    <div class="main px-2">
+    <div class="main px-2" ref="mainContainer">
       <!-- 각 단계에 따른 폼을 조건부로 렌더링 -->
       <InsuranceStart v-if="insuranceStage === 0" />
       <InsuranceMain v-if="insuranceStage === 1" />
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 
 import InsuranceStart from "@/components/InsuranceView/InsuranceStart.vue";
@@ -50,7 +50,14 @@ import InsuranceMain from "@/components/InsuranceView/InsuranceMain.vue";
 import InsuranceMember from "@/components/InsuranceView/InsuranceMember.vue";
 
 const insuranceStage = ref(0);
+const mainContainer = ref(null);
 const router = useRouter();
+
+const scrollToTop = () => {
+  if (mainContainer.value) {
+    mainContainer.value.scrollTop = 0; // mainContainer의 스크롤을 맨 위로 이동
+  }
+};
 
 const nextStep = () => {
   if (insuranceStage.value < 2) {
@@ -58,31 +65,55 @@ const nextStep = () => {
   } else {
     router.push({ name: 'tripMain' });
   }
+
+  nextTick(() => {
+    scrollToTop();
+  });
 };
 
 const backStep = () => {};
+
+// watch 사용하여 insuranceStage가 변경될 때 스크롤 위치 조정
+watch(insuranceStage, () => {
+  nextTick(() => {
+    scrollToTop();
+  });
+});
 </script>
 
 <style scoped>
 .container {
   width: 100%;
-  height: 100vh;
+  height: 90vh;
   margin: 0px auto;
   padding: 0px 10px;
   /* border: 5px solid black; */
 }
 
 .header {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .main {
-  margin: 30px auto 0px auto;
+  margin: 0px auto 0px auto;
   width: 100%;
-  overflow-y: scroll;
+  height: 100%;
+  overflow-y: auto;
   scrollbar-width: none;
+  padding-top: 60px;
+  padding-bottom: 0px;
+  /* border: 1px solid black; */
 }
 
 .bottom {

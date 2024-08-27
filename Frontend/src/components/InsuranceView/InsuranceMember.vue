@@ -19,7 +19,7 @@
             <div>신한 SOL 트래블 해외여행보험</div>
             <div class="close" @click="showModal = false">&times;</div>
           </div>
-          <img class="qr-code" src="@/assets/img/qr-code.png" alt="QR">
+          <img class="qr-code" src="@/assets/img/qr-code.png" alt="QR" @click="navigateToUrl">
           <div class="modal-content">
             <div style="font-weight: bold;">카메라를 켜고 QR코드를 인식해주세요.</div>
             <div class="detail">신한 SOL 트래블 해외여행보험 바코드<br>이미지 클릭시 다이렉트로 이동합니다.</div>
@@ -123,6 +123,11 @@ const inviteMember = (index) => {
 // QR 모달
 const qrInvite = () => {
   showModal.value = true;
+};
+
+// 이미지 클릭 시 호출되는 함수
+const navigateToUrl = () => {
+  window.location.href = 'https://direct.shinhanez.co.kr/#PDROTIOTI_M01';
 };
 </script>
 

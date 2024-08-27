@@ -11,11 +11,11 @@
     <!-- 프로필 -->
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span
-        >최한진 님은
-        <span class="profile-destination">{{ destination }}</span> 여행
-        {{ tripState }} 중</span
-      >
+      <div class="profile-status">
+        최한진 님은<br>
+        <span class="profile-destination">{{ destination }}</span>
+        여행 {{ tripState }}중
+      </div>
     </div>
 
     <!-- 날짜 -->
@@ -306,10 +306,10 @@ const goInsurance = () => {
 .profile-img {
   height: 75px;
   margin-left: 20px;
-  margin-right: 20px;
+  margin-right: 25px;
 }
 
-.profile > span {
+.profile-status {
   font-weight: bold;
   font-size: 1.25rem;
 }
@@ -317,7 +317,7 @@ const goInsurance = () => {
 .profile-destination {
   font-weight: bolder;
   font-size: x-large;
-  padding: 0 4px;
+  padding-right: 4px;
   text-decoration-line: underline;
   text-decoration-style: wavy;
   text-decoration-thickness: 2px;

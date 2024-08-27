@@ -79,9 +79,10 @@ import { ref } from "vue";
 .main-container {
   width: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
+  padding: 0px;
   padding-bottom: 150px;
   /* background-color: #f4f6fa; */
 }

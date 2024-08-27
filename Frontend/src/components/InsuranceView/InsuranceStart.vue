@@ -12,15 +12,18 @@
 .main-container {
   width: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 100px;
+  padding: 0px;
   /* background-color: #f4f6fa; */
 }
 
 .image {
   width: 100%;
+  margin: 0px;
+  padding: 0px;
+  padding-bottom: 80px;
 }
 
 .image > img {
