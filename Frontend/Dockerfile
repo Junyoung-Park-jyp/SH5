@@ -15,3 +15,15 @@ COPY . .
 
 # Build the application
 RUN npm run build
+
+# Step 2: Serve the application using Nginx
+FROM nginx:stable-alpine as production-stage
+
+# Copy the build output to Nginx's HTML directory
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
