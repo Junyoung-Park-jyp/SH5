@@ -23,6 +23,7 @@
     <h1>여행 스케치</h1>
     <v-row>
       <!-- 그림 들어갈 자리 -->
+      <DrawPicture />
     </v-row>
   </div>
 </template>
@@ -32,6 +33,8 @@ import { computed, ref, onMounted } from 'vue'
 import { useTripStore } from '@/stores/tripStore';
 import { useRoute } from 'vue-router'
 
+import DrawPicture from './DrawPicture.vue';
+
 // const route = useRoute()
 // const tripStore = useTripStore()
 // const tripId = route.params.tripId
@@ -40,6 +43,4 @@ import { useRoute } from 'vue-router'
 // })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
