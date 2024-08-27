@@ -98,35 +98,35 @@
         >
           <v-col cols="auto" class="text-center">
             <button icon>
-              <v-icon color="primary" size="32">mdi-home</v-icon>
+              <v-icon color="primary" size="28">mdi-home</v-icon>
             </button>
             <div class="footer-label active">홈</div>
           </v-col>
 
           <v-col cols="auto" class="text-center">
             <button icon>
-              <v-icon color="grey" size="32">mdi-chart-pie</v-icon>
+              <v-icon color="grey" size="28">mdi-chart-pie</v-icon>
             </button>
             <div class="footer-label">자산관리</div>
           </v-col>
 
           <v-col cols="auto" class="text-center">
             <button icon>
-              <v-icon color="grey" size="32">mdi-shopping</v-icon>
+              <v-icon color="grey" size="28">mdi-shopping</v-icon>
             </button>
             <div class="footer-label">상품</div>
           </v-col>
 
           <v-col cols="auto" class="text-center">
             <button icon>
-              <v-icon color="grey" size="32">mdi-gift</v-icon>
+              <v-icon color="grey" size="28">mdi-gift</v-icon>
             </button>
             <div class="footer-label">혜택</div>
           </v-col>
 
           <v-col cols="auto" class="text-center">
             <button icon>
-              <v-icon color="grey" size="32">mdi-view-grid</v-icon>
+              <v-icon color="grey" size="28">mdi-view-grid</v-icon>
             </button>
             <div class="footer-label">전체메뉴</div>
           </v-col>
@@ -157,6 +157,7 @@ const navigateToBridge = () => {
   width: 100%;
   margin: 10px auto 0px auto;
   padding: 0px 15px;
+  /* border: 1px solid black; */
 }
 
 .menu-container,
