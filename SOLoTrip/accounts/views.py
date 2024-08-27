@@ -44,7 +44,7 @@ def login(request):
     username = User.objects.get(email=email).username
     password = 'rkskekfk'
     
-    user = authenticate(username=username, password=password)
+    user = authenticate(request, username=username, password=password)
     
     if user is not None:
         auth_login(request, user)
