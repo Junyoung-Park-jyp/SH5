@@ -32,18 +32,18 @@
         <!-- 오른쪽 아이콘 그룹 -->
         <div class="icon-group">
           <button class="icon-btn">
-            <v-icon icon="mdi-message-processing-outline" size="large"></v-icon>
+            <v-icon icon="mdi-message-processing-outline" size="24px"></v-icon>
           </button>
           <button class="icon-btn">
-            <v-icon icon="mdi-microphone-outline" size="large"></v-icon>
+            <v-icon icon="mdi-microphone-outline" size="24px"></v-icon>
           </button>
           <!-- HomeView에서는 멤버 아이콘 -->
           <button v-if="!isTraveling" class="icon-btn">
-            <v-icon icon="mdi-account-outline" size="large"></v-icon>
+            <v-icon icon="mdi-account-outline" size="24px"></v-icon>
           </button>
           <!-- HomeView 이외는 홈 아이콘 -->
           <button v-if="isTraveling" class="icon-btn">
-            <v-icon icon="mdi-home-outline" size="large"></v-icon>
+            <v-icon icon="mdi-home-outline" size="24px"></v-icon>
           </button>
         </div>
       </v-toolbar>
@@ -89,14 +89,13 @@ const toggleSwitch = () => {
   position: sticky;
   top: 0;
   z-index: 1;
-
   background-color: white;
   font-size: 1.1rem;
 }
 
 .custom-switch {
   position: relative;
-  height: 50px;
+  height: 40px;
   background-color: rgb(222, 222, 222);
   cursor: pointer;
 }
