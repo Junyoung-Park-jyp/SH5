@@ -183,7 +183,7 @@ const formatCost = (cost) => {
 .main-container {
   height: 78vh;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
   padding-bottom: 20px;
@@ -229,7 +229,7 @@ const formatCost = (cost) => {
 .record-carousel {
   width: 90%;
   margin: 0 auto;
-  margin-top: 30px;
+  margin-top: 15px;
 }
 
 .v-carousel {
@@ -253,10 +253,10 @@ const formatCost = (cost) => {
 }
 
 .background-image {
-  background-image: url("@/assets/img/travel.png");
+  /* background-image: url("@/assets/img/travel.png"); */
+  background-color: lightgrey;
   background-size: cover;
   background-position: center;
-  opacity: 0.8;
 }
 
 .non-past {
@@ -264,7 +264,7 @@ const formatCost = (cost) => {
 }
 
 .non-past-carousel {
-  margin-top: 20px;
+  margin-top: 0px;
   height: 120px !important;
 }
 
@@ -283,7 +283,7 @@ const formatCost = (cost) => {
   justify-content: center;
   align-items: center;
   font-size: large;
-  height: 75%;
+  height: 65%;
 }
 
 .info * {
@@ -292,17 +292,17 @@ const formatCost = (cost) => {
 }
 
 .trip-name {
-  font-size: xx-large;
+  font-size: 28px;
   font-weight: 500;
 }
 
 .city {
-  font-size: large;
+  font-size: 18px;
   font-weight: 500;
 }
 
 .cost {
-  font-size: x-large;
+  font-size: 22px;
   font-weight: 500;
 }
 

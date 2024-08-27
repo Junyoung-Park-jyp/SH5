@@ -47,7 +47,9 @@
     <!-- 여행 스케치 -->
     <div class="trip sketch">
       <div class="title">여행 스케치</div>
-      <DrawPicture />
+      <div class="content">
+        <DrawPicture />
+      </div>
     </div>
   </div>
 </template>
@@ -125,9 +127,9 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
 <style scoped>
 .main-container {
-  height: 92vh;
+  width: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
   padding-bottom: 20px;
@@ -228,5 +230,16 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
   padding: 10px 0;
   margin: 0 auto;
   padding: 20px 0 50px 0;
+}
+
+/* 스케치 */
+.sketch {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0 auto;
+}
+
+.sketch .content {
+  padding: 30px 20px;
 }
 </style>
