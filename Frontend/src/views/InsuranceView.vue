@@ -17,7 +17,7 @@
       <!-- 각 단계에 따른 폼을 조건부로 렌더링 -->
       <InsuranceStart v-if="insuranceStage === 0" />
       <InsuranceMain v-if="insuranceStage === 1" />
-      <InsuranceMember v-else />
+      <InsuranceMember v-if="insuranceStage === 2" />
     </div>
 
     <!-- 다음으로 -->

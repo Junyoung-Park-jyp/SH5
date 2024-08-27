@@ -56,8 +56,13 @@
 
     <!-- 예상 보험료 -->
     <div class="bottom">
-      <div>보험료</div>
+      <div class="price-info">보험료
+        <div class="discount" v-if="totalInvited > 0">
+          <span class="blue">{{ discountPercentage }}% 할인</span>
+        </div>
+      </div>
       <div class="amount">
+        &nbsp; 인당
         <div class="before" :class="{ 'cancel': totalInvited > 0 }">{{ formatWithComma(basePrice) }}원</div>
         <div class="after" v-if="totalInvited > 0">
           <span class="blue">{{ formatWithComma(discountedPrice) }}</span>&nbsp;원
@@ -89,6 +94,16 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers.value);
 
 const totalInvited = computed(() => {
   return tripMembers.value.filter(member => member.invited).length;
+});
+
+const discountPercentage = computed(() => {
+  if (totalInvited.value === 1) {
+    return 5; // 5% 할인
+  } else if (totalInvited.value >= 2) {
+    return 10; // 10% 할인
+  } else {
+    return 0;
+  }
 });
 
 const discountedPrice = computed(() => {
@@ -314,6 +329,11 @@ const qrInvite = () => {
   box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.price-info {
+  display: flex;
+  gap: 5px;
+}
+
 .amount {
   display: flex;
   height: 100%;
@@ -334,4 +354,5 @@ const qrInvite = () => {
   font-weight: bold;
   color: #4b72e1;
 }
+
 </style>

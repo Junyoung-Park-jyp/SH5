@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
-    <v-card class="py-8 px-10 upper-card">
-      <v-card-text class="pt-5 title">SOL로 여행으로</v-card-text>
+    <v-card class="py-6 px-10 upper-card">
+      <v-card-text class="pt-3 title">SOL로 여행으로</v-card-text>
       <v-card-text class="pt-2 text"
         >여행의 시작부터 끝까지<br />지출 관리와 정산으로 편리하게!</v-card-text
       >
@@ -10,7 +10,7 @@
       </div>
     </v-card>
 
-    <div class="mt-10 px-7 pb-7">
+    <div class="mt-8 px-7 pb-7">
       <div class="my-5">
         <div class="my-5" style="font-size: large; font-weight: bold">
           여행 짐만큼 중요한 혜택 챙기기
@@ -96,7 +96,7 @@ const userStore = useUserStore();
 
 .upper-card {
   background-color: #5e9bc1;
-  height: 300px;
+  height: 250px;
   color: white;
   border-radius: 0px;
   margin: 0px auto;
@@ -152,9 +152,9 @@ const userStore = useUserStore();
   flex-direction: column;
   border: 1px solid black;
   border-radius: 10px;
-  padding: 30px 10px;
+  padding: 20px 10px;
   margin: auto;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .benefit-title {
@@ -164,7 +164,7 @@ const userStore = useUserStore();
 }
 
 .benefit-list {
-  margin: 20px auto;
+  margin: 15px auto;
 }
 
 .benefit-item {

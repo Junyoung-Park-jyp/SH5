@@ -120,11 +120,16 @@
         여행자 보험
         <button class="invite-btn" @click="goInsurance">함 께 &nbsp; 가 입 하 기</button>
       </div>
-      <div class="content">
-        <div class="insurance-explanation">친구와 함께 가족과 함께</div>
-        <div class="insurance-benefit">
-          2인 가입 시 5% 할인<br />
-          3인 이상 가입 시 총 10% 할인
+      <div class="discription">
+        <div class=text>
+          <div class="insurance-explanation">친구와 함께 가족과 함께</div>
+          <div class="insurance-benefit">
+            2인 가입 시 5% 할인<br />
+            3인 이상 가입 시 총 10% 할인
+          </div>
+        </div>
+        <div class="image">
+          <img src="@/assets/img/insurance_small.png" alt="보험">
         </div>
       </div>
     </div>
@@ -341,6 +346,20 @@ const goInsurance = () => {
   font-size: 1rem;
 }
 
+.image {
+  width: 20%;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items:end;
+  align-content: end;
+  text-align: end;
+}
+
+.image img {
+  width: 100%;
+}
+
 /* 날짜 */
 .date {
   margin-top: -10px;
@@ -453,12 +472,9 @@ const goInsurance = () => {
 
 /* 여행자 보험 */
 .insurance {
-  padding-top: 30px;
+  padding: 30px 0;
 }
 
-.insurance > .content {
-  margin-top: 5px;
-}
 
 .invite-btn {
   width: 150px;
@@ -474,6 +490,17 @@ const goInsurance = () => {
   text-align: center;
 }
 
+
+.discription {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+  margin-top: 5px;
+  background-color: #ffffff;
+  padding: 10px 20px;
+}
+
 .insurance-explanation {
   color: grey;
   margin: 10px auto;
@@ -482,5 +509,6 @@ const goInsurance = () => {
 .insurance-benefit {
   font-size: large;
   font-weight: 500;
+  margin-bottom: 10px;
 }
 </style>
