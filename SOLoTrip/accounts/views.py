@@ -41,6 +41,7 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
+    print(email)
     print(User.objects.all())
     for user in User.objects.all():
         print(user.email)
