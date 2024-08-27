@@ -41,11 +41,13 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
+    print(User.objects.all())
+    for user in User.objects.all():
+        print(user.email)
     username = User.objects.get(email=email).username
     password = 'rkskekfk'
     
     user = authenticate(username=username, password=password)
-    
     if user is not None:
         auth_login(request, user)
         token, created = Token.objects.get_or_create(user=user)
