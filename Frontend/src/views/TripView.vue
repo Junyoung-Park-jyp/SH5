@@ -97,6 +97,27 @@
                     <div class="cost">{{ formatCost(experience.cost) }}</div>
                   </div>
                 </v-carousel-item>
+                <!-- <v-carousel-item
+                  v-for="(experience, index) in tripStore.pastTrips"
+                  :key="index"
+                  class="background-image"
+                  @click="goToGallery(experience.id)"
+                >
+                  <div class="info2">
+                    <v-img
+                      :src="experience.imageUrl"
+                      class="align-center"
+                    ></v-img>
+                    <div class="trip-name">{{ experience.tripName }}</div>
+                    <div class="city">
+                      {{
+                        Array.isArray(experience.city)
+                          ? experience.city.join(", ")
+                          : experience.city
+                      }}
+                    </div>
+                  </div>
+                </v-carousel-item> -->
               </v-carousel>
             </v-col>
             <!-- <v-col cols="2">
@@ -146,6 +167,8 @@ onMounted(async () => {
   for (const experience of tripStore.tripExperiences) {
     experience.imageUrl = await getImageUrl(experience.country);
   }
+
+  tripStore.getPastTrips()
 });
 
 const prevSlide = () => {
@@ -178,6 +201,14 @@ const goTripMain = () => {
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
+
+// 실제 과거 여행 데이터 기준으로 짠 script
+// const pastTrips = computed(() => { return tripStore.pastTrips })
+
+// const goToGallery = (tripId) => {
+//   router.push({ name: 'gallery', params: { id: id}})
+// }
+
 </script>
 
 <style scoped>
