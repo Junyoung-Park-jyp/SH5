@@ -45,18 +45,24 @@ const balanceStore = useBalanceStore();
 const tripStore = useTripStore();
 const userStore = useUserStore();
 
-const accounts = computed(() => { balanceStore.accounts })
+const accounts = computed(() => {
+  balanceStore.accounts;
+});
 const selectedAccount = ref(null);
 
 const settlementTime = ref(null);
 
-onMounted(balanceStore.getAccounts(userStore.email))
+onMounted(balanceStore.getAccounts(userStore.email));
 </script>
 
 <style scoped>
 .fourth,
 .fifth {
   margin: 0px 10px;
+}
+
+.fifth {
+  padding-bottom: 120px;
 }
 
 .fourth {

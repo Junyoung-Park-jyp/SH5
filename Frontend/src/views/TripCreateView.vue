@@ -78,9 +78,9 @@ const clearTrip = () => {
 
 const backStep = () => {
   if (tripFormStage.value > 0) {
-    tripFormStage.value --;
+    tripFormStage.value--;
   }
-}
+};
 
 const nextStep = () => {
   if (tripFormStage.value == 0) {
@@ -97,15 +97,15 @@ const nextStep = () => {
     ) {
       tripFormStage.value++;
     } else {
-      console.log(tripStore.location, tripStore.startDate, tripStore.endDate)
+      console.log(tripStore.location, tripStore.startDate, tripStore.endDate);
       alert("누락된 정보가 있습니다!");
-      // tripFormStage.value++; 
+      // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 1) {
     if (tripStore.members.length > 0 && tripStore.tripName != null) {
       tripFormStage.value++;
     } else {
-      alert('누락된 정보가 있습니다!');
+      alert("누락된 정보가 있습니다!");
       // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 2) {
@@ -117,15 +117,14 @@ const nextStep = () => {
         end_date: tripStore.endDate,
         bank_account: balanceStore.accountNum,
         members: tripStore.members,
-      })
+      });
       showLoadingSequence(); // 여행 생성 중 -> 여행 생성 완료 -> 이동 시퀀스 시작
     } else {
-      alert('누락된 정보가 있습니다!');
+      alert("누락된 정보가 있습니다!");
       // showLoadingSequence();
     }
   }
 };
-
 
 const showLoadingSequence = () => {
   // "여행 생성 중" 페이지로 이동
@@ -158,7 +157,7 @@ const showLoadingSequence = () => {
 <style scoped>
 .container {
   width: 100%;
-  height: 100vh;
+  height: 90vh;
   margin: 0px auto;
   padding: 10px 10px;
 }

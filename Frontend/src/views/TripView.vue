@@ -3,8 +3,7 @@
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>{{ userStore.name}} 님</span>
-    
+      <span>{{ userStore.name }} 님</span>
     </div>
 
     <!-- 미래/현재 -->

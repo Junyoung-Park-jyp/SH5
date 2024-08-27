@@ -12,7 +12,7 @@
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        최한진 님은<br>
+        최한진 님은<br />
         <span class="profile-destination">{{ destination }}</span>
         여행 {{ tripState }}중
       </div>
@@ -118,10 +118,12 @@
     <div class="trip insurance">
       <div class="title d-flex justify-space-between">
         여행자 보험
-        <button class="invite-btn" @click="goInsurance">함 께 &nbsp; 가 입 하 기</button>
+        <button class="invite-btn" @click="goInsurance">
+          함 께 &nbsp; 가 입 하 기
+        </button>
       </div>
       <div class="discription">
-        <div class=text>
+        <div class="text">
           <div class="insurance-explanation">친구와 함께 가족과 함께</div>
           <div class="insurance-benefit">
             2인 가입 시 5% 할인<br />
@@ -129,7 +131,7 @@
           </div>
         </div>
         <div class="image">
-          <img src="@/assets/img/insurance_small.png" alt="보험">
+          <img src="@/assets/img/insurance_small.png" alt="보험" />
         </div>
       </div>
     </div>
@@ -265,8 +267,8 @@ const goDetail = () => {
 };
 
 const goInsurance = () => {
-  return router.push({ name: 'insurance' })
-}
+  return router.push({ name: "insurance" });
+};
 </script>
 
 <style scoped>
@@ -351,7 +353,7 @@ const goInsurance = () => {
   border: 1px solid black;
   display: flex;
   flex-direction: column;
-  align-items:end;
+  align-items: end;
   align-content: end;
   text-align: end;
 }
@@ -475,7 +477,6 @@ const goInsurance = () => {
   padding: 30px 0;
 }
 
-
 .invite-btn {
   width: 150px;
   background-color: #4b72e1;
@@ -489,7 +490,6 @@ const goInsurance = () => {
   font-weight: 500;
   text-align: center;
 }
-
 
 .discription {
   display: flex;

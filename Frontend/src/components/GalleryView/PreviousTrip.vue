@@ -1,39 +1,74 @@
 <template>
   <div class="main-container">
-    <h1>날짜</h1>
-    <v-row>
-      <!-- <p>시작일 | {{ tripData.startDate }}</p>
-      <p>종료일 | {{ tripData.endDate }}</p> -->
-      <p>시작일 | 2024년 8월 25일</p>
-      <p>종료일 | 2024년 8월 27일</p>
-    </v-row>
-    <h1>멤버</h1>
-    <!-- <span>{{ tripData.members.length }}명</span> -->
-    <span>4명</span>
-    <v-row>
-      <!-- 멤버들 반복 v-for로 줄 곳 -->
-      <!-- <div v-for="member in tripData.members">
-        <div>{{ member.name }}</div>
-      </div> -->
-      <div>최</div>
-      <div>박</div>
-      <div>임</div>
-      <div>정</div>
-    </v-row>
-    <h1>여행 스케치</h1>
-    <v-row>
-      <!-- 그림 들어갈 자리 -->
+    <!-- 국가 -->
+    <div class="my-10 trip country">
+      {{ destination }}
+    </div>
+
+    <!-- 날짜 -->
+    <div class="trip date">
+      <div class="title d-flex justify-space-between">
+        날짜<v-spacer></v-spacer>
+        <div class="subtitle">{{ duration }}</div>
+      </div>
+      <div class="content">
+        <p>시작일 &nbsp; | &nbsp; {{ formatDay(startDate) }}</p>
+        <p>종료일 &nbsp; | &nbsp; {{ formatDay(endDate) }}</p>
+      </div>
+    </div>
+
+    <!-- 멤버 -->
+    <div class="trip member">
+      <div class="title">
+        멤버<v-spacer></v-spacer>
+        <div class="subtitle">{{ tripMembers.length }}명</div>
+      </div>
+      <div class="background-member content">
+        <div
+          v-for="(member, index) in tripMembers"
+          :key="index"
+          class="member-list"
+        >
+          <div
+            class="member-symbol d-flex justify-center align-center"
+            :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+          >
+            <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 지출 내역 -->
+    <div class="trip money">
+      <div class="title">나의 지출</div>
+    </div>
+
+    <!-- 여행 스케치 -->
+    <div class="trip sketch">
+      <div class="title">여행 스케치</div>
       <DrawPicture />
-    </v-row>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { useTripStore } from '@/stores/tripStore';
-import { useRoute } from 'vue-router'
+import { computed, ref, onMounted } from "vue";
+import { useTripStore } from "@/stores/tripStore";
+import { useRoute } from "vue-router";
+import { format } from "date-fns";
+import { useMemberColors } from "@/stores/colorStore";
+import {
+  exchangeArray,
+  formatToTwoDecimal,
+  formatWithComma,
+  convertCurrency,
+  currencyIcons,
+  currencyText,
+  fetchExchangeRates,
+} from "@/stores/currencyStore";
 
-import DrawPicture from './DrawPicture.vue';
+import DrawPicture from "./DrawPicture.vue";
 
 // const route = useRoute()
 // const tripStore = useTripStore()
@@ -41,6 +76,157 @@ import DrawPicture from './DrawPicture.vue';
 // const tripData = computed(() => {
 //   return tripStore.getTrip(tripId)
 // })
+
+// 여행 목적지
+const country = "대한민국";
+const city = "부산";
+
+// 대한민국 여행일 경우 목적지는 도시로 설정
+const destination = ref(country);
+if (country === "대한민국") {
+  destination.value = city;
+}
+
+// 오늘 날짜
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+// 여행 날짜
+const startDate = new Date(2024, 7, 10); // 2024년 8월 10일
+const endDate = new Date(2024, 7, 27); // 2024년 8월 27일
+
+// 몇 박 몇 일 계산
+const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+const nights = durationInDays - 1;
+const days = durationInDays;
+
+// 몇 박 몇 일 포맷팅
+const formatDuration = (nights, days) => {
+  return `${nights}박 ${days}일`;
+};
+
+const duration = formatDuration(nights, days);
+
+const formatDay = (date) => {
+  return format(date, "yyyy년 MM월 dd일");
+};
+
+// 여행 멤버와 계좌번호
+const tripMembers = [
+  { name: "박준영", account: "신한 0276524561730773" },
+  { name: "이선재", account: "신한 000-000-000" },
+  { name: "임광영", account: "국민 000-000-000" },
+  { name: "정태완", account: "우리 000-000-000" },
+  { name: "최한진", account: "계좌 미등록" },
+];
+
+const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 </script>
 
-<style scoped></style>
+<style scoped>
+.main-container {
+  height: 92vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding-bottom: 20px;
+  background-color: #f4f6fa;
+}
+
+/* 구획 나누기 */
+.trip {
+  margin: 20px auto;
+  /* border: 2px solid blue; */
+}
+
+.title {
+  font-size: x-large;
+  font-weight: bolder;
+  padding: 5px 20px;
+}
+
+.subtitle {
+  font-size: medium;
+  font-weight: 500;
+}
+
+.content {
+  background-color: #ffffff;
+  padding: 10px 20px;
+}
+
+.content * {
+  font-size: 1rem;
+}
+
+/* 국가 */
+.country {
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  margin: 0px auto;
+  height: 100px;
+  font-size: 40px;
+  font-weight: bolder;
+}
+
+/* 날짜 */
+.date {
+  margin-top: -10px;
+}
+
+.date > .content {
+  padding-left: 35px;
+}
+
+.dday {
+  font-size: large;
+  margin: auto;
+}
+
+/* 멤버 */
+.member * {
+  margin: 0px auto;
+}
+
+.member > .title {
+  display: flex;
+}
+
+.background-member {
+  background-image: url("@/assets/img/member.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  height: 150px;
+  padding-left: 17%;
+  gap: 10%;
+  /* border: 1px solid blue; */
+}
+
+.member-list {
+  display: flex;
+  padding-top: 22px;
+  /* border: 1px solid black; */
+}
+
+.member-symbol {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.member-name {
+  width: 50px;
+}
+
+/* 지출내역 */
+.money {
+  width: 100%;
+  padding: 10px 0;
+  margin: 0 auto;
+  padding: 20px 0 50px 0;
+}
+</style>

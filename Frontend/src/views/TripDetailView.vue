@@ -3,24 +3,31 @@
     <!-- 프로필 -->
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>
-        최한진 님은
-        <span class="profile-destination">{{ destination }}</span> 여행
-        {{ tripState }} 중
-      </span>
+      <div class="profile-status">
+        최한진 님은<br />
+        <span class="profile-destination">{{ destination }}</span>
+        여행 {{ tripState }}중
+      </div>
     </div>
 
     <div class="pick-container">
       <!-- ALL -->
       <div class="all" @click="handleAllClick">
         <div class="upper">&nbsp;</div>
-        <div class="middle" :class="{ 'pick-circle': selectedView === 'all'}">A</div>
+        <div class="middle" :class="{ 'pick-circle': selectedView === 'all' }">
+          A
+        </div>
         <div class="bottom">ALL</div>
       </div>
       <!-- 준비 -->
       <div class="prepare" @click="handlePrepareClick">
         <div class="upper">&nbsp;</div>
-        <div class="middle" :class="{ 'pick-circle': selectedView === 'prepare'}">P</div>
+        <div
+          class="middle"
+          :class="{ 'pick-circle': selectedView === 'prepare' }"
+        >
+          P
+        </div>
         <div class="bottom">준비</div>
       </div>
 
@@ -29,7 +36,12 @@
 
       <!-- 날짜 스크롤 -->
       <div class="day-scroll">
-        <div v-for="(day, i) in date" :key="i" class="day-container" @click="handleDayClick(day)">
+        <div
+          v-for="(day, i) in date"
+          :key="i"
+          class="day-container"
+          @click="handleDayClick(day)"
+        >
           <div class="upper">{{ format(day, "EEE") }}</div>
           <div class="middle" :class="{ 'pick-circle': isSelectedDay(day) }">
             {{ format(day, "d") }}
@@ -42,9 +54,9 @@
       <div class="arrow">></div>
     </div>
 
-    <Detail 
-      :selectedDate="selectedDate" 
-      :showAllContainers="showAllContainers" 
+    <Detail
+      :selectedDate="selectedDate"
+      :showAllContainers="showAllContainers"
       :showBudgetAndBookingOnly="showBudgetAndBookingOnly"
       @updateCheckedCost="updateCheckedCost"
     />
@@ -94,7 +106,7 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const selectedDate = ref(today);
-const selectedView = ref('all'); 
+const selectedView = ref("all");
 
 const startDate = new Date(2024, 7, 10);
 const endDate = new Date(2024, 7, 30);
@@ -105,7 +117,9 @@ const date = eachDayOfInterval({
 });
 
 const paymentStore = usePaymentStore();
-const payments = computed(() => paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd")));
+const payments = computed(() =>
+  paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd"))
+);
 
 const isToday = (day) => isSameDay(day, today);
 
@@ -114,25 +128,25 @@ const showBudgetAndBookingOnly = ref(false);
 
 const handleDayClick = (day) => {
   selectedDate.value = day;
-  selectedView.value = 'date';
+  selectedView.value = "date";
   showAllContainers.value = false;
   showBudgetAndBookingOnly.value = false;
 };
 
 const handleAllClick = () => {
-  selectedView.value = 'all';
+  selectedView.value = "all";
   showAllContainers.value = true;
   showBudgetAndBookingOnly.value = false;
 };
 
 const handlePrepareClick = () => {
-  selectedView.value = 'prepare';
+  selectedView.value = "prepare";
   showAllContainers.value = false;
   showBudgetAndBookingOnly.value = true;
 };
 
 const isSelectedDay = (day) => {
-  return selectedView.value === 'date' && isSameDay(day, selectedDate.value);
+  return selectedView.value === "date" && isSameDay(day, selectedDate.value);
 };
 
 const todayIndex = date.findIndex((day) => isToday(day));
@@ -143,7 +157,9 @@ onMounted(() => {
 
   if (todayElement) {
     dayScrollContainer.scrollLeft =
-      todayElement.offsetLeft - dayScrollContainer.clientWidth / 2 + todayElement.clientWidth / 2;
+      todayElement.offsetLeft -
+      dayScrollContainer.clientWidth / 2 +
+      todayElement.clientWidth / 2;
   }
 
   const arrowElement = document.querySelector(".arrow");
@@ -153,7 +169,6 @@ onMounted(() => {
     arrowElement.style.display = "none";
   }
 });
-
 
 const startDrag = (event) => {
   isDragging.value = true;
@@ -166,7 +181,9 @@ const onDrag = (event) => {
     const x = event.clientX || event.touches[0].clientX;
     const deltaX = x - startX.value;
 
-    const maxDragDistance = adjustmentDiv.value.parentElement.offsetWidth - adjustmentDiv.value.offsetWidth;
+    const maxDragDistance =
+      adjustmentDiv.value.parentElement.offsetWidth -
+      adjustmentDiv.value.offsetWidth;
 
     if (deltaX > 0 && deltaX <= maxDragDistance) {
       adjustmentDiv.value.style.transform = `translateX(${deltaX}px)`;
@@ -190,7 +207,7 @@ const stopDrag = () => {
   }
 };
 
-const checkedCost = ref(""); 
+const checkedCost = ref("");
 
 const updateCheckedCost = (cost) => {
   checkedCost.value = cost; // Update when Detail.vue emits
@@ -202,12 +219,11 @@ const finishTrip = () => {
   setTimeout(() => {
     router.push({
       name: "tripFinish",
-      query: { amount: checkedCost.value }  // Use query instead of params
+      query: { amount: checkedCost.value }, // Use query instead of params
     });
   }, 300);
 };
 </script>
-
 
 <style scoped>
 .main-container {
@@ -231,11 +247,11 @@ const finishTrip = () => {
 
 .profile-img {
   height: 75px;
-  margin-left: 30px;
-  margin-right: 20px;
+  margin-left: 20px;
+  margin-right: 25px;
 }
 
-.profile > span {
+.profile-status {
   font-weight: bold;
   font-size: 1.25rem;
 }
@@ -243,7 +259,7 @@ const finishTrip = () => {
 .profile-destination {
   font-weight: bolder;
   font-size: x-large;
-  padding: 0 4px;
+  padding-right: 4px;
   text-decoration-line: underline;
   text-decoration-style: wavy;
   text-decoration-thickness: 2px;
@@ -399,7 +415,6 @@ const finishTrip = () => {
   position: relative;
   overflow: hidden;
 }
-
 
 .adjust-btn {
   width: 60%;

@@ -124,7 +124,10 @@
       <!-- 선택된 날짜를 텍스트로 표시 -->
       <v-row>
         <v-col cols="12">
-          <p>선택된 기간: {{ departureDateFormatted }} ~ {{ arrivalDateFormatted }}</p>
+          <p>
+            선택된 기간: {{ departureDateFormatted }} ~
+            {{ arrivalDateFormatted }}
+          </p>
         </v-col>
       </v-row>
     </div>
@@ -194,7 +197,10 @@ const addCountry = () => {
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
-    tripStore.location.push({ country: countryInput.value, city: cityInput.value})
+    tripStore.location.push({
+      country: countryInput.value,
+      city: cityInput.value,
+    });
     cityInput.value = "";
   }
 };
@@ -262,6 +268,15 @@ const getHeaderTitleMonth = (date) => {
 </script>
 
 <style scoped>
+.main-container {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding: 0px;
+}
+
 .chip-container {
   display: flex;
   flex-wrap: wrap;
@@ -276,6 +291,10 @@ const getHeaderTitleMonth = (date) => {
 .first {
   margin-top: 30px;
   margin-bottom: 70px;
+}
+
+.second {
+  padding-bottom: 120px;
 }
 
 .question {

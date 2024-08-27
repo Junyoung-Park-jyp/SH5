@@ -84,14 +84,13 @@ const addMember = async () => {
 
 const addTripName = async () => {
   if (tripName.value != "") {
-    tripStore.tripName = tripName.value
-    alert("여행 이름이 저장되었습니다.")
-    console.log(tripStore.tripName)
+    tripStore.tripName = tripName.value;
+    alert("여행 이름이 저장되었습니다.");
+    console.log(tripStore.tripName);
   } else {
-    alert("여행 이름을 입력해주세요.")
+    alert("여행 이름을 입력해주세요.");
   }
-}
-
+};
 </script>
 
 <style scoped>
@@ -103,6 +102,10 @@ const addTripName = async () => {
 .first {
   margin-top: 30px;
   margin-bottom: 70px;
+}
+
+.second {
+  padding-bottom: 120px;
 }
 
 .question {
