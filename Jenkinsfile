@@ -22,7 +22,7 @@ pipeline {
                 script {
                     sh 'docker stop my-vue-app || true'
                     sh 'docker rm my-vue-app || true'
-                    sh 'docker run -d -p 80:80 --name my-vue-app my-vue-app:latest'
+                    sh 'docker run -d -p 8080:80 --name my-vue-app my-vue-app:latest'
                 }
             }
         }
