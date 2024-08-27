@@ -21,11 +21,7 @@
     <div class="bottom">
       <div>보험료</div>
       <div class="amount">
-        <div class="cancel">15,500원</div>
-        <div class="real">
-          <div class="blue">13,950</div>
-          &nbsp;원
-        </div>
+        <div>15,500원</div>
       </div>
     </div>
     <!-- <h1>원하시는 보장을 선택해 주세요.</h1>
@@ -143,7 +139,7 @@ import { ref } from "vue";
   padding: 0px;
   width: 100%;
   text-align: center;
-  padding: 20px;
+  padding: 20px 25px;
   margin: auto;
   background-color: #ffffff;
   /* border: 1px solid black; */
@@ -162,22 +158,8 @@ import { ref } from "vue";
 .amount {
   display: flex;
   height: 100%;
+  /* margin: 0px 5px; */
   /* border: 1px solid blue; */
-}
-
-.cancel {
-  text-decoration: line-through;
-  margin: 0px 5px;
-}
-
-.real {
-  display: flex;
-  font-weight: bold;
-}
-
-.blue {
-  font-weight: bold;
-  color: #4b72e1;
 }
 
 /* .toggle-btn {

@@ -17,9 +17,7 @@
       <!-- 각 단계에 따른 폼을 조건부로 렌더링 -->
       <InsuranceStart v-if="insuranceStage === 0" />
       <InsuranceMain v-if="insuranceStage === 1" />
-      <InsuranceDetail v-else-if="insuranceStage === 2" />
-      <InsuranceMember v-else-if="insuranceStage === 3" />
-      <InsuranceInvite v-else />
+      <InsuranceMember v-else />
     </div>
 
     <!-- 다음으로 -->
@@ -45,17 +43,21 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 import InsuranceStart from "@/components/InsuranceView/InsuranceStart.vue";
 import InsuranceMain from "@/components/InsuranceView/InsuranceMain.vue";
-import InsuranceDetail from "@/components/InsuranceView/InsuranceDetail.vue";
 import InsuranceMember from "@/components/InsuranceView/InsuranceMember.vue";
-import InsuranceInvite from "@/components/InsuranceView/InsuranceInvite.vue";
 
 const insuranceStage = ref(0);
+const router = useRouter();
 
 const nextStep = () => {
-  insuranceStage.value++;
+  if (insuranceStage.value < 2) {
+    insuranceStage.value++;
+  } else {
+    router.push({ name: 'tripMain' });
+  }
 };
 
 const backStep = () => {};

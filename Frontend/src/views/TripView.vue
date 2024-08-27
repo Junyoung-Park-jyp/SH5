@@ -182,7 +182,7 @@ const formatCost = (cost) => {
 
 <style scoped>
 .main-container {
-  height: 85vh;
+  height: 78vh;
   overflow-y: auto;
   overflow-x: auto;
   scrollbar-width: none;

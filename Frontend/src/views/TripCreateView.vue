@@ -160,7 +160,7 @@ const showLoadingSequence = () => {
 <style scoped>
 .container {
   width: 100%;
-  height: 90vh;
+  height: 100vh;
   margin: 0px auto;
   padding: 10px 10px;
 }
@@ -179,16 +179,18 @@ const showLoadingSequence = () => {
 }
 
 .bottom {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  z-index: 1000;
+  padding: 0px;
   width: 100%;
+  height: 90px;
   text-align: center;
   padding: 20px 0;
   margin: 0 auto;
+  background-color: #ffffff;
 }
-
 .next-btn {
   width: 80%;
   background-color: #4b72e1;
