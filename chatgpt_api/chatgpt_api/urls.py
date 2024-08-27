@@ -20,5 +20,6 @@ from api_test import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', views.api),
+    path('categorize/', views.categorize),
+    path('save/', views.save),
 ]
