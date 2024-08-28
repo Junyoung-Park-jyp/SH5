@@ -194,24 +194,22 @@ export default {
 .content {
   width: 100%;
   margin: 0 auto;
-  padding: 5px 0px;
-  font-size: 6px;
+  padding: 5px 0px 5px 10px;
   /* border: 1px solid black; */
 }
 
-.first,
-.second {
-  /* font-size: 6px; */
+div.explanation > div.content > div.first,
+div.explanation > div.content > div.second {
+  font-size: 13px !important;
   margin-bottom: 10px;
-  /* margin-left: 30px; */
 }
-
-.idx {
+div.explanation > div.content > div.first > span.idx,
+div.explanation > div.content > div.second > span.idx {
   background-color: #d8e2fc;
   color: #4b72e1;
   padding: 3px 6px;
-  margin-right: 5px;
-  font-size: xx-small;
+  margin-right: 3px;
+  font-size: 13px;
 }
 
 /*
