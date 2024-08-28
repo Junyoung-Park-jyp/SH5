@@ -79,6 +79,7 @@ const clearTrip = () => {
 const backStep = () => {
   if (tripFormStage.value > 0) {
     tripFormStage.value--;
+    console.log(tripFormStage.value)
   }
 };
 

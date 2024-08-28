@@ -164,4 +164,13 @@ export const useTripStore = defineStore("trip", {
       }
     },
   },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'tripStore',
+        storage: localStorage,
+      },
+    ],
+  }, 
 });

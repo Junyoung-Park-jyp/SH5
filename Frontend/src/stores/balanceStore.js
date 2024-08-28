@@ -55,10 +55,11 @@ export const useBalanceStore = defineStore('balance', {
     async getAccounts(userEmail) {
       try {
       
-        const response = await axiosInstance.post('/bank_accounts/', { email: userEmail });
+        const response = await axiosInstance.get('/bank_accounts/', { email: userEmail });
 
         if (response.data) {
-          this.accounts = response.data
+          this.accounts = response.data.data
+          console.log("계좌 정보", this.accounts)
         } else {
           console.error('올바르지 않은 응답 구조:', response.data);
         }

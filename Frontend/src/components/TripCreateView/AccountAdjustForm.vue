@@ -9,7 +9,7 @@
             v-model="selectedAccount"
             :items="accounts"
             label="계좌 선택"
-            item-text="bank"
+            item-text="bankName"
             item-value="accountNo"
             outlined
           ></v-select>
@@ -45,14 +45,19 @@ const balanceStore = useBalanceStore();
 const tripStore = useTripStore();
 const userStore = useUserStore();
 
-const accounts = computed(() => {
-  balanceStore.accounts;
-});
+const accounts = ref([]);
 const selectedAccount = ref(null);
 
 const settlementTime = ref(null);
 
-onMounted(balanceStore.getAccounts(userStore.email));
+onMounted(async () => {
+  try {
+    await balanceStore.getAccounts(userStore.email);
+    accounts.value = balanceStore.accounts;
+  } catch (error) {
+    console.error("Failed to load accounts:", error);
+  }
+});
 </script>
 
 <style scoped>

@@ -197,7 +197,7 @@ const addCountry = () => {
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
-    tripStore.location.push({
+    tripStore.locations.push({
       country: countryInput.value,
       city: cityInput.value,
     });
