@@ -81,7 +81,7 @@ def adjustment(request):
         serializer = CalculateCreateSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({'message': "정산에 성공했습니다."}, status=status.HTTP_201_CREATED)
+            return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
         
         
 @api_view(["POST"])

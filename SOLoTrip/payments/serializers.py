@@ -4,6 +4,7 @@ from .models import Payment, Calculate
 from trips.models import Member
 from shinhan_api.demand_deposit import inquire_transaction_history as transaction
 from shinhan_api.demand_deposit import update_demand_deposit_account_Transfer as transfer
+from shinhan_api.demand_deposit import inquire_demand_deposit_account_balance as balance
 
 User = get_user_model()
 
@@ -68,7 +69,7 @@ class CalculateCreateSerializer(serializers.Serializer):
     payment_id = serializers.IntegerField()
 
     def create(self, validated_data):
-        calculate_instances = []
+        # calculate_instances = []
         
         for data in validated_data:
             trip_id = data['trip_id']
@@ -85,14 +86,18 @@ class CalculateCreateSerializer(serializers.Serializer):
                 try:
                     member = Member.objects.get(trip=trip_id, bank_account=withdrawal_bank_account)
                 except Member.DoesNotExist:
-                    continue  # 해당 멤버가 없을 경우 이 bill을 건너뜁니다.
+                    continue
 
-                # Calculate 객체 생성
                 calculate_instance = Calculate.objects.create(
                     payment=payment,
                     member=member,
                     cost=cost
                 )
-                calculate_instances.append(calculate_instance)
-                response = transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
-        return calculate_instances
+                # calculate_instances.append(calculate_instance)
+                transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
+        members = Member.objects.filter(trip=trip_id)
+        result = []
+        for member in members:
+            if member.bank_account:
+                result.append(balance(member.user.email, member.bank_account))
+        return result

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Trip, Location, Member
 from django.contrib.auth import get_user_model
+from shinhan_api.demand_deposit import inquire_demand_deposit_account_list as account_list
 
 User = get_user_model()
 
@@ -29,27 +30,28 @@ class TripCreateSerializer(serializers.ModelSerializer):
         locations_data = validated_data.pop('locations')
         members_data = validated_data.pop('members')
 
-        # Trip 객체 생성
         trip = Trip.objects.create(**validated_data)
 
-        # Location 데이터 생성
         for location_data in locations_data:
             Location.objects.create(trip=trip, **location_data)
 
-        # Member 데이터 생성
-        print(members_data)
         for member_data in members_data:
             email = member_data['user']['email']
+            bank_accounts = account_list(email)['REC']
+            bank_account = ''
+            for i in bank_accounts:
+                if i['bankName'] == "신한은행":
+                    bank_account = i['accountNo']
+                    break
             try:
                 user = User.objects.get(email=email)
-                Member.objects.create(trip=trip, user=user)
+                Member.objects.create(trip=trip, user=user, bank_account=bank_account)
             except User.DoesNotExist:
                 continue  # 사용자 존재하지 않을 시 다음 멤버로 넘어감
 
         return trip
 
     def update(self, instance, validated_data):
-        print(validated_data)
         # 기존 Location과 Member 삭제
         Location.objects.filter(trip=instance).delete()
         Member.objects.filter(trip=instance).delete()
