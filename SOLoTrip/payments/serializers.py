@@ -34,7 +34,6 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
             return None
 
     def get_is_completed(self, obj):
-        # Calculate 객체가 존재하는지 확인
         return 1 if Calculate.objects.filter(payment=obj).exists() else 0
 
     def to_representation(self, instance):
@@ -42,15 +41,12 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         bank_account = representation['bank_account']
         transaction_unique_number = representation['transaction_unique_number']
 
-        # transaction_unique_number를 응답에서 제거
         representation.pop('transaction_unique_number')
 
-        # balance 추가
         email = Member.objects.filter(bank_account=bank_account).first().user.email
         representation['balance'] = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
 
         return representation
-
 
 
 class CalculateSerializer(serializers.ModelSerializer):
@@ -64,10 +60,6 @@ class BillSerializer(serializers.Serializer):
     bank_account = serializers.CharField(max_length=30)
 
 
-class BillSerializer(serializers.Serializer):
-    cost = serializers.IntegerField()
-    bank_account = serializers.CharField(max_length=30)
-
 class CalculateCreateSerializer(serializers.Serializer):
     trip_id = serializers.IntegerField()
     bills = serializers.ListField(
@@ -76,31 +68,31 @@ class CalculateCreateSerializer(serializers.Serializer):
     payment_id = serializers.IntegerField()
 
     def create(self, validated_data):
-        trip_id = validated_data['trip_id']
-        bills_data = validated_data['bills']
-        payment_id = validated_data['payment_id']
-        
-        payment = Payment.objects.get(id=payment_id)
-        deposit_bank_account = payment.bank_account
         calculate_instances = []
         
-        for bill_data in bills_data:
-            cost = bill_data['cost']
-            withdrawal_bank_account = bill_data['bank_account']
+        for data in validated_data:
+            trip_id = data['trip_id']
+            bills_data = data['bills']
+            payment_id = data['payment_id']
+            
+            payment = Payment.objects.get(id=payment_id)
+            deposit_bank_account = payment.bank_account
+            
+            for bill_data in bills_data:
+                cost = bill_data['cost']
+                withdrawal_bank_account = bill_data['bank_account']
 
-            try:
-                member = Member.objects.get(trip=trip_id, bank_account=withdrawal_bank_account)
-            except Member.DoesNotExist:
-                continue  # 해당 멤버가 없을 경우 이 bill을 건너뜁니다.
-            except Payment.DoesNotExist:
-                continue  # 해당 결제 내역이 없을 경우 이 bill을 건너뜁니다.
+                try:
+                    member = Member.objects.get(trip=trip_id, bank_account=withdrawal_bank_account)
+                except Member.DoesNotExist:
+                    continue  # 해당 멤버가 없을 경우 이 bill을 건너뜁니다.
 
-            # Calculate 객체 생성
-            calculate_instance = Calculate.objects.create(
-                payment=payment,
-                member=member,
-                cost=cost
-            )
-            calculate_instances.append(calculate_instance)
-            response = transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
+                # Calculate 객체 생성
+                calculate_instance = Calculate.objects.create(
+                    payment=payment,
+                    member=member,
+                    cost=cost
+                )
+                calculate_instances.append(calculate_instance)
+                response = transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
         return calculate_instances

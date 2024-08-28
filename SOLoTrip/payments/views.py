@@ -37,7 +37,6 @@ def pay(request):
 def pay_list(request):
     if request.method == 'GET':
         # start_date~finish_date 까지의 trip_id와 연계된 bank_account 계좌'들'의 거래 내역을 조회한다
-        # http://127.0.0.1:8000/payments/list/?trip_id=11&start_date=2024-08-12&end_date=2024-12-12
         trip_id = request.GET.get('trip_id')
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -49,7 +48,7 @@ def pay_list(request):
             pay_date__gte=start_date, 
             pay_date__lte=end_date, 
             bank_account__in=bank_accounts
-        )
+        ).order_by('pay_date', 'pay_time')
         serializer = PaymentDetailSerializer(payments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -60,7 +59,7 @@ def adjustment(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 정산할 수 있고, 멤버별 값을 결정할 수 있다.
         # 필요 데이터: trip_id, member별 정산 금액과 bank_account, payment_id
-        serializer = CalculateCreateSerializer(data=request.data)
+        serializer = CalculateCreateSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({'message': "정산에 성공했습니다."}, status=status.HTTP_201_CREATED)
