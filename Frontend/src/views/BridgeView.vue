@@ -80,7 +80,7 @@ const benefits = {
 // 여행 시작 페이지 이동 함수
 function goToTrip() {
   router.push({ name: "home" });
-  userStore.signIn({ email: "email9629@naver.com" });
+  // userStore.signIn({ email: "email9629@naver.com" });
 }
 
 // 혜택 더보기 페이지 이동 함수
