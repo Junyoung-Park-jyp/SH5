@@ -12,11 +12,10 @@
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        최한진 님은<br />
-        <!-- {{ userStore.name }} 님은<br /> -->
+        {{ userStore.name }} 님은<br />
         <span class="profile-destination">{{ destination }}</span>
         <!-- <span class="profile-destination">{{ tripStore.locations[0].country }}</span>-->
-        여행 {{ tripState }}중
+        {{ tripState }}
       </div>
     </div>
 
@@ -25,15 +24,18 @@
       <div class="title d-flex justify-space-between">
         날짜
         <v-spacer></v-spacer>
-        <div class="dday" v-if="tripState === '준비'">
-          D-{{ Math.ceil((new Date(startDate) - today) / (1000 * 60 * 60 * 24)) }}
+        <div class="dday" v-if="tripState === '여행 준비 중'">
+          D-{{
+            Math.ceil(
+              (new Date(tripStore.startDate) - today) / (1000 * 60 * 60 * 24) -
+                1
+            )
+          }}
         </div>
       </div>
       <div class="content">
-        <!-- <p>시작일 &nbsp; | &nbsp; {{ formatDay(startDate) }}</p>
-        <p>종료일 &nbsp; | &nbsp; {{ formatDay(endDate) }}</p> -->
-        <p>시작일 &nbsp; | &nbsp; {{ startDate }}</p>
-        <p>종료일 &nbsp; | &nbsp; {{ endDate }}</p>
+        <p>시작일 &nbsp; | &nbsp; {{ formatDay(tripStore.startDate) }}</p>
+        <p>종료일 &nbsp; | &nbsp; {{ formatDay(tripStore.endDate) }}</p>
       </div>
     </div>
 
@@ -45,25 +47,24 @@
         :key="index"
         class="d-flex align-center content"
       >
-        <!-- <div
-          class="member-symbol d-flex justify-center align-center"
-          :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
-          @click="changeColor(index)"
-        >
-          <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
-        </div>
-        <div class="member-name">{{ member.name }}</div>
-        <div class="member-account">{{ member.account }}</div> -->
-        <!-- <div
+        <!-- 심볼 -->
+        <div
           class="member-symbol d-flex justify-center align-center"
           :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           @click="changeColor(index)"
         >
           <div class="member-familyname">{{ member.member.slice(0, 1) }}</div>
-        </div> -->
+        </div>
+        <!-- 이름 -->
         <div class="member-name">{{ member.member }}</div>
-        <div v-if="member.bank_account!=''" class="member-account">{{ member.bank_account }} - {{ member.budget }}</div>
-        <div v-else class="member-account">계좌 미등록 - {{ member.budget }}</div>
+
+        <!-- 계좌 -->
+        <div v-if="member.bank_account != ''" class="member-account">
+          {{ member.bank_account }} - {{ member.budget }}
+        </div>
+        <div v-else class="member-account">
+          계좌 미등록 - {{ member.budget }}
+        </div>
       </div>
     </div>
 
@@ -166,41 +167,46 @@ import {
   currencyText,
   fetchExchangeRates,
 } from "@/stores/currencyStore";
-import { useTripStore } from '@/stores/tripStore';
-import { useBalanceStore } from '@/stores/balanceStore';
+import { useTripStore } from "@/stores/tripStore";
+import { useUserStore } from "@/stores/userStore";
+import { useBalanceStore } from "@/stores/balanceStore";
 
 const router = useRouter();
 const tripStore = useTripStore();
+const userStore = useUserStore();
 const balanceStore = useBalanceStore();
+
 // 여행 목적지
-const country = "대한민국";
-const city = "부산";
+const country = computed(() => tripStore.country.join(""));
+const city = computed(() => tripStore.city.join(""));
 
 // 대한민국 여행일 경우 목적지는 도시로 설정
-const destination = ref(country);
+const destination = ref(country.value);
 if (country === "대한민국") {
-  destination.value = city;
+  destination.value = city.value;
 }
 
 // 오늘 날짜
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-
-// 여행 날짜
-// const startDate = new Date(2024, 7, 10); 
-// const endDate = new Date(2024, 7, 27);
-const startDate = ref(null)
-const endDate = ref(null)
-
 // 여행 상태
-const tripState = ref("준비");
-if (startDate <= today && today <= endDate) {
-  tripState.value = "";
-}
+const tripState = ref("");
+
+// 여행 상태를 갱신하는 함수
+const updateTripState = () => {
+  if (tripStore.startDate && new Date(tripStore.startDate) > today) {
+    tripState.value = "여행 준비 중"; // 여행 준비중
+  } else if (tripStore.startDate && new Date(tripStore.endDate) >= today) {
+    tripState.value = "여행 중"; // 여행 진행중
+  } else {
+    tripState.value = "여행 종료"; // 종료된 경우 추가
+  }
+};
 
 const formatDay = (date) => {
-  return format(date, "yyyy년 MM월 dd일");
+  // date가 유효한 경우에만 포맷팅, 그렇지 않으면 빈 문자열 반환
+  return date ? format(new Date(date), "yyyy년 MM월 dd일") : "";
 };
 
 // 여행 멤버와 계좌번호
@@ -212,9 +218,20 @@ const formatDay = (date) => {
 //   { name: "최한진", account: "계좌 미등록" },
 // ];
 
-// const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+const tripMembers = computed(() => tripStore.members);
 
-const tripMembers = ref([])
+// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
+const membersWithColors = ref([]);
+
+const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(() => {
+  membersWithColors.value = tripMembers.value.map((member, index) => ({
+    ...member,
+    color: memberColors.value[index],
+  }));
+});
 
 // 선택한 통화
 const selectCurrency = ref("USD");
@@ -287,16 +304,13 @@ onMounted(async () => {
     if (tripData) {
       // 데이터 할당
       destination.value = tripData.locations[0].country || "Unknown";
-      startDate.value = tripData.start_date;
-      endDate.value = tripData.end_date;
-      tripMembers.value = tripData.members || [];
+      updateTripState();
       tripStore.startDate = tripData.start_date
+        ? new Date(tripData.start_date)
+        : null;
       tripStore.endDate = tripData.end_date
-      if (startDate.value <= today && today <= endDate.value) {
-        tripState.value = "진행";
-      } else {
-        tripState.value = "준비";
-      }
+        ? new Date(tripData.end_date)
+        : null;
     }
   }
 

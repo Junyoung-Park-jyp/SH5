@@ -37,36 +37,41 @@
         <thead>
           <tr>
             <th></th>
-            <th style="border: 1px dashed lightgrey;">지출액</th>
-            <th style="border: 1px dashed lightgrey;">정산액</th>
-            <th style="border: 1px dashed lightgrey;">잔액</th>
+            <th style="border: 1px dashed lightgrey">지출액</th>
+            <th style="border: 1px dashed lightgrey">정산액</th>
+            <th style="border: 1px dashed lightgrey">잔액</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(member, index) in tripMembers" :key="index">
             <td class="member-td">
               <div
-              class="member-symbol member d-flex justify-center align-center"
-              :style="{
-                backgroundColor: rgbaColor(memberColors[index], 0.7),
-              }"
+                class="member-symbol member d-flex justify-center align-center"
+                :style="{
+                  backgroundColor: rgbaColor(memberColors[index], 0.7),
+                }"
               >
                 <div class="member-familyname">
-                  {{ member.name.slice(0, 1) }}
+                  {{ member.member.slice(0, 1) }}
                 </div>
               </div>
             </td>
-            <td style="border: 1px dashed lightgrey;">{{ formatWithComma(member.expense) }}</td>
-            <td style="border: 1px dashed lightgrey;"
-            :class="{
-              positive: member.adjustment > 0,
-              negative: member.adjustment < 0,
-            }"
-              >
+            <td style="border: 1px dashed lightgrey">
+              {{ formatWithComma(member.expense) }}
+            </td>
+            <td
+              style="border: 1px dashed lightgrey"
+              :class="{
+                positive: member.adjustment > 0,
+                negative: member.adjustment < 0,
+              }"
+            >
               {{ member.adjustment > 0 ? "+" : "" }}
               {{ formatWithComma(member.adjustment) }}
             </td>
-            <td style="border: 1px dashed lightgrey;">{{ formatWithComma(member.balance) }}</td>
+            <td style="border: 1px dashed lightgrey">
+              {{ formatWithComma(member.balance) }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -76,47 +81,30 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
 import { useRoute } from "vue-router";
+import { useTripStore } from "@/stores/tripStore";
 
 const route = useRoute();
 const amount = route.query.amount;
+const tripStore = useTripStore();
 
-const tripMembers = [
-  {
-    name: "박준영",
-    expense: 426864,
-    adjustment: 24125,
-    balance: 1426864,
-  },
-  {
-    name: "이선재",
-    expense: 526864,
-    adjustment: -174698,
-    balance: 3426864,
-  },
-  {
-    name: "임광영",
-    expense: 726864,
-    adjustment: 37243,
-    balance: 2426864,
-  },
-  {
-    name: "정태완",
-    expense: 326864,
-    adjustment: 89775,
-    balance: 4426864,
-  },
-  {
-    name: "최한진",
-    expense: 286864,
-    adjustment: 89775,
-    balance: 5426864,
-  },
-];
+const tripMembers = computed(() => tripStore.members);
+
+// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
+const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
+
+// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(() => {
+  membersWithColors.value = tripMembers.value.map((member, index) => ({
+    ...member,
+    color: memberColors.value[index],
+  }));
+});
 </script>
 
 <style scoped>
