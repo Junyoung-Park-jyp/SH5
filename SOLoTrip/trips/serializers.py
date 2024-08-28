@@ -55,7 +55,7 @@ class TripCreateSerializer(serializers.ModelSerializer):
         # 기존 Location과 Member 삭제
         Location.objects.filter(trip=instance).delete()
         Member.objects.filter(trip=instance).delete()
-
+        
         locations_data = validated_data.pop('locations')
         members_data = validated_data.pop('members')
 

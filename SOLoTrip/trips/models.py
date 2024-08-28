@@ -19,4 +19,4 @@ class Member(models.Model):
 class Location(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     country = models.CharField(max_length=30, null=False, blank=False)
-    city = models.CharField(max_length=30, null=False, blank=False)
+    city = models.CharField(max_length=30, null=True, blank=True)
