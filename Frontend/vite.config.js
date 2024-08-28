@@ -19,10 +19,19 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+<<<<<<< HEAD
   define: {
     // 'import.meta.env': {
     //   ...import.meta.env,
     //   VITE_AILABAPI_API_KEY: process.env.VITE_AILABAPI_API_KEY,
     // }
   }
+=======
+  // define: {
+  //   'import.meta.env': {
+  //     ...import.meta.env,
+  //     VITE_AILABAPI_API_KEY: process.env.VITE_AILABAPI_API_KEY,
+  //   }
+  // }
+>>>>>>> b8c2fbd (Merge)
 })
