@@ -12,7 +12,7 @@ import time
 client = OpenAI(api_key='')
 
 # 지출 내역 카테고리 (트리플 어플 참고)
-countries = ['스페인', '이탈리아']
+countries = ['태국']
 categories = ['숙소', '항공', '교통', '관광', '식비', '카페', '쇼핑', '기타']
 
 @api_view(['GET'])
@@ -24,7 +24,7 @@ def categorize(request):
         cnt = 0
         while True:
             response = client.chat.completions.create(
-                model='gpt-4',
+                model='gpt-4-turbo',
                 messages=[
                     {
                         'role': 'system',
@@ -55,17 +55,17 @@ def save(request):
     if request.method == 'GET':
         # 더미 데이터
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_dir, 'dummy_data', 'trip_3.csv')
+        file_path = os.path.join(current_dir, 'dummy_data', 'trip_4.csv')
         
         df = pd.read_csv(file_path)
-        for i in range(42, df.shape[0]):
+        for i in range(13, df.shape[0]):
             keyword = df.iloc[i]['brand_name']
 
             cnt = 0
             while True:
                 try:
                     response = client.chat.completions.create(
-                        model='gpt-4',
+                        model='gpt-4-turbo',
                         messages=[
                             {
                                 'role': 'system',
