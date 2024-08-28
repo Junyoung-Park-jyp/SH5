@@ -15,7 +15,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build --build-arg VUE_APP_AILAB_API_KEY=$AILAB_API_KEY -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
+                    sh 'docker build --build-arg AILAB_API_KEY=$AILAB_API_KEY -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
                 }
             }
         }
