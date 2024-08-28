@@ -64,13 +64,13 @@ def inquire_demand_deposit_account_list(email):
     return response
 
 
-def inquire_demand_deposit_account():
+def inquire_demand_deposit_account(email, accountNo):
     """
     2.4.5 계좌 조회(단건)
     """
-    url = "edu/demandDeposit/inquireDemandDepositAccountList"
-    body = make_header(url.split('/')[-1])
-    body['accountNo'] = "0886248123734384"
+    url = "edu/demandDeposit/inquireDemandDepositAccount"
+    body = make_header(url.split('/')[-1], email)
+    body['accountNo'] = accountNo
     '''
     {'REC': [{'bankCode': '088', 'bankName': '신한은행', 'userName': 'oodeng98', 'accountNo': '0886248123734384', 'accountName': '정태완', 'accountTypeCode': '1', 'accountTypeName': '수시입출금', 'accountCreatedDate': '20240817', 'accountExpiryDate': '20290817', 'dailyTransferLimit': '500000000', 'oneTimeTransferLimit': '100000000', 'accountBalance': '0', 'lastTransactionDate': '', 'currency': 'KRW'}]}
     '''
@@ -222,8 +222,8 @@ if __name__ == "__main__":
     # create_demand_deposit("oodeng98@naver.com")
     # inquire_demand_deposit_list("oodeng98@naver.com")
     # create_demand_deposit_account("oodeng98@naver.com")
-    pprint(inquire_demand_deposit_account_list("seonjae97@gmail.com")['REC'])
-    # inquire_demand_deposit_account()
+    pprint(inquire_demand_deposit_account_list("email9629@naver.com")['REC'])
+    pprint(inquire_demand_deposit_account("email9629@naver.com", "0882943094128264")['REC'])
     # inquire_demand_deposit_account_holder_name()
     # pprint(inquire_demand_deposit_account_balance("email9629@naver.com", "0372462077415412"))
     # pprint(update_demand_deposit_account_withdrawal("0817158183605808", 10000))

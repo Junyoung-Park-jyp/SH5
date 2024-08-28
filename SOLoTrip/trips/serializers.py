@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Trip, Location, Member
 from django.contrib.auth import get_user_model
 from shinhan_api.demand_deposit import inquire_demand_deposit_account_list as account_list
+from shinhan_api.demand_deposit import inquire_demand_deposit_account as account
 
 User = get_user_model()
 
@@ -39,6 +40,7 @@ class TripCreateSerializer(serializers.ModelSerializer):
             email = member_data['user']['email']
             bank_accounts = account_list(email)['REC']
             bank_account = ''
+            print(bank_accounts)
             for i in bank_accounts:
                 if i['bankName'] == "신한은행":
                     bank_account = i['accountNo']
@@ -92,7 +94,7 @@ class MemberDetailSerializer(serializers.ModelSerializer):
     member = serializers.CharField(source='user.username')
     class Meta:
         model = Member
-        fields = ['member', 'bank_account', 'is_participate', 'budget']
+        fields = ['member', 'bank_account', 'budget']
         
         
 class TripMainSerializer(serializers.ModelSerializer):
@@ -106,4 +108,10 @@ class TripMainSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['locations'] = LocationSerializer(instance.location_set.all().order_by('country', 'city'), many=True).data
         representation['members'] = MemberDetailSerializer(instance.member_set.all().order_by('user__username'), many=True).data
+        for member in representation['members']:
+            bank_account = member['bank_account']
+            user = User.objects.get(username=member['member'])
+            member_account = account(user.email, bank_account)['REC']
+            member['bank_name'] = member_account['bankName']
+            member['balance'] = member_account['accountBalance']
         return representation
