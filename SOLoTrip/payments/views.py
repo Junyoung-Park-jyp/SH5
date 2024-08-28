@@ -25,7 +25,7 @@ def pay(request):
         response = withdrawal(bank_account, amount, email)
         data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
         data['transaction_type'] = '출금'
-
+        
         # ChatGPT API를 이용하여 결제 내역의 카테고리를 저장한다
         data['category'] = categorize(data.get('brand_name'))
 
