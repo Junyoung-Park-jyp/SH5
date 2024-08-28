@@ -85,7 +85,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { eachDayOfInterval, format, isSameDay } from "date-fns";
 import Detail from "@/components/TripDetailView/Detail.vue";
 import { usePaymentStore } from "@/stores/paymentStore";
@@ -96,6 +96,7 @@ const tripState = ref("준비"); // 예시로 "준비"로 초기화
 const userStore = useUserStore();
 const tripStore = useTripStore()
 const router = useRouter();
+const route = useRoute();
 const adjustmentDiv = ref(null); // 정산 버튼 참조
 const isDragging = ref(false); // 드래그 상태를 관리하는 변수
 const startX = ref(0); // 드래그 시작 시 X 좌표 저장
@@ -141,10 +142,24 @@ onMounted(() => {
     arrowElement.style.display = "none";
   }
 
-  const tripId = tripStore.tripId.data.id;
-  console.log(tripId)
+
 
 });
+
+onMounted(async () => {
+  const tripId = route.params.id
+  console.log("tripId", tripId, "today", format(new Date(), 'yyyy-MM-dd'), 'endDate', tripStore.endDate)
+  if (tripId) {
+    const payments = await paymentStore.getPayments(tripId, format(today, 'yyyy-MM-dd'), tripStore.endDate);
+    if (payments) {
+      // 데이터 할당
+      console.log(usePaymentStore)
+    }
+  }
+
+});
+
+
 const paymentStore = usePaymentStore();
 
 // "ALL" 버튼이 선택되었을 때 모든 날짜의 지출 내역을, 특정 날짜가 선택되었을 때 해당 날짜의 지출 내역을 계산
@@ -156,7 +171,7 @@ const payments = computed(() => {
   }
 });
 
-const isToday = (day) => isSameDay(day, today);
+const isToday = (day) => isSameDay(day, today, );
 
 const showAllContainers = ref(true); // 모든 컨테이너 표시 여부
 const showBudgetAndBookingOnly = ref(false); // 예산 및 예약 컨테이너만 표시 여부
@@ -188,24 +203,7 @@ const isSelectedDay = (day) => {
   return selectedView.value === "date" && isSameDay(day, selectedDate.value);
 };
 
-onMounted(() => {
-  const dayScrollContainer = document.querySelector(".day-scroll");
-  const todayElement = dayScrollContainer.children[todayIndex];
-  console.log(tripStore.startDate, tripStore.endDate)
-  if (todayElement) {
-    dayScrollContainer.scrollLeft =
-      todayElement.offsetLeft -
-      dayScrollContainer.clientWidth / 2 +
-      todayElement.clientWidth / 2;
-  }
 
-  const arrowElement = document.querySelector(".arrow");
-  if (dayScrollContainer.scrollWidth > dayScrollContainer.clientWidth) {
-    arrowElement.style.display = "block";
-  } else {
-    arrowElement.style.display = "none";
-  }
-});
 
 const startDrag = (event) => {
   isDragging.value = true;

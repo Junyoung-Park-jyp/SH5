@@ -26,7 +26,7 @@
           </div>
 
           <!-- 도시 -->
-          <v-select
+          <!-- <v-select
             v-model="cityInput"
             label="도시"
             :items="cities"
@@ -44,7 +44,7 @@
             >
               {{ city }}
             </v-chip>
-          </div>
+          </div> -->
         </v-col>
         <div class="btn-container">
           <button @click="addCity" class="mt-1 btn-add">+ 추가</button>
@@ -119,15 +119,6 @@
               :header-date-format="getHeaderTitleMonth"
             ></v-date-picker>
           </v-menu>
-        </v-col>
-      </v-row>
-      <!-- 선택된 날짜를 텍스트로 표시 -->
-      <v-row>
-        <v-col cols="12">
-          <p>
-            선택된 기간: {{ departureDateFormatted }} ~
-            {{ arrivalDateFormatted }}
-          </p>
         </v-col>
       </v-row>
     </div>

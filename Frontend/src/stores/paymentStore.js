@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
-
+import { useTripStore } from '@/stores/tripStore'
 export const usePaymentStore = defineStore('paymentStore', {
   // state: () => ({
   //   payments: [],
@@ -437,13 +437,13 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async getPayments() {
+    async getPayments(tripId, startDate, endDate) {
       const tripStore = useTripStore()
       try {
         const response = await axiosInstance.get('/payments/list/', { params: {
-          trip_id: tripStore.tripId,
-          start_date: tripStore.startDate,
-          end_date: tripStore.endDate
+          trip_id: tripId,
+          start_date: startDate,
+          end_date: endDate
           } 
         })
 

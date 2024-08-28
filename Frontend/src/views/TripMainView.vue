@@ -154,7 +154,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
 import {
@@ -170,6 +170,7 @@ import { useTripStore } from '@/stores/tripStore';
 import { useBalanceStore } from '@/stores/balanceStore';
 
 const router = useRouter();
+const route = useRoute();
 const tripStore = useTripStore();
 const balanceStore = useBalanceStore();
 // 여행 목적지
@@ -186,6 +187,7 @@ if (country === "대한민국") {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
+const tripId = route.params.id
 
 // 여행 날짜
 // const startDate = new Date(2024, 7, 10); 
@@ -309,7 +311,7 @@ const modifyTrip = () => {
 };
 
 const goDetail = () => {
-  return router.push({ name: "tripDetail" });
+  return router.push({ name: "tripDetail", params:{ id: tripId} });
 };
 
 const goInsurance = () => {

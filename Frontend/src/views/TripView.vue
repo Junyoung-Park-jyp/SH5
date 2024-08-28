@@ -3,7 +3,8 @@
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>{{ userStore.name }} 님</span>
+      <span>{{ userStore.name }} 님
+      </span>
     </div>
 
     <!-- 미래/현재 -->
@@ -35,15 +36,15 @@
           </template>
 
           <v-carousel-item
-            v-for="(experience, index) in tripStore.tripExperiences"
+            v-for="(ongoingTrip, index) in ongoingTrips"
             :key="index"
             class="background-image-now"
-            @click="goTripMain"
+            @click="goTripMain(ongoingTrip.id)"
           >
             <div class="info">
               <span>
                 <v-icon icon="mdi-music"></v-icon>
-                현재 스페인 여행 중
+                {{ ongoingTrip.trip_name }}
                 <v-icon icon="mdi-music"></v-icon>
               </span>
             </div>
@@ -76,7 +77,7 @@
                 interval="3000"
                 @click="goTripGallery"
               >
-                <v-carousel-item
+                <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
                   :key="index"
                   class="background-image"
@@ -96,8 +97,8 @@
                     </div>
                     <div class="cost">{{ formatCost(experience.cost) }}</div>
                   </div>
-                </v-carousel-item>
-                <!-- <v-carousel-item
+                </v-carousel-item> -->
+                <v-carousel-item
                   v-for="(experience, index) in tripStore.pastTrips"
                   :key="index"
                   class="background-image"
@@ -117,7 +118,7 @@
                       }}
                     </div>
                   </div>
-                </v-carousel-item> -->
+                </v-carousel-item>
               </v-carousel>
             </v-col>
             <!-- <v-col cols="2">
@@ -147,7 +148,8 @@ import axios from "axios";
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
-
+const ongoingTrips = computed(() => tripStore.futureTrips)
+const pastTrips = computed(() => tripStore.pastTrips)
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
 
@@ -164,11 +166,14 @@ const getImageUrl = async (countryName) => {
 };
 
 onMounted(async () => {
+  await Promise.all([
+    tripStore.getPastTrips(),
+    tripStore.getFutureTrips()
+  ]);
+
   for (const experience of tripStore.tripExperiences) {
     experience.imageUrl = await getImageUrl(experience.country);
   }
-
-  tripStore.getPastTrips()
 });
 
 const prevSlide = () => {
@@ -193,8 +198,8 @@ const makeTrip = () => {
   }, 1000); // 애니메이션 길이와 일치시켜야 함
 };
 
-const goTripMain = () => {
-  router.push({ name: "tripMain" });
+const goTripMain = (tripId) => {
+  router.push({ name: "tripMain", params: {id: tripId} });
 };
 
 const goTripGallery = () => {

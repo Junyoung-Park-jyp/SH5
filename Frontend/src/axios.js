@@ -3,7 +3,7 @@ import { useUserStore } from '@/stores/userStore';
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
   baseURL: 'https://5illjjang.click/api',
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json'  // Content-Type 기본값 설정
   } 

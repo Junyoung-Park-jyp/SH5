@@ -33,7 +33,7 @@
           ></v-text-field>
         </v-col>
         <div class="btn-container">
-          <button @click="addMember" class="mt-1 btn-add">+ 추가</button>
+          <button @click="addMember" class="mt-1 btn-add">+ 등록</button>
         </div>
       </v-row>
     </div>
@@ -47,15 +47,15 @@
           <!-- 여행이름 입력 필드 -->
           <v-text-field
             label="여행 이름"
-            placeholder="여행 이름"
+            placeholder="여행 별칭"
             outlined
             type="text"
             v-model="tripName"
           ></v-text-field>
         </v-col>
-        <div class="btn-container">
+        <!-- <div class="btn-container">
           <button @click="addTripName" class="mt-1 btn-add">저장</button>
-        </div>
+        </div> -->
       </v-row>
     </div>
   </div>
