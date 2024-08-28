@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="benefit-btn">
-          <v-btn class="benefit-btn-click">혜택 더보기</v-btn>
+          <v-btn class="benefit-btn-click" @click="goToBenefits">혜택 더보기</v-btn>
         </div>
       </div>
     </div>
@@ -83,6 +83,15 @@ function goToTrip() {
   userStore.signIn({ email: "email9629@naver.com" });
 }
 
+// 혜택 더보기 페이지 이동 함수
+function goToBenefits() {
+  if (selectedCardType.value === '체크카드') {
+    window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/check/1225714_2206.html';
+  } else if (selectedCardType.value === '신용카드') {
+    window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/credit/1227751_2207.html';
+  }
+}
+
 // 테스트용 로그인 코드
 import { onMounted } from "vue";
 import { useUserStore } from "@/stores/userStore";
@@ -92,6 +101,9 @@ const userStore = useUserStore();
 <style scoped>
 .main-container {
   height: 90vh;
+  background-color: #ffffff;
+  /* border: 1px solid black; */
+  margin-bottom: 0px;
 }
 
 .upper-card {
@@ -155,6 +167,7 @@ const userStore = useUserStore();
   padding: 20px 10px;
   margin: auto;
   margin-top: 20px;
+  /* background-color: #f4f6fa; */
 }
 
 .benefit-title {

@@ -24,7 +24,7 @@
         날짜
         <v-spacer></v-spacer>
         <div class="dday" v-if="tripState === '준비'">
-          D-{{ Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)) }}
+          D{{ Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)) }}
         </div>
       </div>
       <div class="content">
