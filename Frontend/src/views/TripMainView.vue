@@ -58,9 +58,17 @@
         <!-- 이름 -->
         <div class="member-name">{{ member.member }}</div>
 
+        <!-- 은행 -->
+        <div class="member-bankname">
+          {{ member.bank_name.slice(0, member.bank_name.length - 2) }}
+        </div>
+
         <!-- 계좌 -->
         <div v-if="member.bank_account != ''" class="member-account">
-          {{ member.bank_account }} - {{ member.budget }}
+          <div class="member-bankaccount">{{ member.bank_account }}</div>
+          <div class="member-bankbalance">
+            {{ formatWithComma(member.balance) }} 원
+          </div>
         </div>
         <div v-else class="member-account">
           계좌 미등록 - {{ member.budget }}

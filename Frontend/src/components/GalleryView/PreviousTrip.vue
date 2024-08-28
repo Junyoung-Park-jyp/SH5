@@ -37,7 +37,7 @@
             class="member-symbol d-flex justify-center align-center"
             :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           >
-            <div class="member-familyname">{{ member.name.slice(0, 3) }}</div>
+            <div class="member-familyname">{{ member.member.slice(0, 3) }}</div>
           </div>
         </div>
       </div>
@@ -87,9 +87,11 @@ import PieChart from "./PieChart.vue";
 //   return tripStore.getTrip(tripId)
 // })
 
+const tripStore = useTripStore();
+
 // 여행 목적지
-const country = "대한민국";
-const city = "부산";
+const country = computed(() => tripStore.country.join(""));
+const city = computed(() => tripStore.city.join(""));
 
 // 대한민국 여행일 경우 목적지는 도시로 설정
 const destination = ref(country);
@@ -102,36 +104,66 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 // 여행 날짜
-const startDate = new Date(2024, 7, 10); // 2024년 8월 10일
-const endDate = new Date(2024, 7, 27); // 2024년 8월 27일
+const startDate = computed(() => new Date(tripStore.startDate));
+const endDate = computed(() => new Date(tripStore.endDate));
 
 // 몇 박 몇 일 계산
-const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-const nights = durationInDays - 1;
-const days = durationInDays;
+const durationInDays = computed(() => {
+  const start = startDate.value;
+  const end = endDate.value;
+
+  // startDate와 endDate가 유효한 Date 객체인지 확인
+  if (
+    start instanceof Date &&
+    !isNaN(start) &&
+    end instanceof Date &&
+    !isNaN(end)
+  ) {
+    const diffTime = end.getTime() - start.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 일 수 계산
+  } else {
+    return 0; // 유효하지 않은 경우
+  }
+});
+
+const nights = computed(() => durationInDays.value - 1);
+const days = computed(() => durationInDays.value);
 
 // 몇 박 몇 일 포맷팅
 const formatDuration = (nights, days) => {
   return `${nights}박 ${days}일`;
 };
 
-const duration = formatDuration(nights, days);
+const duration = computed(() => formatDuration(nights.value, days.value));
 
 const formatDay = (date) => {
   return format(date, "yyyy년 MM월 dd일");
 };
 
 // 여행 멤버와 계좌번호
-const tripMembers = [
-  { name: "박준영", account: "신한 0276524561730773" },
-  { name: "이선재", account: "신한 000-000-000" },
-  { name: "임광영", account: "국민 000-000-000" },
-  { name: "정태완", account: "우리 000-000-000" },
-  { name: "최한진", account: "계좌 미등록" },
-  { name: "이뭉크", account: "신한 000-000-000" },
-];
+// const tripMembers = [
+//   { name: "박준영", account: "신한 0276524561730773" },
+//   { name: "이선재", account: "신한 000-000-000" },
+//   { name: "임광영", account: "국민 000-000-000" },
+//   { name: "정태완", account: "우리 000-000-000" },
+//   { name: "최한진", account: "계좌 미등록" },
+//   { name: "이뭉크", account: "신한 000-000-000" },
+// ];
+
+const tripMembers = computed(() => tripStore.members);
+
+// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
+const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
+
+// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(() => {
+  membersWithColors.value = tripMembers.value.map((member, index) => ({
+    ...member,
+    color: memberColors.value[index],
+  }));
+});
 
 import member1 from "@/assets/img/member1.png";
 import member2 from "@/assets/img/member2.png";

@@ -264,7 +264,8 @@ const totalBalance = computed(() => {
     return 0;
   }
   return tripMembers.value.reduce(
-    (total, member) => total + (member.balance || 0),
+    (total, member) =>
+      total + (member.balance ? parseFloat(member.balance) : 0),
     0
   );
 });
