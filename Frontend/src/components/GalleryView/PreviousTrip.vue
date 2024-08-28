@@ -28,7 +28,10 @@
           v-for="(member, index) in tripMembers"
           :key="index"
           class="member-list"
-          :style="{ backgroundImage: `url(${getImagePath(index)})`, paddingRight: calculatePadding(index) }"
+          :style="{
+            backgroundImage: `url(${getImagePath(index)})`,
+            paddingRight: calculatePadding(index),
+          }"
         >
           <div
             class="member-symbol d-flex justify-center align-center"
@@ -75,7 +78,7 @@ import {
 } from "@/stores/currencyStore";
 
 import DrawPicture from "./DrawPicture.vue";
-import PieChart from './PieChart.vue';
+import PieChart from "./PieChart.vue";
 
 // const route = useRoute()
 // const tripStore = useTripStore()
@@ -130,10 +133,10 @@ const tripMembers = [
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
-import member1 from '@/assets/img/member1.png';
-import member2 from '@/assets/img/member2.png';
-import member3 from '@/assets/img/member3.png';
-import member4 from '@/assets/img/member4.png';
+import member1 from "@/assets/img/member1.png";
+import member2 from "@/assets/img/member2.png";
+import member3 from "@/assets/img/member3.png";
+import member4 from "@/assets/img/member4.png";
 
 const images = [member1, member2, member3, member4];
 
@@ -155,8 +158,9 @@ const calculatePadding = (index) => {
   overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding: 0px;
   background-color: #f4f6fa;
+  /* border: 1px solid black; */
 }
 
 /* 구획 나누기 */
@@ -237,7 +241,7 @@ const calculatePadding = (index) => {
   align-items: center;
   justify-content: flex;
   width: 100px; /* 각 사진의 너비 */
-  height: 100%; 
+  height: 100%;
   background-size: cover;
   background-position: center;
   scroll-snap-align: start; /* Snap alignment */
@@ -264,6 +268,11 @@ const calculatePadding = (index) => {
   padding: 10px 0;
   margin: 0 auto;
   padding: 20px 0 50px 0;
+}
+
+.money .content {
+  width: 100%;
+  /* border: 1px solid black; */
 }
 
 /* 스케치 */
