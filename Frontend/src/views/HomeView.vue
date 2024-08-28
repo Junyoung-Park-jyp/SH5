@@ -3,9 +3,8 @@
     <div class="menu-container">
       <v-row>
         <v-col cols="12">
-          <v-card class="account-card pa-10 pr-5">
-            <v-row no-gutters>
-              <v-col class="text-left p-3">
+          <v-card class="account-card">
+              <v-col cols="8" class="text-left p-3">
                 <div class="mb-2 account-name">OOO님</div>
                 <div class="account-num">
                   <span>신한</span>
@@ -16,14 +15,13 @@
                   <span class="mx-2">1,000,000</span>
                 </div>
               </v-col>
-              <v-col class="text-right">
+              <v-col cols="4" class="text-right">
                 <img
                   src="../assets/img/account.png"
                   alt="account"
-                  style="width: 70%"
+                  style="width: 100%"
                 />
               </v-col>
-            </v-row>
           </v-card>
         </v-col>
       </v-row>
@@ -31,7 +29,7 @@
       <v-row class="mt-10">
         <v-col cols="4">
           <v-card class="menu-card green-card pa-4" outlined>
-            <div class="text-left menu">SOL트래블</div>
+            <div class="menu">SOL트래블</div>
             <div class="menu-icon">
               <img src="../assets/img/menu1.png" alt="menu1" />
             </div>
@@ -43,7 +41,7 @@
             outlined
             @click="navigateToBridge"
           >
-            <div class="text-left menu">SOL로 여행</div>
+            <div class="menu">SOL로 여행</div>
             <div class="menu-icon">
               <img src="../assets/img/menu2.png" alt="menu2" />
             </div>
@@ -51,7 +49,7 @@
         </v-col>
         <v-col cols="4">
           <v-card class="menu-card white-card pa-4" outlined>
-            <div class="text-left menu">환율조회</div>
+            <div class="menu">환율조회</div>
             <div class="menu-icon">
               <img src="../assets/img/menu3.png" alt="menu3" />
             </div>
@@ -62,7 +60,7 @@
       <v-row class="mt-2">
         <v-col cols="4">
           <v-card class="menu-card white-card pa-4" outlined>
-            <div class="text-left menu">환전</div>
+            <div class="menu">환전</div>
             <div class="menu-icon">
               <img src="../assets/img/menu4.png" alt="menu4" />
             </div>
@@ -70,7 +68,7 @@
         </v-col>
         <v-col cols="4">
           <v-card class="menu-card white-card pa-4" outlined>
-            <div class="text-left menu">목표환율<br />환전</div>
+            <div class="menu">목표환율<br />환전</div>
             <div class="menu-icon">
               <img src="../assets/img/menu5.png" alt="menu5" />
             </div>
@@ -157,6 +155,7 @@ const navigateToBridge = () => {
   width: 100%;
   margin: 10px auto 0px auto;
   padding: 0px 15px;
+  background-color: #f4f6fa;
   /* border: 1px solid black; */
 }
 
@@ -171,8 +170,12 @@ const navigateToBridge = () => {
   background-color: #ffffff;
   border-radius: 12px;
   height: 200px;
+  width: 100%;
   font-size: large;
   font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .account-name {
@@ -183,6 +186,28 @@ const navigateToBridge = () => {
 .account-num,
 .account-balance {
   font-size: medium;
+}
+
+.text-left {
+  height: 100%;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  padding-left: 25px;
+  /* border: 1px solid blue; */
+}
+
+.text-right {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  margin: auto;
+  padding: 0 10px 20px 0;
+  /* border: 1px solid black; */
 }
 
 .menu-card {

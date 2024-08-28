@@ -1,201 +1,201 @@
 <template>
   <div class="main-container">
     <div class="content-container">
-    <!-- 예산 -->
-    <div v-if="showAllContainers || showBudgetAndBookingOnly" class="budget-container">
-      <div class="title d-flex justify-space-between">
-        <div class="prepare">준비</div>
-        <div class="line">&nbsp;|&nbsp;</div>
-        <div class="budget">예산</div>
-        <v-spacer></v-spacer>
-        <div class="sum" @click="toggleCurrency">
-          {{ formattedTotalBalance }}
+      <!-- 예산 -->
+      <div v-if="showAllContainers || showBudgetAndBookingOnly" class="budget-container">
+        <div class="title d-flex justify-space-between">
+          <div class="prepare">준비</div>
+          <div class="line">&nbsp;|&nbsp;</div>
+          <div class="budget">예산</div>
+          <v-spacer></v-spacer>
+          <div class="sum" @click="toggleCurrency">
+            {{ formattedTotalBalance }}
+          </div>
+        </div>
+        <div class="budget-content">
+          <div class="left-detail">
+            <v-icon icon="mdi-wallet-outline" color="grey" size="28px"></v-icon>
+          </div>
+          <div class="right-detail">
+            <div
+              v-for="(member, index) in tripMembers"
+              :key="index"
+              class="member-info"
+            >
+              <div
+                class="member-symbol d-flex justify-center align-center"
+                :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+                @click="changeColor(index)"
+              >
+                <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+              </div>
+              <div class="member-balance" @click="toggleCurrency">
+                {{ formattedMemberBalance(member.balance) }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="budget-content">
-        <div class="left-detail">
-          <v-icon icon="mdi-wallet-outline" color="grey" size="28px"></v-icon>
+
+      <!-- 준비 | 사전 예약 -->
+      <div v-if="bookingPayments.length && (showAllContainers || showBudgetAndBookingOnly)" class="booking-container">
+        <div class="title d-flex justify-space-between">
+          <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
+          <v-spacer></v-spacer>
+          <div class="sum" @click="toggleCurrency">
+            {{ formattedTotalCost(bookingPayments) }}
+          </div>
         </div>
-        <div class="right-detail">
+        <div class="book-content">
           <div
-            v-for="(member, index) in tripMembers"
-            :key="index"
-            class="member-info"
+            class="payment"
+            v-for="(payment, paymentIndex) in bookingPayments"
+            :key="paymentIndex"
           >
-            <div
-              class="member-symbol d-flex justify-center align-center"
-              :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
-              @click="changeColor(index)"
-            >
-              <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+            <!-- 체크 버튼 -->
+            <div class="check-area">
+              <v-btn
+                @click="toggleCheck(paymentIndex, 'booking')"
+                variant="text"
+                :color="payment.checked ? 'primary' : 'grey'"
+                :icon="
+                  payment.checked
+                    ? 'mdi-check-circle'
+                    : 'mdi-checkbox-blank-circle-outline'
+                "
+              ></v-btn>
             </div>
-            <div class="member-balance" @click="toggleCurrency">
-              {{ formattedMemberBalance(member.balance) }}
+
+            <!-- 카테고리 -->
+            <div class="category-area">
+              <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- 준비 | 사전 예약 -->
-    <div v-if="bookingPayments.length && (showAllContainers || showBudgetAndBookingOnly)" class="booking-container">
-      <div class="title d-flex justify-space-between">
-        <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
-        <v-spacer></v-spacer>
-        <div class="sum" @click="toggleCurrency">
-          {{ formattedTotalCost(bookingPayments) }}
-        </div>
-      </div>
-      <div class="book-content">
-        <div
-          class="payment"
-          v-for="(payment, paymentIndex) in bookingPayments"
-          :key="paymentIndex"
-        >
-          <!-- 체크 버튼 -->
-          <div class="check-area">
-            <v-btn
-              @click="toggleCheck(paymentIndex, 'booking')"
-              variant="text"
-              :color="payment.checked ? 'primary' : 'grey'"
-              :icon="
-                payment.checked
-                  ? 'mdi-check-circle'
-                  : 'mdi-checkbox-blank-circle-outline'
-              "
-            ></v-btn>
-          </div>
-
-          <!-- 카테고리 -->
-          <div class="category-area">
-            <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
-          </div>
-
-          <!-- 결제 금액 및 내역 -->
-          <div class="cost-area">
-            <div class="cost" @click="toggleCurrency">
-              {{ formattedCost(payment.cost) }}
+            <!-- 결제 금액 및 내역 -->
+            <div class="cost-area">
+              <div class="cost" @click="toggleCurrency">
+                {{ formattedCost(payment.cost) }}
+              </div>
+              <div class="name">{{ payment.name }}</div>
             </div>
-            <div class="name">{{ payment.name }}</div>
-          </div>
 
-          <!-- 정산 대상 -->
-          <div class="person-area">
-            <div
-              v-for="(member, index) in tripMembers"
-              :key="index"
-              class="person-info"
-            >
+            <!-- 정산 대상 -->
+            <div class="person-area">
               <div
-                class="person-symbol d-flex justify-center align-center"
-                :style="personStyle(member.name, payment.members, index)"
-                @click="personClick(paymentIndex, member.name, 'booking')"
+                v-for="(member, index) in tripMembers"
+                :key="index"
+                class="person-info"
               >
-                <div class="person-familyname">
-                  {{ member.name.slice(0, 1) }}
+                <div
+                  class="person-symbol d-flex justify-center align-center"
+                  :style="personStyle(member.name, payment.members, index)"
+                  @click="personClick(paymentIndex, member.name, 'booking')"
+                >
+                  <div class="person-familyname">
+                    {{ member.name.slice(0, 1) }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- 결제 날짜 -->
-          <div class="date-area">
-            {{ formatDate(payment.pay_date) }}
-            {{ formatTime(payment.pay_time) }}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 결제 | 지출 -->
-    <div v-if="filteredPayments.length && (showAllContainers || !showBudgetAndBookingOnly)" class="pay-container">
-      <div class="title d-flex justify-space-between">
-        <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
-        <v-spacer></v-spacer>
-        <div class="sum" @click="toggleCurrency">
-          {{ formattedTotalCost(filteredPayments) }}
-        </div>
-      </div>
-      <div class="pay-content">
-        <div
-          class="payment"
-          v-for="(payment, paymentIndex) in filteredPayments"
-          :key="paymentIndex"
-        >
-          <!-- 체크 버튼 -->
-          <div class="check-area">
-            <v-btn
-              @click="toggleCheck(paymentIndex, 'trip')"
-              variant="text"
-              :color="payment.checked ? 'primary' : 'grey'"
-              :icon="
-                payment.checked
-                  ? 'mdi-check-circle'
-                  : 'mdi-checkbox-blank-circle-outline'
-              "
-            ></v-btn>
-          </div>
-
-          <!-- 카테고리 -->
-          <div class="category-area">
-            <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
-          </div>
-
-          <!-- 결제 금액 및 내역 -->
-          <div class="cost-area">
-            <div class="cost" @click="toggleCurrency">
-              {{ formattedCost(payment.cost) }}
+            <!-- 결제 날짜 -->
+            <div class="date-area">
+              {{ formatDate(payment.pay_date) }}
+              {{ formatTime(payment.pay_time) }}
             </div>
-            <div class="name">{{ payment.name }}</div>
           </div>
+        </div>
+      </div>
 
-          <!-- 정산 대상 -->
-          <div class="person-area">
-            <div
-              v-for="(member, index) in tripMembers"
-              :key="index"
-              class="person-info"
-            >
+      <!-- 결제 | 지출 -->
+      <div v-if="filteredPayments.length && (showAllContainers || !showBudgetAndBookingOnly)" class="pay-container">
+        <div class="title d-flex justify-space-between">
+          <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
+          <v-spacer></v-spacer>
+          <div class="sum" @click="toggleCurrency">
+            {{ formattedTotalCost(filteredPayments) }}
+          </div>
+        </div>
+        <div class="pay-content">
+          <div
+            class="payment"
+            v-for="(payment, paymentIndex) in filteredPayments"
+            :key="paymentIndex"
+          >
+            <!-- 체크 버튼 -->
+            <div class="check-area">
+              <v-btn
+                @click="toggleCheck(paymentIndex, 'trip')"
+                variant="text"
+                :color="payment.checked ? 'primary' : 'grey'"
+                :icon="
+                  payment.checked
+                    ? 'mdi-check-circle'
+                    : 'mdi-checkbox-blank-circle-outline'
+                "
+              ></v-btn>
+            </div>
+
+            <!-- 카테고리 -->
+            <div class="category-area">
+              <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
+            </div>
+
+            <!-- 결제 금액 및 내역 -->
+            <div class="cost-area">
+              <div class="cost" @click="toggleCurrency">
+                {{ formattedCost(payment.cost) }}
+              </div>
+              <div class="name">{{ payment.name }}</div>
+            </div>
+
+            <!-- 정산 대상 -->
+            <div class="person-area">
               <div
-                class="person-symbol d-flex justify-center align-center"
-                :style="personStyle(member.name, payment.members, index)"
-                @click="personClick(paymentIndex, member.name, 'trip')"
+                v-for="(member, index) in tripMembers"
+                :key="index"
+                class="person-info"
               >
-                <div class="person-familyname">
-                  {{ member.name.slice(0, 1) }}
+                <div
+                  class="person-symbol d-flex justify-center align-center"
+                  :style="personStyle(member.name, payment.members, index)"
+                  @click="personClick(paymentIndex, member.name, 'trip')"
+                >
+                  <div class="person-familyname">
+                    {{ member.name.slice(0, 1) }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- 결제 날짜 -->
-          <div class="date-area">
-            {{ formatDate(payment.pay_date) }} {{ formatTime(payment.pay_time) }}
+            <!-- 결제 날짜 -->
+            <div class="date-area">
+              {{ formatDate(payment.pay_date) }} {{ formatTime(payment.pay_time) }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="summary">
-      <div class="spend">
-        <div class="type">쓴 돈</div>
-        <div class="today">₩ 4057</div>
-        <div class="total">₩ 426864</div>
+      <div class="summary">
+        <div class="spend">
+          <div class="type">쓴 돈</div>
+          <div class="today">₩ 4057</div>
+          <div class="total">₩ 426864</div>
+        </div>
+        <div class="remain">
+          <div class="type">남은 돈</div>
+          <div class="today">₩ 6024</div>
+          <div class="total">₩ 426864</div>
+        </div>
       </div>
-      <div class="remain">
-        <div class="type">남은 돈</div>
-        <div class="today">₩ 6024</div>
-        <div class="total">₩ 426864</div>
-      </div>
-    </div>
 
-    <div class="calculation">
-      <div class="result" @click="toggleCurrencyInResult">
-        {{ formattedCheckedCost }}
+      <div class="calculation">
+        <div class="result" @click="toggleCurrencyInResult">
+          {{ formattedCheckedCost }}
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 
@@ -463,7 +463,7 @@ const formatTime = (time) => {
   overflow-y: auto;
   background-color: #f4f6fa;
   margin: 0px auto;
-  padding-bottom: 0px;
+  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
 }

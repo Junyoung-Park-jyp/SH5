@@ -87,6 +87,7 @@ watch(insuranceStage, () => {
   height: 90vh;
   margin: 0px auto;
   padding: 0px 10px;
+  background-color: #f4f6fa;
   /* border: 5px solid black; */
 }
 
@@ -99,7 +100,7 @@ watch(insuranceStage, () => {
   text-align: center;
   padding: 10px;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: #f4f6fa;
   display: flex;
   justify-content: space-between;
   align-items: center;

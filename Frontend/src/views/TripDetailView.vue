@@ -227,13 +227,13 @@ const finishTrip = () => {
 
 <style scoped>
 .main-container {
-  height: 95vh;
-  overflow-y: auto;
+  height: 93vh;
+  overflow-y: none;
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 0px;
   background-color: #f4f6fa;
+  /* margin-bottom: -10px; */
 }
 
 /* 프로필 */
@@ -395,10 +395,23 @@ const finishTrip = () => {
   text-align: center;
   width: 100%;
   height: 90px;
-  margin: auto;
-  /* margin-bottom: -20px; */
+  padding: 0px;
+  margin: 0 auto;
   background-color: #ffffff;
   /* border: 1px solid black; */
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0px;
+  width: 100%;
+  height: 120px;
+  text-align: center;
+  padding: 15px 0;
+  margin: 0 auto;
+  /* border: 1px solid black; */
+  background-color: rgba(255, 255, 255);
 }
 
 .adjust-background {

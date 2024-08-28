@@ -160,6 +160,7 @@ const showLoadingSequence = () => {
   height: 90vh;
   margin: 0px auto;
   padding: 10px 10px;
+  background-color: #ffffff;
 }
 
 .header {
@@ -186,7 +187,7 @@ const showLoadingSequence = () => {
   text-align: center;
   padding: 20px 0;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 .next-btn {
   width: 80%;

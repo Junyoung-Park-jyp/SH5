@@ -181,12 +181,12 @@ const formatCost = (cost) => {
 
 <style scoped>
 .main-container {
-  height: 78vh;
+  height: 95vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 60px;
   background-color: #f4f6fa;
 }
 
@@ -227,7 +227,7 @@ const formatCost = (cost) => {
 }
 
 .record-carousel {
-  width: 90%;
+  width: 85%;
   margin: 0 auto;
   margin-top: 15px;
 }
