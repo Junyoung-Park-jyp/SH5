@@ -27,14 +27,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-05-10",
         pay_time: "16:21:00",
         checked: false,
-      },
-      {
-        name: "대한한공",
-        cost: 2420000,
-        members: ["임광영", "정태완"],
-        pay_date: "2024-05-17",
-        pay_time: "17:24:00",
-        checked: false,
+        category: "항공",
       },
       {
         name: "Hotel Le Relais Du Louvre",
@@ -43,6 +36,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-06-30",
         pay_time: "09:19:00",
         checked: false,
+        category: "숙소",
       },
       {
         name: "Hertz Rental Car",
@@ -51,6 +45,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-07-15",
         pay_time: "22:24:00",
         checked: false,
+        category: "교통",
       },
 
       // 8월 10일
@@ -61,6 +56,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-10",
         pay_time: "08:15:00",
         checked: false,
+        category: "카페",
       },
       {
         name: "점심 도시락",
@@ -69,6 +65,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-10",
         pay_time: "12:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 11일
       {
@@ -78,6 +75,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-11",
         pay_time: "09:00:00",
         checked: false,
+        category: "카페",
       },
       {
         name: "저녁 식사",
@@ -86,8 +84,18 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-11",
         pay_time: "19:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 12일
+      {
+        name: "신발",
+        cost: 62000,
+        members: ["임광영", "정태완", "최한진"],
+        pay_date: "2024-08-12",
+        pay_time: "11:34:00",
+        checked: false,
+        category: "쇼핑",
+      },
       {
         name: "점심 파스타",
         cost: 18000,
@@ -95,6 +103,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-12",
         pay_time: "13:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 맥주",
@@ -103,6 +112,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-12",
         pay_time: "20:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 13일
       {
@@ -112,6 +122,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-13",
         pay_time: "10:00:00",
         checked: false,
+        category: "관광",
       },
       {
         name: "저녁 라면",
@@ -120,6 +131,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-13",
         pay_time: "19:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 14일
       {
@@ -129,6 +141,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-14",
         pay_time: "08:30:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "점심 피자",
@@ -137,6 +150,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-14",
         pay_time: "13:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 15일
       {
@@ -146,6 +160,16 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-15",
         pay_time: "08:15:00",
         checked: false,
+        category: "카페",
+      },
+      {
+        name: "기념품",
+        cost: 100000,
+        members: ["최한진", "임광영"],
+        pay_date: "2024-08-15",
+        pay_time: "14:27:00",
+        checked: false,
+        category: "기타",
       },
       {
         name: "저녁 스테이크",
@@ -154,6 +178,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-15",
         pay_time: "20:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 16일
       {
@@ -163,6 +188,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-16",
         pay_time: "12:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "디저트 아이스크림",
@@ -171,6 +197,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-16",
         pay_time: "15:00:00",
         checked: false,
+        category: "카페",
       },
       // 8월 17일
       {
@@ -180,6 +207,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-17",
         pay_time: "08:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 바비큐",
@@ -188,6 +216,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-17",
         pay_time: "19:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 18일
       {
@@ -197,6 +226,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-18",
         pay_time: "10:30:00",
         checked: false,
+        category: "카페",
       },
       {
         name: "저녁 타코",
@@ -205,6 +235,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-18",
         pay_time: "20:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 19일
       {
@@ -214,6 +245,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-19",
         pay_time: "13:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "디저트 케이크",
@@ -222,6 +254,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-19",
         pay_time: "16:00:00",
         checked: false,
+        category: "카페",
       },
       // 8월 20일
       {
@@ -231,6 +264,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-20",
         pay_time: "09:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 파스타",
@@ -239,6 +273,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-20",
         pay_time: "19:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 21일
       {
@@ -248,6 +283,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-21",
         pay_time: "12:30:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 초밥",
@@ -256,6 +292,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-21",
         pay_time: "19:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 22일
       {
@@ -265,6 +302,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-22",
         pay_time: "08:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 스파게티",
@@ -273,6 +311,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-22",
         pay_time: "19:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 23일
       {
@@ -282,6 +321,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-23",
         pay_time: "12:30:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 피자",
@@ -290,6 +330,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-23",
         pay_time: "19:30:00",
         checked: false,
+        category: "식비",
       },
       // 8월 24일
       {
@@ -299,6 +340,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-24",
         pay_time: "08:00:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "저녁 해물탕",
@@ -307,6 +349,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-24",
         pay_time: "20:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 25일
       {
@@ -316,6 +359,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-25",
         pay_time: "17:21:00",
         checked: false,
+        category: "식비",
       },
       {
         name: "Monoprix",
@@ -324,6 +368,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-25",
         pay_time: "22:24:00",
         checked: false,
+        category: "쇼핑",
       },
       // 8월 26일
       {
@@ -333,6 +378,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-26",
         pay_time: "09:33:00",
         checked: false,
+        category: "관광",
       },
       {
         name: "저녁 스테이크",
@@ -341,6 +387,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-26",
         pay_time: "20:00:00",
         checked: false,
+        category: "식비",
       },
       // 8월 27일
       {
@@ -350,6 +397,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-27",
         pay_time: "09:19:00",
         checked: false,
+        category: "쇼핑",
       },
       {
         name: "저녁 바베큐",
@@ -358,6 +406,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         pay_date: "2024-08-27",
         pay_time: "19:30:00",
         checked: false,
+        category: "식비",
       },
     ],
   }),

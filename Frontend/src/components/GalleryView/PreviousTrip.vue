@@ -28,12 +28,13 @@
           v-for="(member, index) in tripMembers"
           :key="index"
           class="member-list"
+          :style="{ backgroundImage: `url(${getImagePath(index)})`, paddingRight: calculatePadding(index) }"
         >
           <div
             class="member-symbol d-flex justify-center align-center"
             :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           >
-            <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+            <div class="member-familyname">{{ member.name.slice(0, 3) }}</div>
           </div>
         </div>
       </div>
@@ -42,6 +43,9 @@
     <!-- 지출 내역 -->
     <div class="trip money">
       <div class="title">나의 지출</div>
+      <div class="content">
+        <PieChart />
+      </div>
     </div>
 
     <!-- 여행 스케치 -->
@@ -71,6 +75,7 @@ import {
 } from "@/stores/currencyStore";
 
 import DrawPicture from "./DrawPicture.vue";
+import PieChart from './PieChart.vue';
 
 // const route = useRoute()
 // const tripStore = useTripStore()
@@ -120,9 +125,27 @@ const tripMembers = [
   { name: "임광영", account: "국민 000-000-000" },
   { name: "정태완", account: "우리 000-000-000" },
   { name: "최한진", account: "계좌 미등록" },
+  { name: "이뭉크", account: "신한 000-000-000" },
 ];
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
+
+import member1 from '@/assets/img/member1.png';
+import member2 from '@/assets/img/member2.png';
+import member3 from '@/assets/img/member3.png';
+import member4 from '@/assets/img/member4.png';
+
+const images = [member1, member2, member3, member4];
+
+const getImagePath = (index) => {
+  return images[index % images.length];
+};
+
+const calculatePadding = (index) => {
+  // Example padding values based on index, customize as needed
+  const paddingValues = [0, 15, 40, 40]; // These values are in pixels
+  return `${paddingValues[index % paddingValues.length]}px`;
+};
 </script>
 
 <style scoped>
@@ -151,6 +174,8 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 .subtitle {
   font-size: medium;
   font-weight: 500;
+  display: flex;
+  align-items: center;
 }
 
 .content {
@@ -197,31 +222,40 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 }
 
 .background-member {
-  background-image: url("@/assets/img/member.png");
-  background-size: cover;
-  background-position: center;
   display: flex;
-  height: 150px;
-  padding-left: 17%;
-  gap: 10%;
-  /* border: 1px solid blue; */
+  justify-content: flex-start;
+  align-items: center;
+  height: 200px;
+  max-width: 400px; /* 한 화면에 4명씩 (4 * 100px) */
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
 .member-list {
   display: flex;
-  padding-top: 22px;
+  align-items: center;
+  justify-content: flex;
+  width: 100px; /* 각 사진의 너비 */
+  height: 100%; 
+  background-size: cover;
+  background-position: center;
+  scroll-snap-align: start; /* Snap alignment */
+  flex-shrink: 0; /* Prevent shrinking */
   /* border: 1px solid black; */
+  padding-bottom: 55px;
+  padding-left: 10px;
 }
 
 .member-symbol {
   border: 1px solid black;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
 }
 
-.member-name {
-  width: 50px;
+.member-familyname {
+  font-weight: 500;
 }
 
 /* 지출내역 */
