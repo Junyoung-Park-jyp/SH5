@@ -49,7 +49,7 @@ const uploadImage = async () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
+          "ailabapi-api-key": process.env.VUE_APP_AILAB_API_KEY,
         },
       }
     );
