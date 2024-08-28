@@ -15,7 +15,9 @@ pipeline {
         stage('Print Env') {
             steps {
                 script {
-                    echo "AILAB_API_KEY: ${AILAB_API_KEY}"
+                    withCredentials([string(credentialsId: 'AILAB_API_KEY', variable: 'SECRET_API_KEY')]) {
+                        echo "AILAB_API_KEY: ${SECRET_API_KEY}" // 안전하게 출력
+                    }
                 }
             }
         }
