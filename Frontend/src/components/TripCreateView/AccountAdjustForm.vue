@@ -8,9 +8,12 @@
       <v-row>
         <div class="question">여행용 출금 계좌 선택하기</div>
         <v-col cols="12">
-          <div v-for="(account, index) in accounts" :key="index">
+          <v-select v-model="selectedAccount" :items="formattedAccounts" item-title="title" item-value="value"
+            label="계좌를 선택하세요">
+          </v-select>
+          <!-- <div v-for="(account, index) in accounts" :key="index">
             <p>{{ account.bankName }} - {{ account.accountNo }} - {{ account.accountBalance }}</p>
-          </div>  
+          </div> -->
         </v-col>
       </v-row>
     </div>
@@ -21,12 +24,7 @@
         <div class="question">일일 정산 시간 설정하기</div>
         <div class="explanation">지정 시간에 자동으로 PUSH 알림 전송</div>
         <v-col cols="12">
-          <v-text-field
-            v-model="settlementTime"
-            label="정산 시간 선택"
-            type="time"
-            outlined
-          ></v-text-field>
+          <v-text-field v-model="settlementTime" label="정산 시간 선택" type="time" outlined></v-text-field>
         </v-col>
       </v-row>
     </div>
@@ -35,7 +33,7 @@
 
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useBalanceStore } from "@/stores/balanceStore";
 import { useTripStore } from "@/stores/tripStore";
 import { useUserStore } from "@/stores/userStore";
@@ -52,11 +50,11 @@ const isLoading = ref(true);  // 로딩 상태 추가
 onMounted(async () => {
   try {
     await balanceStore.getAccounts(userStore.email);
-    console.log(accounts.value)
-    balanceStore.bank = accounts.value[0].bankName
-    balanceStore.accountNum = accounts.value[0].accountNo
-    balanceStore.balance = accounts.value[0].accountBalance
-    console.log(balanceStore.bank, balanceStore.accountNum, balanceStore.balance)
+    // console.log(accounts.value)
+    // balanceStore.bank = accounts.value[0].bankName
+    // balanceStore.accountNum = accounts.value[0].accountNo
+    // balanceStore.balance = accounts.value[0].accountBalance
+    // console.log(balanceStore.bank, balanceStore.accountNum, balanceStore.balance)
     isLoading.value = false;  // 로딩 완료 후 false로 변경
   } catch (error) {
     console.error("Failed to load accounts:", error);
@@ -64,6 +62,23 @@ onMounted(async () => {
   }
 });
 
+// 은행명과 계좌 형식
+const formattedAccounts = computed(() =>
+  accounts.value.map(account => ({
+    title: `${account.bankName.slice(0, account.bankName.length - 2)} ${account.accountNo}`,
+    value: account
+  }))
+);
+
+// selectedAccount 값 변경 시 balanceStore 값 업데이트
+watch(selectedAccount, (newValue) => {
+  if (newValue) {
+    balanceStore.bank = selectedAccount.value.bankName
+    balanceStore.accountNum = selectedAccount.value.accountNo
+    balanceStore.balance = selectedAccount.value.accountBalance
+    console.log(balanceStore.bank, balanceStore.accountNum, balanceStore.balance)
+  }
+})
 </script>
 
 <style scoped>
