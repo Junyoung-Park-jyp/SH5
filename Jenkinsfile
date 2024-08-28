@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        AILAB_API_KEY = credentials('AILAB_API_KEY')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,7 +15,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Docker 이미지를 빌드할 때 Dockerfile의 경로와 빌드 컨텍스트를 명시적으로 지정
                     sh 'docker build --build-arg VUE_APP_AILAB_API_KEY=$AILAB_API_KEY -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
                 }
             }
