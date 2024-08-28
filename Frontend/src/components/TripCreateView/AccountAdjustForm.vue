@@ -1,18 +1,19 @@
 <template>
-  <div class="main-container">
+  <div v-if="isLoading">
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+  </div>
+  <div v-else class="main-container">
     <!-- 계좌 선택 드롭다운 -->
     <div class="fourth">
       <v-row>
         <div class="question">여행용 출금 계좌 선택하기</div>
         <v-col cols="12">
           <v-select
-            v-model="selectedAccount"
             :items="accounts"
-            label="계좌 선택"
-            item-text="bankName"
-            item-value="accountNo"
-            outlined
           ></v-select>
+          <div v-for="(account, index) in accounts" :key="index">
+            <p>{{ account.bankName }} - {{ account.accountNo }} - {{ account.accountBalance }}</p>
+          </div>  
         </v-col>
       </v-row>
     </div>
@@ -35,6 +36,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useBalanceStore } from "@/stores/balanceStore";
@@ -45,19 +47,26 @@ const balanceStore = useBalanceStore();
 const tripStore = useTripStore();
 const userStore = useUserStore();
 
-const accounts = ref([]);
+const accounts = computed(() => balanceStore.accounts || []);
 const selectedAccount = ref(null);
-
 const settlementTime = ref(null);
+const isLoading = ref(true);  // 로딩 상태 추가
 
 onMounted(async () => {
   try {
     await balanceStore.getAccounts(userStore.email);
-    accounts.value = balanceStore.accounts;
+    console.log(accounts.value)
+    balanceStore.bank = accounts.value[0].bankName
+    balanceStore.accountNum = accounts.value[0].accountNo
+    balanceStore.balance = accounts.value[0].accountBalance
+    console.log(balanceStore.bank, balanceStore.accountNum, balanceStore.balance)
+    isLoading.value = false;  // 로딩 완료 후 false로 변경
   } catch (error) {
     console.error("Failed to load accounts:", error);
+    isLoading.value = false;  // 에러 발생 시에도 로딩 상태 false로 변경
   }
 });
+
 </script>
 
 <style scoped>

@@ -110,14 +110,26 @@ const nextStep = () => {
       // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 2) {
-    if (balanceStore.bank) {
-      tripStore.makeTrip({
+    console.log({
         trip_name: tripStore.tripName,
         locations: tripStore.locations,
         start_date: tripStore.startDate,
         end_date: tripStore.endDate,
         bank_account: balanceStore.accountNum,
-        members: tripStore.members,
+        members: tripStore.members.map(member => {
+          return { email: member.email };
+        }),
+      })
+    if (balanceStore.bank) {
+      tripStore.makeTrip({
+        trip_name: tripStore.tripName,
+        locations: tripStore.locations,
+        start_date: tripStore.startDate.slice(0, 10),
+        end_date: tripStore.endDate.slice(0, 10),
+        bank_account: balanceStore.accountNum,
+        members: tripStore.members.map(member => {
+          return { email: member.email };
+        }),
       });
       showLoadingSequence(); // 여행 생성 중 -> 여행 생성 완료 -> 이동 시퀀스 시작
     } else {

@@ -4,7 +4,7 @@
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        최한진 님은<br />
+        {{ userName }} 님은<br />
         <span class="profile-destination">{{ destination }}</span>
         여행 {{ tripState }}중
       </div>
@@ -88,10 +88,12 @@ import { useRouter } from "vue-router";
 import { eachDayOfInterval, format, isSameDay } from "date-fns";
 import Detail from "@/components/TripDetailView/Detail.vue";
 import { usePaymentStore } from "@/stores/paymentStore";
-
+import { useUserStore } from '@/stores/userStore';
+import { useTripStore } from '@/stores/tripStore';
 // 여행 상태 (예: "준비", "진행 중", "완료")
 const tripState = ref("준비"); // 예시로 "준비"로 초기화
-
+const userStore = useUserStore();
+const tripStore = useTripStore()
 const router = useRouter();
 const adjustmentDiv = ref(null);
 const isDragging = ref(false);
@@ -108,14 +110,34 @@ today.setHours(0, 0, 0, 0);
 const selectedDate = ref(today);
 const selectedView = ref("all");
 
-const startDate = new Date(2024, 7, 10);
-const endDate = new Date(2024, 7, 30);
+const startDate = computed(() => new Date(tripStore.startDate)) ;
+const endDate = computed(() => new Date(tripStore.endDate));
+const userName = computed(() => userStore.name)
+const date = computed(() => eachDayOfInterval({
+  start: startDate.value,
+  end: endDate.value,
+}));
 
-const date = eachDayOfInterval({
-  start: startDate,
-  end: endDate,
+// const todayIndex = date.findIndex((day) => isToday(day));
+const todayIndex = computed(() => date.value.findIndex((day) => isToday(day)));
+
+onMounted(() => {
+  const dayScrollContainer = document.querySelector(".day-scroll");
+  const todayElement = dayScrollContainer.children[todayIndex.value];
+  if (todayElement) {
+    dayScrollContainer.scrollLeft =
+      todayElement.offsetLeft -
+      dayScrollContainer.clientWidth / 2 +
+      todayElement.clientWidth / 2;
+  }
+
+  const arrowElement = document.querySelector(".arrow");
+  if (dayScrollContainer.scrollWidth > dayScrollContainer.clientWidth) {
+    arrowElement.style.display = "block";
+  } else {
+    arrowElement.style.display = "none";
+  }
 });
-
 const paymentStore = usePaymentStore();
 const payments = computed(() =>
   paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd"))
@@ -149,12 +171,10 @@ const isSelectedDay = (day) => {
   return selectedView.value === "date" && isSameDay(day, selectedDate.value);
 };
 
-const todayIndex = date.findIndex((day) => isToday(day));
-
 onMounted(() => {
   const dayScrollContainer = document.querySelector(".day-scroll");
   const todayElement = dayScrollContainer.children[todayIndex];
-
+  console.log(tripStore.startDate, tripStore.endDate)
   if (todayElement) {
     dayScrollContainer.scrollLeft =
       todayElement.offsetLeft -

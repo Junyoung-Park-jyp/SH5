@@ -126,6 +126,27 @@ export const useBalanceStore = defineStore('balance', {
       }
     },
 
+    async getPayments() {
+      const tripStore = useTripStore()
+      try {
+        const response = await axiosInstance.get('/payments/list/', { params: {
+          trip_id: tripStore.tripId,
+          start_date: tripStore.startDate,
+          end_date: tripStore.endDate
+          } 
+        })
+
+        if (response) {
+          console.log("정산 내역", response.data)
+        } else {
+          console.error('정산 내역 조회 실패')
+        }
+
+      } catch(error) {
+        console.error('결제내역 조회 실패', error)
+      }
+    },
+
     async makeAdjustment() {
       const tripStore = useTripStore()
       try {

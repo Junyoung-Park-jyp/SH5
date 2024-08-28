@@ -13,7 +13,9 @@
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         최한진 님은<br />
+        <!-- {{ userStore.name }} 님은<br /> -->
         <span class="profile-destination">{{ destination }}</span>
+        <!-- <span class="profile-destination">{{ tripStore.locations[0].country }}</span>-->
         여행 {{ tripState }}중
       </div>
     </div>
@@ -24,12 +26,14 @@
         날짜
         <v-spacer></v-spacer>
         <div class="dday" v-if="tripState === '준비'">
-          D-{{ Math.ceil((startDate - today) / (1000 * 60 * 60 * 24)) }}
+          D-{{ Math.ceil((new Date(startDate) - today) / (1000 * 60 * 60 * 24)) }}
         </div>
       </div>
       <div class="content">
-        <p>시작일 &nbsp; | &nbsp; {{ formatDay(startDate) }}</p>
-        <p>종료일 &nbsp; | &nbsp; {{ formatDay(endDate) }}</p>
+        <!-- <p>시작일 &nbsp; | &nbsp; {{ formatDay(startDate) }}</p>
+        <p>종료일 &nbsp; | &nbsp; {{ formatDay(endDate) }}</p> -->
+        <p>시작일 &nbsp; | &nbsp; {{ startDate }}</p>
+        <p>종료일 &nbsp; | &nbsp; {{ endDate }}</p>
       </div>
     </div>
 
@@ -41,7 +45,7 @@
         :key="index"
         class="d-flex align-center content"
       >
-        <div
+        <!-- <div
           class="member-symbol d-flex justify-center align-center"
           :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           @click="changeColor(index)"
@@ -49,7 +53,17 @@
           <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
         </div>
         <div class="member-name">{{ member.name }}</div>
-        <div class="member-account">{{ member.account }}</div>
+        <div class="member-account">{{ member.account }}</div> -->
+        <!-- <div
+          class="member-symbol d-flex justify-center align-center"
+          :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+          @click="changeColor(index)"
+        >
+          <div class="member-familyname">{{ member.member.slice(0, 1) }}</div>
+        </div> -->
+        <div class="member-name">{{ member.member }}</div>
+        <div v-if="member.bank_account!=''" class="member-account">{{ member.bank_account }} - {{ member.budget }}</div>
+        <div v-else class="member-account">계좌 미등록 - {{ member.budget }}</div>
       </div>
     </div>
 
@@ -152,9 +166,12 @@ import {
   currencyText,
   fetchExchangeRates,
 } from "@/stores/currencyStore";
+import { useTripStore } from '@/stores/tripStore';
+import { useBalanceStore } from '@/stores/balanceStore';
 
 const router = useRouter();
-
+const tripStore = useTripStore();
+const balanceStore = useBalanceStore();
 // 여행 목적지
 const country = "대한민국";
 const city = "부산";
@@ -169,9 +186,12 @@ if (country === "대한민국") {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
+
 // 여행 날짜
-const startDate = new Date(2024, 7, 10); // 2024년 8월 10일
-const endDate = new Date(2024, 7, 27); // 2024년 8월 27일
+// const startDate = new Date(2024, 7, 10); 
+// const endDate = new Date(2024, 7, 27);
+const startDate = ref(null)
+const endDate = ref(null)
 
 // 여행 상태
 const tripState = ref("준비");
@@ -184,15 +204,17 @@ const formatDay = (date) => {
 };
 
 // 여행 멤버와 계좌번호
-const tripMembers = [
-  { name: "박준영", account: "신한 0276524561730773" },
-  { name: "이선재", account: "신한 000-000-000" },
-  { name: "임광영", account: "국민 000-000-000" },
-  { name: "정태완", account: "우리 000-000-000" },
-  { name: "최한진", account: "계좌 미등록" },
-];
+// const tripMembers = [
+//   { name: "박준영", account: "신한 0276524561730773" },
+//   { name: "이선재", account: "신한 000-000-000" },
+//   { name: "임광영", account: "국민 000-000-000" },
+//   { name: "정태완", account: "우리 000-000-000" },
+//   { name: "최한진", account: "계좌 미등록" },
+// ];
 
-const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+// const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+const tripMembers = ref([])
 
 // 선택한 통화
 const selectCurrency = ref("USD");
@@ -255,6 +277,30 @@ function updateCurrencyRate() {
 // 환율 데이터 가져오기
 onMounted(() => {
   fetchExchangeRates();
+  updateCurrencyRate();
+});
+
+onMounted(async () => {
+  const tripId = tripStore.tripId;
+  if (tripId) {
+    const tripData = await tripStore.getTrip(4);
+    if (tripData) {
+      // 데이터 할당
+      destination.value = tripData.locations[0].country || "Unknown";
+      startDate.value = tripData.start_date;
+      endDate.value = tripData.end_date;
+      tripMembers.value = tripData.members || [];
+      tripStore.startDate = tripData.start_date
+      tripStore.endDate = tripData.end_date
+      if (startDate.value <= today && today <= endDate.value) {
+        tripState.value = "진행";
+      } else {
+        tripState.value = "준비";
+      }
+    }
+  }
+
+  await fetchExchangeRates();
   updateCurrencyRate();
 });
 
