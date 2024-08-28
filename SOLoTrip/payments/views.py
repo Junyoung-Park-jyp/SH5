@@ -32,7 +32,10 @@ def pay(request):
         data['transaction_type'] = '출금'
         
         # ChatGPT API를 이용하여 결제 내역의 카테고리를 저장한다
-        data['category'] = categorize(data.get('brand_name'))
+        try:
+            data['category'] = categorize(data.get('brand_name'))
+        except:
+            data['category'] = "미정"
 
         serializer = PaymentCreateSerializer(data=data)
         if serializer.is_valid(raise_exception=True):

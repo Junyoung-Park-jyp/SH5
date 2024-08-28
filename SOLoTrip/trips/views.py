@@ -88,6 +88,9 @@ def trip_main(request):
 def member(request):
     if request.method == 'GET':
         email = request.GET.get('email')
+        if not email:
+            email = request.user.email
+
         try:
             user = User.objects.get(email=email)
         except:
