@@ -42,14 +42,14 @@ const uploadImage = async () => {
     const formData = new FormData();
     formData.append("image", selectedFile.value);
     formData.append("index", 0); // Vintage Comic
-
+    console.log("API_KEY 되냐", process.env.VUE_APP_AILAB_API_KEY);
     const responsePost = await axios.post(
       "https://www.ailabapi.com/api/image/effects/ai-anime-generator",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
+          "ailabapi-api-key": process.env.VUE_APP_AILAB_API_KEY,
         },
       }
     );
