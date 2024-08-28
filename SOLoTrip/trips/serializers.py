@@ -70,7 +70,6 @@ class TripCreateSerializer(serializers.ModelSerializer):
             Location.objects.create(trip=instance, **location_data)
 
         # 새로운 Member 데이터 추가
-        print(members_data)
         for member_data in members_data:
             email = member_data['user']['email']
             bank_account = member_data['bank_account']

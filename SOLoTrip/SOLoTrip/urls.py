@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/exchange_rates/', include('exchange_rates.urls')),
     path('api/trips/', include('trips.urls')),
     path('api/payments/', include('payments.urls')),
+    path('api/keys/', include('keys.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

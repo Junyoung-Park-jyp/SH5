@@ -150,8 +150,6 @@ def update_demand_deposit_account_Transfer(email, deposit_bank_account, withdraw
     2.4.10 계좌 이체
     """
     url = "edu/demandDeposit/updateDemandDepositAccountTransfer"
-    print(email, deposit_bank_account, withdrawal_bank_account, transaction_balance)
-    pprint(inquire_demand_deposit_account_list(email)['REC'])
     body = make_header(url.split('/')[-1], email)
     body['depositAccountNo'] = deposit_bank_account
     body['transactionBalance'] = transaction_balance

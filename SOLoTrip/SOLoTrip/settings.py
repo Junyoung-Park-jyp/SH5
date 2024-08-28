@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'bank_accounts', 
     'trips',
     'payments', 
+    'keys', 
 ]
 
 MIDDLEWARE = [
