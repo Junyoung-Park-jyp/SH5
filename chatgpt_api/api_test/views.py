@@ -6,11 +6,13 @@ from django.conf import settings
 import os
 import pandas as pd
 from openai import OpenAI
+import time
 
 # 지출 내역 프롬프트
 client = OpenAI(api_key='')
 
 # 지출 내역 카테고리 (트리플 어플 참고)
+countries = ['스페인', '이탈리아']
 categories = ['숙소', '항공', '교통', '관광', '식비', '카페', '쇼핑', '기타']
 
 @api_view(['GET'])
@@ -26,7 +28,7 @@ def categorize(request):
                 messages=[
                     {
                         'role': 'system',
-                        'content': '당신은 여행 시 발생하는 결제 내역을 보고 특정 카테고리로 분류하는 도움을 주는 어시스트턴트입니다. ' + ', '.join(categories) + '"의 카테고리 중에서 하나를 선택해서 무조건 한 단어로만 대답해주세요.'
+                        'content': f'당신은 {", ".join(countries)} 여행 시 발생하는 결제 내역을 보고 특정 카테고리로 분류하는 도움을 주는 어시스트턴트입니다. "{", ".join(categories)}"의 카테고리 중에서 하나를 선택해서 무조건 한 단어로만 대답해주세요.'
                     },
                     {
                         'role': 'user',
@@ -53,27 +55,32 @@ def save(request):
     if request.method == 'GET':
         # 더미 데이터
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_dir, 'dummy_data', 'trip_2.csv')
+        file_path = os.path.join(current_dir, 'dummy_data', 'trip_3.csv')
         
         df = pd.read_csv(file_path)
-        for i in range(df.shape[0]):
+        for i in range(42, df.shape[0]):
             keyword = df.iloc[i]['brand_name']
 
             cnt = 0
             while True:
-                response = client.chat.completions.create(
-                    model='gpt-4',
-                    messages=[
-                        {
-                            'role': 'system',
-                            'content': '당신은 여행 시 발생하는 결제 내역을 보고 특정 카테고리로 분류하는 도움을 주는 어시스트턴트입니다. ' + ', '.join(categories) + '"의 카테고리 중에서 하나를 선택해서 무조건 한 단어로만 대답해주세요.'
-                        },
-                        {
-                            'role': 'user',
-                            'content': keyword
-                        },
-                    ]
-                )
+                try:
+                    response = client.chat.completions.create(
+                        model='gpt-4',
+                        messages=[
+                            {
+                                'role': 'system',
+                                'content': f'당신은 {", ".join(countries)} 여행 시 발생하는 결제 내역을 보고 특정 카테고리로 분류하는 도움을 주는 어시스트턴트입니다. "{", ".join(categories)}"의 카테고리 중에서 하나를 선택해서 무조건 한 단어로만 대답해주세요.'
+                            },
+                            {
+                                'role': 'user',
+                                'content': keyword
+                            },
+                        ]
+                    )
+                except:
+                    print('Error')
+                    time.sleep(30)
+                    continue
                 answer = response.choices[0].message.content
                 cnt += 1
 
@@ -88,8 +95,8 @@ def save(request):
             # category 열에 데이터 추가
             df.at[i, 'category'] = answer
             print(f'Index: {i}, Brand Name: {keyword}, Category: {answer}')
-        
-        # csv 파일 저장
-        df.to_csv(file_path, index=False)
+
+            # csv 파일 저장
+            df.to_csv(file_path, index=False)
         return Response({'message': 'Data processed and saved successfully.'})
     return Response({'error': 'Invalid request method.'}, status=400)
