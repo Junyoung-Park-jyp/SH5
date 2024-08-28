@@ -362,8 +362,11 @@ export const usePaymentStore = defineStore('paymentStore', {
     ],
   }),
   getters: {
-    getPaymentsByDate: (state) => (date) => {
-      return state.payments.filter((payment) => payment.pay_date === date);
+    getAllPayments(state) {
+      return state.payments; // 모든 결제 내역을 반환
     },
+    getPaymentsByDate: (state) => (date) => {
+      return state.payments.filter(payment => payment.pay_date === date);
+    }
   },
 });

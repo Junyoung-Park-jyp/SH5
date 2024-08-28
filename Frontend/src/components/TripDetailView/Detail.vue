@@ -218,6 +218,7 @@ const props = defineProps({
   selectedDate: Date,
   showAllContainers: Boolean,
   showBudgetAndBookingOnly: Boolean,
+  selectedView: String,
 });
 
 // Emits
@@ -332,9 +333,13 @@ const paymentsDuringTrip = computed(() => {
 
 // 선택된 날짜에 해당하는 지출 내역 필터링
 const filteredPayments = computed(() => {
-  return paymentsDuringTrip.value.filter((payment) =>
-    new Date(payment.pay_date).toDateString() === props.selectedDate.toDateString()
-  );
+  if (props.selectedView === 'all') {
+    return paymentsDuringTrip.value;  // 모든 결제 내역을 반환
+  } else {
+    return paymentsDuringTrip.value.filter((payment) =>
+      new Date(payment.pay_date).toDateString() === props.selectedDate.toDateString()
+    );
+  }
 });
 
 const totalCheckedCost = computed(() => {

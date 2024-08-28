@@ -158,7 +158,7 @@ const showLoadingSequence = () => {
 <style scoped>
 .container {
   width: 100%;
-  height: 90vh;
+  height: 100vh;
   margin: 0px auto;
   padding: 10px 10px;
   background-color: #ffffff;
@@ -203,6 +203,7 @@ const showLoadingSequence = () => {
   text-align: center;
 }
 
+/* 모달 */
 .modal-container {
   display: flex;
   flex-direction: column;
