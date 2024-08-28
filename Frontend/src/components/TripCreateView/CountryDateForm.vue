@@ -158,14 +158,14 @@ const arrivalMenu = ref(false);
 const updateDepartureDate = (newDate) => {
   departureDate.value = newDate;
   departureDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
-  tripStore.startDate = newDate;
+  tripStore.startDate = departureDateFormatted.value;
   departureMenu.value = false;
 };
 
 const updateArrivalDate = (newDate) => {
   arrivalDate.value = newDate;
   arrivalDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
-  tripStore.endDate = newDate;
+  tripStore.endDate = arrivalDateFormatted.value;
   arrivalMenu.value = false;
 };
 
@@ -189,18 +189,21 @@ const fetchCities = () => {
 const addCountry = () => {
   if (countryInput.value && !tripStore.country.includes(countryInput.value)) {
     tripStore.country.push(countryInput.value);
+    tripStore.locations.push({
+      country: countryInput.value
+    })
     countryInput.value = "";
   }
 };
-
+  
 // 도시를 배열에 추가하는 함수
 const addCity = () => {
   if (cityInput.value && !tripStore.city.includes(cityInput.value)) {
     tripStore.city.push(cityInput.value);
-    tripStore.locations.push({
-      country: countryInput.value,
-      city: cityInput.value,
-    });
+    // tripStore.locations.push({
+    //   country: countryInput.value,
+    //   city: cityInput.value,
+    // });
     cityInput.value = "";
   }
 };
