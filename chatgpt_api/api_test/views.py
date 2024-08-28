@@ -8,7 +8,7 @@ import pandas as pd
 from openai import OpenAI
 
 # 지출 내역 프롬프트
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+client = OpenAI(api_key='')
 
 # 지출 내역 카테고리 (트리플 어플 참고)
 categories = ['숙소', '항공', '교통', '관광', '식비', '카페', '쇼핑', '기타']
