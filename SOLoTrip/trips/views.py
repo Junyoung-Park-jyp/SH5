@@ -35,15 +35,6 @@ def create_trip(request):
             return Response({'data': {"id": trip.pk}}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    # elif request.method == 'DELETE':
-    #     trip_id = request.data.get('trip_id')
-    #     try:
-    #         trip = Trip.objects.get(pk=trip_id)
-    #     except Trip.DoesNotExist:
-    #         return Response({'error': 'Trip not found'}, status=status.HTTP_404_NOT_FOUND)
-    #     trip_name = trip.username
-    #     trip.delete()
-    #     return Response({"message": f"{trip_name} 여행이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         
 
 @api_view(['GET'])
@@ -85,6 +76,9 @@ def trip_main(request):
             trip = Trip.objects.get(pk=trip_id)
         except Trip.DoesNotExist:
             return Response({'error': '해당 아이디에 해당하는 Trip이 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if not Member.objects.filter(trip=trip_id, user=request.user).exists():
+            return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = TripMainSerializer(trip)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 

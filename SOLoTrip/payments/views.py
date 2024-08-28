@@ -22,6 +22,10 @@ def pay(request):
         amount = data.get('amount')
         
         member = Member.objects.filter(bank_account=bank_account)[0]
+        
+        if request.user != member.user:
+            return Response({'error': "현재 사용자는 해당 계좌의 주인이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
         email = member.user.email
         response = withdrawal(bank_account, amount, email)
         data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
@@ -41,6 +45,9 @@ def pay_list(request):
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
         
+        if not Member.objects.filter(trip=trip_id, user=request.user).exists():
+            return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        
         members = Member.objects.filter(trip_id=trip_id)
         bank_accounts = members.values_list('bank_account', flat=True)
         
@@ -58,7 +65,12 @@ def pay_list(request):
 def adjustment(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 정산할 수 있고, 멤버별 값을 결정할 수 있다.
-        # 필요 데이터: trip_id, member별 정산 금액과 bank_account, payment_id
+        # 필요 데이터: trip_id, {member별 정산 금액과 bank_account}, payment_id
+        payment_id = request.data.get('payment_id')
+        bank_account = Payment.objects.get(id=payment_id).bank_account
+        if not Member.objects.filter(bank_account=bank_account, user=request.user).exists():
+            return Response({'error': "현재 사용자는 해당 계좌의 주인이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        
         serializer = CalculateCreateSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -73,5 +85,12 @@ def objection(request):
         # 필요 데이터: payment_id
         payment_id = request.data.get('payment_id')
         calculates = Calculate.objects.filter(payment=payment_id)
+        
+        for calculate in calculates:
+            if calculate.member == request.user:
+                break
+        else:
+            return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        
         response = calculates.delete()
         return Response({'data': response}, status=status.HTTP_204_NO_CONTENT)
