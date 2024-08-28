@@ -73,12 +73,14 @@ def adjustment(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 정산할 수 있고, 멤버별 값을 결정할 수 있다.
         # 필요 데이터: trip_id, {member별 정산 금액과 bank_account}, payment_id
-        payment_id = request.data.get('payment_id')
-        bank_account = Payment.objects.get(id=payment_id).bank_account
-        if not Member.objects.filter(bank_account=bank_account, user=request.user).exists():
-            return Response({'error': "현재 사용자는 해당 계좌의 주인이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        payments = request.data.get('payments')
+        for payment in payments:    
+            payment_id = payment.get('payment_id')
+            bank_account = Payment.objects.get(id=payment_id).bank_account
+            if not Member.objects.filter(bank_account=bank_account, user=request.user).exists():
+                return Response({'error': "현재 사용자는 해당 계좌를 사용하고 있지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
-        serializer = CalculateCreateSerializer(data=request.data, many=True)
+        serializer = CalculateCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)

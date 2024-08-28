@@ -61,20 +61,30 @@ class BillSerializer(serializers.Serializer):
     bank_account = serializers.CharField(max_length=30)
 
 
+class PaymentSerializer(serializers.Serializer):
+    payment_id = serializers.IntegerField()
+    bills = serializers.ListField(child=BillSerializer())
+
+
 class CalculateCreateSerializer(serializers.Serializer):
     trip_id = serializers.IntegerField()
-    bills = serializers.ListField(
-        child=BillSerializer()
-    )
-    payment_id = serializers.IntegerField()
+    payments = serializers.ListField(child=PaymentSerializer())
 
     def create(self, validated_data):
-        # calculate_instances = []
+        print(validated_data)
+        trip_id = validated_data['trip_id']
         
-        for data in validated_data:
-            trip_id = data['trip_id']
-            bills_data = data['bills']
-            payment_id = data['payment_id']
+        # 정산 전 금액을 계산하기 위해 결과 딕셔너리 초기화
+        members = Member.objects.filter(trip=trip_id)
+        result = {}
+        for member in members:
+            if member.bank_account:
+                result[member.user.username] = [int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])]  # 정산 전 금액
+
+        # 각 payment에 대해 처리
+        for payment_data in validated_data['payments']:
+            payment_id = payment_data['payment_id']
+            bills_data = payment_data['bills']
             
             payment = Payment.objects.get(id=payment_id)
             deposit_bank_account = payment.bank_account
@@ -88,16 +98,23 @@ class CalculateCreateSerializer(serializers.Serializer):
                 except Member.DoesNotExist:
                     continue
 
-                calculate_instance = Calculate.objects.create(
+                # Calculate 객체 생성
+                Calculate.objects.create(
                     payment=payment,
                     member=member,
                     cost=cost
                 )
-                # calculate_instances.append(calculate_instance)
+
+                # 금액 이체 로직 호출
                 transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
-        members = Member.objects.filter(trip=trip_id)
-        result = []
+        
+        # 정산 후 금액을 계산하기 위해 다시 members를 순회
         for member in members:
             if member.bank_account:
-                result.append(balance(member.user.email, member.bank_account))
+                username = member.user.username
+                temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
+                initial_balance = result[username][0]
+                result[username].append(initial_balance - temp_balance)  # 정산 전후 차액
+                result[username].append(temp_balance)  # 정산 후 잔액
+
         return result
