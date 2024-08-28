@@ -7,7 +7,7 @@
               <v-col cols="8" class="text-left p-3">
                 <div class="mb-2 account-name">{{ userStore.userName }} 님</div>
                 <div class="account-num">
-                  <span>{{ userStore.userBank.slice(0, userStore.userBank.length - 2) }}</span>
+                  <!-- <span>{{ userStore.userBank.slice(0, userStore.userBank.length - 2) }}</span> -->
                   <span class="mx-2">{{ userStore.userAccountNum }}</span>
                 </div>
                 <div class="account-balance">

@@ -142,12 +142,13 @@ import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useStateStore } from '@/stores/stateStore'
 import axios from "axios";
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
-
+const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
 
@@ -169,6 +170,8 @@ onMounted(async () => {
   }
 
   tripStore.getPastTrips()
+  stateStore.getAILABapi({
+  })
 });
 
 const prevSlide = () => {

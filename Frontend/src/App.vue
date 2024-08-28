@@ -71,11 +71,7 @@ const toggleSwitch = () => {
   stateStore.toggleTrip();
 };
 
-// onMounted(
-//   userStore.signIn({
-//     email: '94oldman@gmail.com'
-//   })
-// )
+
 </script>
 
 <style scoped>
