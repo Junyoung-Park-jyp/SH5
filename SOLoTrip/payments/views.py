@@ -82,8 +82,8 @@ def adjustment(request):
         
         serializer = CalculateCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
+            result = serializer.save()
+            return Response({'data': result}, status=status.HTTP_201_CREATED)
         
         
 @api_view(["POST"])

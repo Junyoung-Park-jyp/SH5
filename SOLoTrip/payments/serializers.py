@@ -71,7 +71,6 @@ class CalculateCreateSerializer(serializers.Serializer):
     payments = serializers.ListField(child=PaymentSerializer())
 
     def create(self, validated_data):
-        print(validated_data)
         trip_id = validated_data['trip_id']
         
         # 정산 전 금액을 계산하기 위해 결과 딕셔너리 초기화
@@ -79,7 +78,7 @@ class CalculateCreateSerializer(serializers.Serializer):
         result = {}
         for member in members:
             if member.bank_account:
-                result[member.user.username] = [int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])]  # 정산 전 금액
+                result[member.user.username] = {"정산 전 잔액": int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])}  # 정산 전 잔액
 
         # 각 payment에 대해 처리
         for payment_data in validated_data['payments']:
@@ -113,8 +112,8 @@ class CalculateCreateSerializer(serializers.Serializer):
             if member.bank_account:
                 username = member.user.username
                 temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
-                initial_balance = result[username][0]
-                result[username].append(initial_balance - temp_balance)  # 정산 전후 차액
-                result[username].append(temp_balance)  # 정산 후 잔액
+                initial_balance = result[username]["정산 전 잔액"]
+                result[username]["정산 전후 차액"] = temp_balance - initial_balance  # 정산 전후 차액
+                result[username]["정산 후 잔액"] = temp_balance  # 정산 후 잔액
 
         return result
