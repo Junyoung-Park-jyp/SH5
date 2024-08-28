@@ -49,7 +49,7 @@ const uploadImage = async () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          "ailabapi-api-key": "",
+          "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
         },
       }
     );
@@ -71,7 +71,7 @@ const getResult = async (taskId) => {
           "https://www.ailabapi.com/api/common/query-async-task-result",
           {
             headers: {
-              "ailabapi-api-key": "",
+              "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
             },
             params: {
               task_id: taskId,
