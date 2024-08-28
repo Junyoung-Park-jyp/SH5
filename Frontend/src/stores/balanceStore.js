@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useUserStore } from '@/stores/userStore.js'
 import axiosInstance from '@/axios';
+import { useTripStore } from './tripStore';
 
 export const useBalanceStore = defineStore('balance', {
   state: () => ({
@@ -122,6 +123,26 @@ export const useBalanceStore = defineStore('balance', {
       } catch(error) {
         console.error("결제 실패: ", error)
       }
-    }
+    },
+
+    async makeAdjustment() {
+      const tripStore = useTripStore()
+      try {
+        const response = await axiosInstance.post('/payments/adjustment/', { 
+          trip_id: tripStore.tripId,
+          payment_id: this.paymentId,
+          bills: this.payments
+        }
+      )
+      if (response) {
+        this.payments = []
+        console.log('정산에 성공했습니다')
+      } else {
+        "요청이 거부되었습니다."
+      }
+      } catch(error) {
+        console.error('정산 실패', error)
+      }
+    },
   },
 });
