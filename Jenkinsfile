@@ -12,6 +12,14 @@ pipeline {
             }
         }
 
+        stage('Print Env') {
+            steps {
+                script {
+                    echo "AILAB_API_KEY: ${AILAB_API_KEY}"
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
