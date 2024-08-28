@@ -275,10 +275,10 @@ function updateCurrencyRate() {
 }
 
 // 환율 데이터 가져오기
-onMounted(() => {
-  fetchExchangeRates();
-  updateCurrencyRate();
-});
+// onMounted(() => {
+//   fetchExchangeRates();
+//   updateCurrencyRate();
+// });
 
 onMounted(async () => {
   const tripId = tripStore.tripId;

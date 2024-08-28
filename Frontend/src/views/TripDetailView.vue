@@ -5,7 +5,7 @@
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ userName }} 님은<br />
-        <span class="profile-destination">{{ destination }}</span>
+        <span class="profile-destination">{{ locations[0].country }}</span>
         여행 {{ tripState }}중
       </div>
     </div>
@@ -101,10 +101,12 @@ const isDragging = ref(false); // 드래그 상태를 관리하는 변수
 const startX = ref(0); // 드래그 시작 시 X 좌표 저장
 const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
 
-const country = "대한민국";
-const city = "부산";
-const destination = ref(country === "대한민국" ? city : country);
-
+// const country = "대한민국";
+// const city = "부산";
+// const destination = ref(country === "대한민국" ? city : country);
+const country = computed(() => tripStore.country)
+const city = computed(() => tripStore.city)
+const locations = computed(() => tripStore.locations)
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
@@ -138,6 +140,10 @@ onMounted(() => {
   } else {
     arrowElement.style.display = "none";
   }
+
+  const tripId = tripStore.tripId.data.id;
+  console.log(tripId)
+
 });
 const paymentStore = usePaymentStore();
 

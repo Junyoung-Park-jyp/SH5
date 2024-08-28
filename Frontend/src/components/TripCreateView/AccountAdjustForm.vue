@@ -8,9 +8,6 @@
       <v-row>
         <div class="question">여행용 출금 계좌 선택하기</div>
         <v-col cols="12">
-          <v-select
-            :items="accounts"
-          ></v-select>
           <div v-for="(account, index) in accounts" :key="index">
             <p>{{ account.bankName }} - {{ account.accountNo }} - {{ account.accountBalance }}</p>
           </div>  
