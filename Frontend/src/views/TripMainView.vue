@@ -283,7 +283,7 @@ function updateCurrencyRate() {
 onMounted(async () => {
   const tripId = tripStore.tripId;
   if (tripId) {
-    const tripData = await tripStore.getTrip(4);
+    const tripData = await tripStore.getTrip(tripId);
     if (tripData) {
       // 데이터 할당
       destination.value = tripData.locations[0].country || "Unknown";
