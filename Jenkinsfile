@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        AILAB_API_KEY = credentials('AILAB_API_KEY')
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -15,7 +11,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build --build-arg AILAB_API_KEY=$AILAB_API_KEY -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
+                    sh 'docker build -t my-vue-app:latest -f Frontend/Dockerfile Frontend/'
                 }
             }
         }
