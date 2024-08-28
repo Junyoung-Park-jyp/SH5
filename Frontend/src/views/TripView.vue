@@ -74,6 +74,7 @@
                 :show-arrows="false"
                 cycle
                 interval="3000"
+                @click="goTripGallery"
               >
                 <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -195,6 +196,11 @@ const makeTrip = () => {
 const goTripMain = () => {
   router.push({ name: "tripMain" });
 };
+
+const goTripGallery = () => {
+  router.push({ name: "gallery" });
+};
+
 
 // cost 포맷팅
 const formatCost = (cost) => {
