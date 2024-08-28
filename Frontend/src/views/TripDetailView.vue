@@ -58,6 +58,7 @@
       :selectedDate="selectedDate"
       :showAllContainers="showAllContainers"
       :showBudgetAndBookingOnly="showBudgetAndBookingOnly"
+      :selectedView="selectedView"
       @updateCheckedCost="updateCheckedCost"
     />
 
@@ -95,10 +96,10 @@ const tripState = ref("준비"); // 예시로 "준비"로 초기화
 const userStore = useUserStore();
 const tripStore = useTripStore()
 const router = useRouter();
-const adjustmentDiv = ref(null);
-const isDragging = ref(false);
-const startX = ref(0);
-const currentX = ref(0);
+const adjustmentDiv = ref(null); // 정산 버튼 참조
+const isDragging = ref(false); // 드래그 상태를 관리하는 변수
+const startX = ref(0); // 드래그 시작 시 X 좌표 저장
+const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
 
 const country = "대한민국";
 const city = "부산";
@@ -108,7 +109,7 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const selectedDate = ref(today);
-const selectedView = ref("all");
+const selectedView = ref("all");  // 선택된 뷰 ("all", "prepare", "date")
 
 const startDate = computed(() => new Date(tripStore.startDate)) ;
 const endDate = computed(() => new Date(tripStore.endDate));
@@ -139,15 +140,22 @@ onMounted(() => {
   }
 });
 const paymentStore = usePaymentStore();
-const payments = computed(() =>
-  paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd"))
-);
+
+// "ALL" 버튼이 선택되었을 때 모든 날짜의 지출 내역을, 특정 날짜가 선택되었을 때 해당 날짜의 지출 내역을 계산
+const payments = computed(() => {
+  if (selectedView.value === "all") {
+    return paymentStore.getAllPayments();  // 모든 날짜의 지출 내역 가져오기
+  } else {
+    return paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd"));  // 특정 날짜의 지출 내역 가져오기
+  }
+});
 
 const isToday = (day) => isSameDay(day, today);
 
-const showAllContainers = ref(true);
-const showBudgetAndBookingOnly = ref(false);
+const showAllContainers = ref(true); // 모든 컨테이너 표시 여부
+const showBudgetAndBookingOnly = ref(false); // 예산 및 예약 컨테이너만 표시 여부
 
+// 특정 날짜를 클릭했을 때 실행되는 함수
 const handleDayClick = (day) => {
   selectedDate.value = day;
   selectedView.value = "date";
@@ -155,18 +163,21 @@ const handleDayClick = (day) => {
   showBudgetAndBookingOnly.value = false;
 };
 
+// ALL 버튼을 클릭했을 때 실행되는 함수
 const handleAllClick = () => {
   selectedView.value = "all";
   showAllContainers.value = true;
   showBudgetAndBookingOnly.value = false;
 };
 
+// 준비 버튼을 클릭했을 때 실행되는 함수
 const handlePrepareClick = () => {
   selectedView.value = "prepare";
   showAllContainers.value = false;
   showBudgetAndBookingOnly.value = true;
 };
 
+// 특정 날짜가 선택된 날짜인지 확인하는 함수
 const isSelectedDay = (day) => {
   return selectedView.value === "date" && isSameDay(day, selectedDate.value);
 };
@@ -227,12 +238,15 @@ const stopDrag = () => {
   }
 };
 
+// 체크된 비용 저장
 const checkedCost = ref("");
 
+// Detail 컴포넌트에서 업데이트된 비용을 저장하는 함수
 const updateCheckedCost = (cost) => {
   checkedCost.value = cost; // Update when Detail.vue emits
 };
 
+// 정산 완료 버튼 슬라이딩
 const finishTrip = () => {
   adjustmentDiv.value.style.transform = `translateX(100%)`;
 
@@ -247,13 +261,13 @@ const finishTrip = () => {
 
 <style scoped>
 .main-container {
-  height: 95vh;
-  overflow-y: auto;
+  height: 93vh;
+  overflow-y: none;
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 0px;
   background-color: #f4f6fa;
+  /* margin-bottom: -10px; */
 }
 
 /* 프로필 */
@@ -409,16 +423,21 @@ const finishTrip = () => {
 
 /* 정산하기 */
 .adjustment {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 125px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 100%;
-  height: 90px;
-  margin: auto;
-  /* margin-bottom: -20px; */
-  background-color: #ffffff;
+  text-align: center;
+  padding: 15px 0;
+  margin: 0 auto;
   /* border: 1px solid black; */
+  background-color: rgba(255, 255, 255);
 }
 
 .adjust-background {

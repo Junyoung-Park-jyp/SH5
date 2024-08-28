@@ -9,14 +9,14 @@
         >
           <div
             :class="{ active: !isTraveling, 'home-mode': !isTraveling }"
-            class="px-4"
+            class="pl-5 pr-4"
             style="z-index: 1; font-weight: 500"
           >
             홈
           </div>
           <div
             :class="{ active: isTraveling, 'travel-mode': isTraveling }"
-            class="px-4"
+            class="pl-3 pr-4"
             style="z-index: 1; font-weight: 500"
           >
             여행
@@ -81,7 +81,8 @@ const toggleSwitch = () => {
 <style scoped>
 .main-container {
   padding-bottom: 100px;
-  height: 100vh;
+  height: 85vh;
+  background-color: #f4f6fa;
 }
 
 /* 상단 툴바 */
@@ -90,6 +91,7 @@ const toggleSwitch = () => {
   top: 0;
   z-index: 1;
   background-color: white;
+  background-color: #f4f6fa;
   font-size: 1.1rem;
 }
 
@@ -101,7 +103,7 @@ const toggleSwitch = () => {
 }
 
 .switch-thumb {
-  width: 45%;
+  width: 50%;
   height: 90%;
   background-color: #4b72e1;
   position: absolute;

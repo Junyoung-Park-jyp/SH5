@@ -33,44 +33,44 @@
 
     <!-- 상세내역 -->
     <div class="detail">
-      <div class="explanation">개인별 잔액 = 예산 - 총 지출액</div>
       <table class="settlement-table">
         <thead>
           <tr>
             <th></th>
-            <th>지출액</th>
-            <th>정산액</th>
-            <th>잔액</th>
+            <th style="border: 1px dashed lightgrey;">지출액</th>
+            <th style="border: 1px dashed lightgrey;">정산액</th>
+            <th style="border: 1px dashed lightgrey;">잔액</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(member, index) in tripMembers" :key="index">
-            <td>
+            <td class="member-td">
               <div
-                class="member-symbol member d-flex justify-center align-center"
-                :style="{
-                  backgroundColor: rgbaColor(memberColors[index], 0.7),
-                }"
+              class="member-symbol member d-flex justify-center align-center"
+              :style="{
+                backgroundColor: rgbaColor(memberColors[index], 0.7),
+              }"
               >
                 <div class="member-familyname">
                   {{ member.name.slice(0, 1) }}
                 </div>
               </div>
             </td>
-            <td>{{ formatWithComma(member.expense) }}</td>
-            <td
-              :class="{
-                positive: member.adjustment > 0,
-                negative: member.adjustment < 0,
-              }"
-            >
+            <td style="border: 1px dashed lightgrey;">{{ formatWithComma(member.expense) }}</td>
+            <td style="border: 1px dashed lightgrey;"
+            :class="{
+              positive: member.adjustment > 0,
+              negative: member.adjustment < 0,
+            }"
+              >
               {{ member.adjustment > 0 ? "+" : "" }}
               {{ formatWithComma(member.adjustment) }}
             </td>
-            <td>{{ formatWithComma(member.balance) }}</td>
+            <td style="border: 1px dashed lightgrey;">{{ formatWithComma(member.balance) }}</td>
           </tr>
         </tbody>
       </table>
+      <div class="explanation">개인별 잔액 = 예산 - 총 지출액</div>
     </div>
   </div>
 </template>
@@ -223,15 +223,7 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
   height: 70%;
   background-color: #ffffff;
   margin: auto;
-  padding: 5px;
-}
-
-.explanation {
-  width: 100%;
-  margin: 50px auto 0px auto;
-  text-align: right;
-  padding-right: 10px;
-  font-size: 0.8rem;
+  padding: 5px 15px 5px 0px;
 }
 
 .settlement-table {
@@ -239,7 +231,7 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
   border-collapse: collapse;
   text-align: center;
   font-size: 1.2rem;
-  margin: 5px auto;
+  margin: 30px auto 5px auto;
 }
 
 .settlement-table thead tr th {
@@ -249,7 +241,7 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 .settlement-table th,
 .settlement-table td {
   padding: 10px;
-  border: 1px dashed lightgrey;
+  /* border: 1px dashed lightgrey; */
 }
 
 .settlement-table td {
@@ -261,6 +253,12 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
   align-items: center;
   gap: 10px;
   font-size: large;
+}
+
+.member-td {
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .member-symbol {
@@ -278,5 +276,13 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 .negative {
   color: #e71d1d;
   font-weight: bold;
+}
+
+.explanation {
+  width: 100%;
+  margin: 0px auto;
+  text-align: right;
+  padding-right: 10px;
+  font-size: 0.8rem;
 }
 </style>

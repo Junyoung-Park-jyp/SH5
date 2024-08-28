@@ -74,6 +74,7 @@
                 :show-arrows="false"
                 cycle
                 interval="3000"
+                @click="goTripGallery"
               >
                 <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -196,6 +197,11 @@ const goTripMain = () => {
   router.push({ name: "tripMain" });
 };
 
+const goTripGallery = () => {
+  router.push({ name: "gallery" });
+};
+
+
 // cost 포맷팅
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
@@ -212,12 +218,12 @@ const formatCost = (cost) => {
 
 <style scoped>
 .main-container {
-  height: 78vh;
+  height: 95vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 60px;
   background-color: #f4f6fa;
 }
 
@@ -258,7 +264,7 @@ const formatCost = (cost) => {
 }
 
 .record-carousel {
-  width: 90%;
+  width: 85%;
   margin: 0 auto;
   margin-top: 15px;
 }
