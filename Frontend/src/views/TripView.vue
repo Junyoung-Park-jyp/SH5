@@ -7,10 +7,9 @@
     </div>
 
     <!-- 미래/현재 -->
-    <div v-if="ongoingTrips"   class="non-past">
+    <div v-if="ongoingTrips" class="non-past">
       <v-row class="d-flex align-center">
         <v-carousel
-
           :show-arrows="true"
           hide-delimiters
           :cycle="false"
@@ -41,7 +40,7 @@
             class="background-image-now"
             @click="goTripMain(ongoingTrip.id)"
           >
-            <div class="background-layer"></div>
+            <!-- <div class="background-layer"></div> -->
             <div
               class="background-layer"
               :style="{
@@ -80,7 +79,7 @@
                 v-model="currentSlide"
                 :show-arrows="false"
                 cycle
-                interval="3000"
+                interval="4000"
               >
                 <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -109,15 +108,15 @@
                   class="background-image"
                   @click="goTripGallery(experience.id)"
                 >
-                  <div class="background-layer"></div>
-                  <!-- <div
+                  <!-- <div class="background-layer"></div> -->
+                  <div
                     class="background-layer"
                     :style="{
                       backgroundImage: `url(${getBackgroundImage(
                         experience.locations[0].country
                       )})`,
                     }"
-                  ></div> -->
+                  ></div>
                   <!-- background-layer 추가 -->
                   <div class="info2">
                     <v-img
@@ -252,19 +251,26 @@ const formatCost = (cost) => {
 // 여행 국가에 따른 carousel 배경 이미지 지정하기
 const getBackgroundImage = (country) => {
   const images = {
-    한국: "@/assets/img/carousel/korea.jpg",
-    대한민국: "@/assets/img/carousel/korea.jpg",
-    일본: "@/assets/img/carousel/japan.jpg",
-    중국: "@/assets/img/carousel/china.jpg",
-    스페인: "@/assets/img/carousel/spain.jpg",
-    이탈리아: "@/assets/img/carousel/italy.jpg",
-    프랑스: "@/assets/img/carousel/france.jpg",
-    영국: "@/assets/img/carousel/england.jpg",
-    독일: "@/assets/img/carousel/germany.png",
-    미국: "@/assets/img/carousel/usa.png",
+    한국: new URL("@/assets/img/carousel/korea.jpg", import.meta.url).href,
+    대한민국: new URL("@/assets/img/carousel/korea.jpg", import.meta.url).href,
+    수원: new URL("@/assets/img/carousel/military.jpg", import.meta.url).href,
+    일본: new URL("@/assets/img/carousel/japan.jpeg", import.meta.url).href,
+    중국: new URL("@/assets/img/carousel/china.jpg", import.meta.url).href,
+    베트남: new URL("@/assets/img/carousel/vietnam.jpg", import.meta.url).href,
+    캄보디아: new URL("@/assets/img/carousel/cambodia.jpeg", import.meta.url)
+      .href,
+    스페인: new URL("@/assets/img/carousel/spain.jpg", import.meta.url).href,
+    이탈리아: new URL("@/assets/img/carousel/italy.jpeg", import.meta.url).href,
+    프랑스: new URL("@/assets/img/carousel/france.jpg", import.meta.url).href,
+    영국: new URL("@/assets/img/carousel/england.jpeg", import.meta.url).href,
+    독일: new URL("@/assets/img/carousel/germany.jpg", import.meta.url).href,
+    미국: new URL("@/assets/img/carousel/usa.jpg", import.meta.url).href,
   };
 
-  return images[country] || "@/assets/img/carousel/default.jpg"; // 국가명에 해당하는 이미지가 없으면 기본 이미지 사용
+  return (
+    images[country] ||
+    new URL("@/assets/img/carousel/default.jpg", import.meta.url).href
+  );
 };
 </script>
 
@@ -356,7 +362,7 @@ const getBackgroundImage = (country) => {
   height: 100%;
   background-size: cover;
   background-position: center;
-  opacity: 0.8;
+  opacity: 0.5;
   z-index: 0;
 }
 
@@ -369,6 +375,11 @@ const getBackgroundImage = (country) => {
   align-items: center;
   font-size: large;
   height: 100%;
+  font-weight: bolder;
+}
+
+.info > span {
+  font-size: 28px;
 }
 
 .info2 {
@@ -380,6 +391,7 @@ const getBackgroundImage = (country) => {
   align-items: center;
   font-size: large;
   height: 65%;
+  font-weight: bolder;
 }
 
 .non-past {
@@ -397,12 +409,12 @@ const getBackgroundImage = (country) => {
 }
 
 .trip-name {
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 500;
 }
 
 .trip-country {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 500;
 }
 

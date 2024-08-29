@@ -5,7 +5,7 @@
 
     <!-- 입금/출금 -->
     <div class="type">
-      <div class="deposit">
+      <!-- <div class="deposit">
         <div class="deposit-img">
           <img src="@/assets/img/deposit.png" alt="입금" />
         </div>
@@ -13,14 +13,16 @@
           <div>박준영님에게 172,860원 출금</div>
           <div>임광영님에게 252,440원 출금</div>
         </div>
-      </div>
+      </div> -->
       <div class="withdraw">
         <div class="withdraw-img">
           <img src="@/assets/img/withdraw.png" alt="출금" />
         </div>
         <div class="withdraw-list">
-          <div>이선재님으로부터 375,988원 입금</div>
-          <div>최한진님으로부터 82,350원 입금</div>
+          <div>박준영님으로부터 375,988원 입금</div>
+          <div>이선재님으로부터 82,350원 입금</div>
+          <div>임광영님으로부터 375,988원 입금</div>
+          <div>정태완님으로부터 82,350원 입금</div>
         </div>
       </div>
     </div>

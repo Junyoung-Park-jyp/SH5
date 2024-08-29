@@ -270,9 +270,7 @@ const totalBalance = computed(() => {
   );
 });
 
-// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
 const membersWithColors = ref([]);
-
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
 
 // `onMounted`에서 `membersWithColors`를 초기화
@@ -345,7 +343,7 @@ const formattedMemberBalance = (balance) => {
   )}`;
 };
 
-const startDate = computed(()=> new Date(tripStore.startDate))  
+const startDate = computed(() => new Date(tripStore.startDate));
 
 // 사전 예약 결제 내역을 스토어에서 가져오기
 const bookingPayments = computed(() => {
@@ -598,7 +596,7 @@ const formatTime = (time) => {
 }
 
 .member-balance {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: rgb(78, 160, 120);
   white-space: nowrap;
   overflow: hidden;

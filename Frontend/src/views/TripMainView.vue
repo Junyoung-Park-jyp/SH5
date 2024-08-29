@@ -14,8 +14,15 @@
       <div class="profile-status">
         {{ myname }} 님은 {{ tripState }}<br />
         <!-- <span class="profile-destination">{{ destination }}</span> -->
-        <!-- <span class="profile-destination">{{ tripStore.locations[0].country }}</span>-->
-        
+        <div class="profile-destination">
+          <span
+            class="profile-country"
+            v-for="(location, index) in tripStore.locations"
+            :key="index"
+          >
+            {{ location.country }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -50,7 +57,9 @@
         <!-- 심볼 -->
         <div
           class="member-symbol d-flex justify-center align-center"
-          :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+          :style="{
+            backgroundColor: rgbaColor(memberColors[index], 0.7),
+          }"
           @click="changeColor(index)"
         >
           <div class="member-familyname">{{ member.member.slice(0, 1) }}</div>
@@ -63,7 +72,10 @@
           <!-- 계좌 -->
           <div v-if="member.account_list != ''" class="member-account">
             <div class="member-bank">
-              <span class="member-bankname">{{ member.bank_name.slice(0, member.bank_name.length - 2) }}</span>&nbsp;
+              <span class="member-bankname">{{
+                member.bank_name.slice(0, member.bank_name.length - 2)
+              }}</span
+              >&nbsp;
               <span class="member-bankaccount">{{ member.bank_account }}</span>
             </div>
             <div class="member-bankbalance">
@@ -161,9 +173,7 @@
       </div>
     </div>
   </div>
-  <div v-else>
-    Loading...
-  </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script setup>
@@ -207,13 +217,13 @@ if (country === "대한민국") {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-const tripId = route.params.id
+const tripId = route.params.id;
 
 // 여행 날짜
-// const startDate = new Date(2024, 7, 10); 
+// const startDate = new Date(2024, 7, 10);
 // const endDate = new Date(2024, 7, 27);
-const startDate = ref(null)
-const endDate = ref(null)
+const startDate = ref(null);
+const endDate = ref(null);
 
 // 여행 상태
 const tripState = ref("");
@@ -322,7 +332,7 @@ function updateCurrencyRate() {
 const loading = ref(true);
 
 onMounted(async () => {
-  tripStore.clearTrip()
+  tripStore.clearTrip();
   try {
     console.log("tripId", tripId);
     if (tripId) {
@@ -339,7 +349,7 @@ onMounted(async () => {
           ? new Date(tripData.end_date)
           : null;
 
-        tripStore.members = tripData.members
+        tripStore.members = tripData.members;
       }
     }
 
@@ -357,7 +367,7 @@ const modifyTrip = () => {
 };
 
 const goDetail = () => {
-  return router.push({ name: "tripDetail", params:{ id: tripId} });
+  return router.push({ name: "tripDetail", params: { id: tripId } });
 };
 
 const goInsurance = () => {
@@ -408,19 +418,45 @@ const goInsurance = () => {
 .profile-status {
   font-weight: bold;
   font-size: 1.25rem;
+  width: 100%;
 }
 
 .profile-destination {
   font-weight: bolder;
   font-size: x-large;
   padding-right: 4px;
+  /* border: 1px solid black; */
+  width: 100%;
+  white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
+  overflow: hidden; /* 넘치는 텍스트를 숨김 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함하여 width 계산 */
+}
+
+/* @keyframes slideText {
+  0% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(300%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+} */
+
+.profile-destination span {
+  display: inline-block; /* 인라인 블록으로 설정하여 움직임 가능 */
+  animation: slideText 4s linear infinite; /* 10초 동안 애니메이션이 반복 */
+}
+
+.profile-country {
   text-decoration-line: underline;
   text-decoration-style: wavy;
   text-decoration-thickness: 2px;
   text-underline-offset: 4px; /* 글자-밑줄 간격 */
   text-decoration-skip-ink: none;
+  margin-right: 10px; /* 단어 간격을 조정하기 위해 추가 */
 }
-
 /* 구획 나누기 */
 .trip {
   margin: 20px auto;
@@ -493,7 +529,7 @@ const goInsurance = () => {
 .member-info {
   display: flex;
   flex-direction: column;
-  min-width: 210px; 
+  min-width: 210px;
 }
 
 .member-bank * {

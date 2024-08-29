@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 
 // 색상 배열
 const colors = [
@@ -14,7 +14,6 @@ const colors = [
 
 // Composable function to handle member colors
 export function useMemberColors(members) {
-  // 멤버별 색상 배열 초기화
   const memberColors = ref([]);
 
   // 로컬 스토리지에서 색상 불러오기
@@ -46,7 +45,6 @@ export function useMemberColors(members) {
   // Hex 색상을 RGBA로 변환하여 투명도를 조절하는 함수
   const rgbaColor = (hex = "#d3d3d3", alpha = 1) => {
     if (!hex || typeof hex !== "string" || hex.length !== 7) {
-      // 기본값 또는 잘못된 hex 값 처리
       hex = "#d3d3d3"; // 기본값 설정
     }
     const r = parseInt(hex.slice(1, 3), 16);
@@ -58,19 +56,13 @@ export function useMemberColors(members) {
   // 멤버 목록이 변경될 때마다 색상 배열 업데이트
   watch(
     members,
-    () => {
-      loadColors();
+    (newMembers) => {
+      if (newMembers.length > 0) {
+        loadColors();
+      }
     },
     { immediate: true }
   );
-
-  // 페이지 로드 시 색상 로드
-  onMounted(() => {
-    loadColors();
-  });
-
-  // 색상 변경 감지하여 자동 저장
-  watch(memberColors, saveColors, { deep: true });
 
   return {
     memberColors,
