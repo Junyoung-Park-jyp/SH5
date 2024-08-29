@@ -5,7 +5,7 @@
       <v-row>
         <div class="question">누구와 여행을 떠나시나요?</div>
         <div class="explanation">
-          닉네임과 이메일 입력시 자동으로 초대 PUSH 알림 전송
+          이메일 입력시 자동으로 초대 PUSH 알림 전송
         </div>
         <v-col cols="12">
           <!-- <v-row>
@@ -15,13 +15,13 @@
           </v-row> -->
 
           <!-- 닉네임 입력 필드 -->
-          <v-text-field
+          <!-- <v-text-field
             label="닉네임"
             placeholder="닉네임"
             outlined
             type="text"
             v-model="userName"
-          ></v-text-field>
+          ></v-text-field> -->
 
           <!-- 이메일 입력 필드 -->
           <v-text-field
@@ -82,6 +82,7 @@ const addMember = async () => {
 
   if (userData) {
     tripStore.members.push(userData);
+    email.value = "";
   } else {
     console.error("멤버 추가 실패");
   }

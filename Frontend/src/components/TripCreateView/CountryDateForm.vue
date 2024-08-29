@@ -47,7 +47,7 @@
           </div> -->
         </v-col>
         <div class="btn-container">
-          <button @click="addCity" class="mt-1 btn-add">+ 추가</button>
+          <button @click="addCountry" class="mt-1 btn-add">+ 추가</button>
         </div>
       </v-row>
     </div>
@@ -134,8 +134,8 @@ import { ko } from "date-fns/locale";
 const tripStore = useTripStore();
 
 const countryInput = ref("");
-const cityInput = ref("");
-const cities = ref([]);
+// const cityInput = ref("");
+// const cities = ref([]);
 
 // 출발일시 및 도착일시 관리
 const departureDate = ref(null);
@@ -161,20 +161,14 @@ const updateArrivalDate = (newDate) => {
 };
 
 // 도시 목록을 가져오기 위한 예제 데이터
-const cityData = {
-  한국: ["서울", "부산", "인천", "대구"],
-  일본: ["도쿄", "오사카", "교토", "삿포로"],
-  미국: ["뉴욕", "로스앤젤레스", "시카고", "샌프란시스코"],
-};
-
 // 사용자가 국가를 입력하면 해당 국가의 도시 목록을 가져오는 함수
-const fetchCities = () => {
-  if (cityData[countryInput.value]) {
-    cities.value = cityData[countryInput.value];
-  } else {
-    cities.value = [];
-  }
-};
+// const fetchCities = () => {
+//   if (cityData[countryInput.value]) {
+//     cities.value = cityData[countryInput.value];
+//   } else {
+//     cities.value = [];
+//   }
+// };
 
 // 국가를 배열에 추가하는 함수
 const addCountry = () => {
@@ -210,7 +204,7 @@ const removeCity = (index) => {
 };
 
 // 국가가 변경될 때마다 도시 목록을 업데이트
-watch(countryInput, fetchCities);
+watch(countryInput);
 
 // 날짜 포맷팅 함수
 const getDay = (date) => {
