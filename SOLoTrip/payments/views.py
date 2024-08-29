@@ -7,6 +7,8 @@ from .models import Payment, Calculate
 from trips.models import Member
 from .serializers import PaymentCreateSerializer, PaymentDetailSerializer, CalculateCreateSerializer
 from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal as withdrawal
+from shinhan_api.demand_deposit import update_demand_deposit_account_Transfer as transfer
+from shinhan_api.demand_deposit import inquire_demand_deposit_account_balance as balance
 from chatgpt_api.api import categorize
 
 
@@ -101,5 +103,21 @@ def objection(request):
         else:
             return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
-        response = calculates.delete()
-        return Response({'data': response}, status=status.HTTP_204_NO_CONTENT)
+        result = {}
+        payment = Payment.objects.get(id=payment_id)
+        withdrawal_bank_account = payment.bank_account
+        withdrawal_user = Member.objects.filter(bank_account=withdrawal_bank_account)[0].user
+        withdrawal_email = withdrawal_user.email
+        username = withdrawal_user.username
+        result[username] = {"정산 취소 전 잔액": int(balance(withdrawal_email, withdrawal_bank_account)['REC']['accountBalance'])}
+        for calculate in calculates:
+            deposit_user = calculate.member
+            deposit_bank_account = deposit_user.bank_account
+            transfer(withdrawal_email, deposit_bank_account, withdrawal_bank_account, calculate.cost)
+            temp_balance = int(balance(deposit_user.user.email, deposit_user.bank_account)['REC']['accountBalance'])
+            initial_balance = result[username]["정산 취소 전 잔액"]
+            result[username]["정산 전후 차액"] = temp_balance - initial_balance  # 정산 전후 차액
+            result[username]["정산 후 잔액"] = temp_balance  # 정산 후 잔액
+        
+        calculates.delete()
+        return Response({'data': result}, status=status.HTTP_204_NO_CONTENT)
