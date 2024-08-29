@@ -251,7 +251,7 @@ const getBackgroundImage = (country) => {
     일본: "@/assets/img/carousel/japan.jpg",
     중국: "@/assets/img/carousel/china.jpg",
     스페인: "@/assets/img/carousel/spain.jpg",
-    이탈리아: "@/assets/img/carousel/italy.jpg", //
+    이탈리아: "@/assets/img/carousel/italy.jpg",
     프랑스: "@/assets/img/carousel/france.jpg",
     영국: "@/assets/img/carousel/england.jpg",
     독일: "@/assets/img/carousel/germany.png",
