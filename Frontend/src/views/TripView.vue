@@ -3,7 +3,7 @@
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>{{ userStore.name }} 님
+      <span>{{ userStore.userName }} 님
       </span>
     </div>
 
@@ -222,9 +222,9 @@ const formatCost = (cost) => {
 // 실제 과거 여행 데이터 기준으로 짠 script
 // const pastTrips = computed(() => { return tripStore.pastTrips })
 
-// const goToGallery = (tripId) => {
-//   router.push({ name: 'gallery', params: { id: id}})
-// }
+const goToGallery = (tripId) => {
+  router.push({ name: 'gallery', params: { id: tripId }})
+}
 </script>
 
 <style scoped>

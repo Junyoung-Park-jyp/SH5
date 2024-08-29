@@ -155,6 +155,7 @@ onMounted(() => {
   userStore.signIn({ email: "email9629@naver.com" });
 });
 
+
 // BridgeView로 라우팅하는 함수
 const navigateToBridge = () => {
   stateStore.toggleTrip();
