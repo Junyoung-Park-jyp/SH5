@@ -43,8 +43,9 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         transaction_unique_number = representation['transaction_unique_number']
 
         representation.pop('transaction_unique_number')
-
-        email = Member.objects.filter(bank_account=bank_account).first().user.email
+        user = Member.objects.filter(bank_account=bank_account).first().user
+        email = user.email
+        representation['username'] = user.username
         representation['balance'] = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
 
         return representation
