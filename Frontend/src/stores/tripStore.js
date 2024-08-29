@@ -169,15 +169,15 @@ export const useTripStore = defineStore("trip", {
 
     async getFutureTrips() {
       try {
-        const response = await axiosInstance.get('/trips/ongoing/')
+        const response = await axiosInstance.get("/trips/ongoing/");
 
         if (response) {
-          console.log(response.data)
+          console.log(response.data);
 
-          this.futureTrips = response.data.data
+          this.futureTrips = response.data.data;
         }
-      } catch(error) {
-        console.error('미래 여행 조회 실패', error)
+      } catch (error) {
+        console.error("미래 여행 조회 실패", error);
       }
     },
   },
@@ -185,7 +185,7 @@ export const useTripStore = defineStore("trip", {
     enabled: true,
     strategies: [
       {
-        key: 'tripStore',
+        key: "tripStore",
         storage: sessionStorage,
       },
     ],
