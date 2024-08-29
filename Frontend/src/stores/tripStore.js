@@ -160,7 +160,7 @@ export const useTripStore = defineStore("trip", {
         if (response) {
           console.log(response.data);
 
-          this.pastTrips = response.data.data
+          this.pastTrips = response.data.data;
         }
       } catch (error) {
         console.error("과거 여행 조회 실패", error);
