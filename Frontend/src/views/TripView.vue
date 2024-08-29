@@ -223,18 +223,20 @@ const goTripMain = (tripId) => {
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
-const goTripGallery = (tripId) => {
-  router.push({ name: "gallery", params: {id: tripId} });
-};
+// const goTripGallery = () => {
+//   router.push({ name: "gallery" });
+// };
 
 // cost 포맷팅
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
 
-const goToGallery = (tripId) => {
+const goTripGallery = (tripId) => {
   router.push({ name: 'gallery', params: { id: tripId }})
 }
+
+
 </script>
 
 <style scoped>
