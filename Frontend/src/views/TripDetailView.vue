@@ -158,7 +158,7 @@ onMounted(async () => {
   const tripId = route.params.id
   console.log("tripId", tripId, "today", format(new Date(), 'yyyy-MM-dd'), 'endDate', tripStore.endDate)
   if (tripId) {
-    const payments = await paymentStore.getPayments(tripId, format(today, 'yyyy-MM-dd'), format(endDate, 'yyyy-MM-dd'));
+    const payments = await paymentStore.getPayments(tripId, format(tripStore.startDate, 'yyyy-MM-dd'), format(tripStore.endDate, 'yyyy-MM-dd'));
     if (payments) {
       // 데이터 할당
       console.log(usePaymentStore)

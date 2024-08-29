@@ -87,7 +87,7 @@ export const useTripStore = defineStore("trip", {
     },
 
     setTrip(tripData) {
-      this.loactions = tripData.locations;
+      this.locations = tripData.locations;
       this.members = tripData.members;
       this.startDate = tripData.start_date;
       this.endDate = tripData.end_date;
