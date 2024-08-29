@@ -8,9 +8,6 @@ RUN npm install
 
 COPY . .
 
-ARG VUE_APP_AILAB_API_KEY
-ENV VUE_APP_AILAB_API_KEY=${VUE_APP_AILAB_API_KEY}
-
 RUN npm run build
 
 FROM nginx:stable-alpine as production-stage

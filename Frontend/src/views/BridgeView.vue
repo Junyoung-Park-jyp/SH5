@@ -80,15 +80,17 @@ const benefits = {
 // 여행 시작 페이지 이동 함수
 function goToTrip() {
   router.push({ name: "home" });
-  userStore.signIn({ email: "email9629@naver.com" });
+  // userStore.signIn({ email: "email9629@naver.com" });
 }
 
 // 혜택 더보기 페이지 이동 함수
 function goToBenefits() {
   if (selectedCardType.value === '체크카드') {
-    window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/check/1225714_2206.html';
+    // window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/check/1225714_2206.html';
+    window.open('https://www.shinhancard.com/pconts/html/card/apply/check/1225714_2206.html', '_blank');
   } else if (selectedCardType.value === '신용카드') {
-    window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/credit/1227751_2207.html';
+    // window.location.href = 'https://www.shinhancard.com/pconts/html/card/apply/credit/1227751_2207.html';
+    window.open('https://www.shinhancard.com/pconts/html/card/apply/credit/1227751_2207.html', '_blank');
   }
 }
 

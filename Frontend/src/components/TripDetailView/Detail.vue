@@ -2,7 +2,10 @@
   <div class="main-container">
     <div class="content-container">
       <!-- 예산 -->
-      <div v-if="showAllContainers || showBudgetAndBookingOnly" class="budget-container">
+      <div
+        v-if="showAllContainers || showBudgetAndBookingOnly"
+        class="budget-container"
+      >
         <div class="title d-flex justify-space-between">
           <div class="prepare">준비</div>
           <div class="line">&nbsp;|&nbsp;</div>
@@ -22,12 +25,17 @@
               :key="index"
               class="member-info"
             >
+              <!-- 심볼 -->
               <div
                 class="member-symbol d-flex justify-center align-center"
-                :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
+                :style="{
+                  backgroundColor: rgbaColor(memberColors[index], 0.7),
+                }"
                 @click="changeColor(index)"
               >
-                <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+                <div class="member-familyname">
+                  {{ member.member.slice(0, 1) }}
+                </div>
               </div>
               <div class="member-balance" @click="toggleCurrency">
                 {{ formattedMemberBalance(member.balance) }}
@@ -38,7 +46,13 @@
       </div>
 
       <!-- 준비 | 사전 예약 -->
-      <div v-if="bookingPayments.length && (showAllContainers || showBudgetAndBookingOnly)" class="booking-container">
+      <div
+        v-if="
+          bookingPayments.length &&
+          (showAllContainers || showBudgetAndBookingOnly)
+        "
+        class="booking-container"
+      >
         <div class="title d-flex justify-space-between">
           <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
           <v-spacer></v-spacer>
@@ -88,11 +102,11 @@
               >
                 <div
                   class="person-symbol d-flex justify-center align-center"
-                  :style="personStyle(member.name, payment.members, index)"
-                  @click="personClick(paymentIndex, member.name, 'booking')"
+                  :style="personStyle(member.member, payment.members, index)"
+                  @click="personClick(paymentIndex, member.member, 'booking')"
                 >
                   <div class="person-familyname">
-                    {{ member.name.slice(0, 1) }}
+                    {{ member.member.slice(0, 1) }}
                   </div>
                 </div>
               </div>
@@ -108,7 +122,13 @@
       </div>
 
       <!-- 결제 | 지출 -->
-      <div v-if="filteredPayments.length && (showAllContainers || !showBudgetAndBookingOnly)" class="pay-container">
+      <div
+        v-if="
+          filteredPayments.length &&
+          (showAllContainers || !showBudgetAndBookingOnly)
+        "
+        class="pay-container"
+      >
         <div class="title d-flex justify-space-between">
           <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
           <v-spacer></v-spacer>
@@ -158,11 +178,11 @@
               >
                 <div
                   class="person-symbol d-flex justify-center align-center"
-                  :style="personStyle(member.name, payment.members, index)"
-                  @click="personClick(paymentIndex, member.name, 'trip')"
+                  :style="personStyle(member.member, payment.members, index)"
+                  @click="personClick(paymentIndex, member.member, 'trip')"
                 >
                   <div class="person-familyname">
-                    {{ member.name.slice(0, 1) }}
+                    {{ member.member.slice(0, 1) }}
                   </div>
                 </div>
               </div>
@@ -170,7 +190,8 @@
 
             <!-- 결제 날짜 -->
             <div class="date-area">
-              {{ formatDate(payment.pay_date) }} {{ formatTime(payment.pay_time) }}
+              {{ formatDate(payment.pay_date) }}
+              {{ formatTime(payment.pay_time) }}
             </div>
           </div>
         </div>
@@ -198,7 +219,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
@@ -211,7 +231,11 @@ import {
   currencyText,
   fetchExchangeRates,
 } from "@/stores/currencyStore";
-import { usePaymentStore } from "@/stores/paymentStore"; // 스토어 불러오기
+import { useTripStore } from "@/stores/tripStore";
+import { usePaymentStore } from "@/stores/paymentStore";
+
+const tripStore = useTripStore();
+const paymentStore = usePaymentStore();
 
 // Props
 const props = defineProps({
@@ -222,31 +246,48 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(['updateCheckedCost']);
-
-// 결제 데이터를 스토어에서 불러오기
-const paymentStore = usePaymentStore();
+const emit = defineEmits(["updateCheckedCost"]);
 
 // 멤버별 예산 더미 데이터
-const tripMembers = [
-  { name: "박준영", balance: 3000000 },
-  { name: "이선재", balance: 3500000 },
-  { name: "임광영", balance: 4000000 },
-  { name: "정태완", balance: 4500000 },
-  { name: "최한진", balance: 5000000 },
-];
+// const tripMembers = [
+//   { name: "박준영", balance: 3000000 },
+//   { name: "이선재", balance: 3500000 },
+//   { name: "임광영", balance: 4000000 },
+//   { name: "정태완", balance: 4500000 },
+//   { name: "최한진", balance: 5000000 },
+// ];
+
+const tripMembers = computed(() => tripStore.members);
 
 const totalBalance = computed(() => {
-  return tripMembers.reduce((total, member) => total + member.balance, 0);
+  if (!Array.isArray(tripMembers.value)) {
+    return 0;
+  }
+  return tripMembers.value.reduce(
+    (total, member) =>
+      total + (member.balance ? parseFloat(member.balance) : 0),
+    0
+  );
 });
 
+// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
+const membersWithColors = ref([]);
+
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(() => {
+  membersWithColors.value = tripMembers.value.map((member, index) => ({
+    ...member,
+    color: memberColors.value[index],
+  }));
+});
 
 const currencyIndex = ref(0);
 const currencies = ref(["KRW"]);
 
 onMounted(() => {
-  fetchExchangeRates(); 
+  fetchExchangeRates();
   currencies.value = [
     "KRW",
     ...exchangeArray.value.map((item) => item.currency),
@@ -333,18 +374,20 @@ const paymentsDuringTrip = computed(() => {
 
 // 선택된 날짜에 해당하는 지출 내역 필터링
 const filteredPayments = computed(() => {
-  if (props.selectedView === 'all') {
-    return paymentsDuringTrip.value;  // 모든 결제 내역을 반환
+  if (props.selectedView === "all") {
+    return paymentsDuringTrip.value; // 모든 결제 내역을 반환
   } else {
-    return paymentsDuringTrip.value.filter((payment) =>
-      new Date(payment.pay_date).toDateString() === props.selectedDate.toDateString()
+    return paymentsDuringTrip.value.filter(
+      (payment) =>
+        new Date(payment.pay_date).toDateString() ===
+        props.selectedDate.toDateString()
     );
   }
 });
 
 const totalCheckedCost = computed(() => {
   return [...bookingPayments.value, ...paymentsDuringTrip.value]
-    .filter(payment => payment.checked)
+    .filter((payment) => payment.checked)
     .reduce((sum, payment) => sum + payment.cost, 0);
 });
 
@@ -363,22 +406,28 @@ const formattedCheckedCost = computed(() => {
     currencies.value[currencyIndex.value] === "KRW"
       ? "₩"
       : currencyText[currencies.value[currencyIndex.value]];
-      const formattedCost = `${currencySymbol} ${formatWithComma(formatToTwoDecimal(convertedValue))}`;
-      return formattedCost;
+  const formattedCost = `${currencySymbol} ${formatWithComma(
+    formatToTwoDecimal(convertedValue)
+  )}`;
+  return formattedCost;
 });
 
 watch(formattedCheckedCost, (newCost) => {
-  emit('updateCheckedCost', newCost);
+  emit("updateCheckedCost", newCost);
 });
 
 const toggleCheck = (index, type) => {
-  if (type === 'booking') {
-    bookingPayments.value[index].checked = !bookingPayments.value[index].checked;
-  } else if (type === 'trip') {
+  if (type === "booking") {
+    bookingPayments.value[index].checked =
+      !bookingPayments.value[index].checked;
+  } else if (type === "trip") {
     // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
     const payment = filteredPayments.value[index];
-    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
-    paymentsDuringTrip.value[actualIndex].checked = !paymentsDuringTrip.value[actualIndex].checked;
+    const actualIndex = paymentsDuringTrip.value.findIndex(
+      (p) => p === payment
+    );
+    paymentsDuringTrip.value[actualIndex].checked =
+      !paymentsDuringTrip.value[actualIndex].checked;
   }
 };
 
@@ -418,7 +467,6 @@ const formattedCost = (cost) => {
   )}`;
 };
 
-
 const personStyle = (memberName, reservationMembers, index) => {
   if (reservationMembers.includes(memberName)) {
     return {
@@ -435,18 +483,21 @@ const personStyle = (memberName, reservationMembers, index) => {
 };
 
 const personClick = (index, memberName, type) => {
-  const paymentList = type === 'booking' ? bookingPayments.value : filteredPayments.value;
+  const paymentList =
+    type === "booking" ? bookingPayments.value : filteredPayments.value;
   const payment = paymentList[index];
 
   if (payment.members.includes(memberName)) {
-    payment.members = payment.members.filter(name => name !== memberName);
+    payment.members = payment.members.filter((name) => name !== memberName);
   } else {
     payment.members.push(memberName);
   }
 
   // paymentsDuringTrip의 실제 항목 업데이트
-  if (type === 'trip') {
-    const actualIndex = paymentsDuringTrip.value.findIndex(p => p === payment);
+  if (type === "trip") {
+    const actualIndex = paymentsDuringTrip.value.findIndex(
+      (p) => p === payment
+    );
     paymentsDuringTrip.value[actualIndex] = payment;
   }
 };
@@ -510,7 +561,7 @@ const formatTime = (time) => {
   height: 60px;
   margin: 10px auto;
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
   overflow-y: auto;
@@ -660,7 +711,6 @@ const formatTime = (time) => {
 
 .person-area::-webkit-scrollbar {
   width: 3px;
-  
 }
 .person-area::-webkit-scrollbar-thumb {
   background-color: #757575;
@@ -699,7 +749,7 @@ const formatTime = (time) => {
 .date-area {
   display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
   text-align: center;
   font-size: 0.6rem;
   color: grey;
@@ -759,7 +809,6 @@ const formatTime = (time) => {
   color: grey;
   font-size: smaller;
 }
-
 
 /* 정산 금액 */
 .calculation {

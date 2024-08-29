@@ -113,7 +113,7 @@ const getResult = async (taskId) => {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   /* border: 1px solid black; */
 }
 

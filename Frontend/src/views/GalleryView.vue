@@ -18,7 +18,8 @@ import PreviousTrip from "@/components/GalleryView/PreviousTrip.vue";
   scrollbar-width: none;
   margin: 0px auto;
   /* padding-bottom: 20px; */
-  padding-bottom: 0px;
+  padding: 0px;
   background-color: #f4f6fa;
+  /* border: 1px solid black; */
 }
 </style>

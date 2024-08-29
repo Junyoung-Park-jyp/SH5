@@ -128,6 +128,10 @@
           </v-row>
         </div>
       </v-row>
+      <div v-else class="non-record">
+        <div class="txt">SOL로 여행 기록이 없습니다</div>
+        <div class="circle"></div>
+      </div>
     </div>
 
     <!-- 여행 만들기 -->
@@ -142,12 +146,13 @@ import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useStateStore } from "@/stores/stateStore";
 import axios from "axios";
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
-
+const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
 
@@ -168,7 +173,8 @@ onMounted(async () => {
     experience.imageUrl = await getImageUrl(experience.country);
   }
 
-  tripStore.getPastTrips()
+  tripStore.getPastTrips();
+  stateStore.getAILABapi({});
 });
 
 const prevSlide = () => {
@@ -201,7 +207,6 @@ const goTripGallery = () => {
   router.push({ name: "gallery" });
 };
 
-
 // cost 포맷팅
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
@@ -213,12 +218,11 @@ const formatCost = (cost) => {
 // const goToGallery = (tripId) => {
 //   router.push({ name: 'gallery', params: { id: id}})
 // }
-
 </script>
 
 <style scoped>
 .main-container {
-  height: 95vh;
+  height: 92vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -347,6 +351,48 @@ const formatCost = (cost) => {
   width: 50%;
 }
 
+/* 기록이 없는 경우 */
+.non-record {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 20%;
+  /* border: 1px solid black; */
+}
+
+.non-record .txt {
+  position: absolute;
+  width: 100%;
+  bottom: 5%;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 35px;
+  /* border: 1px solid blue; */
+}
+
+.non-record .circle {
+  position: absolute;
+  left: 50%;
+  bottom: 0%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: black;
+  border-radius: 50%;
+  animation: bounce 0.65s infinite alternate cubic-bezier(0.1, 0.49, 0.42, 0.99);
+}
+
+@keyframes bounce {
+  0% {
+    transform: translate(-50%, 25px);
+  }
+
+  100% {
+    transform: translate(-50%, -15px);
+  }
+}
+
+/* 하단 */
 .bottom {
   position: fixed;
   bottom: 0;

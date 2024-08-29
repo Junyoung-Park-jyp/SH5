@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
     userKey: '',
     bank: null,
     accountNum: null,
+    balance: 0,
     isLogin: false,
   }),
 
@@ -28,6 +29,9 @@ export const useUserStore = defineStore('user', {
     },
     userAccountNum(state) {
       return state.accountNum
+    },
+    userBalance(state) {
+      return state.balance
     }
   },
 
@@ -61,6 +65,9 @@ export const useUserStore = defineStore('user', {
           this.isLogin = true;
           this.name = response.data.data.username
           this.token = response.data.token
+          this.bank = response.data.data.account_list[0].bank_name
+          this.accountNum = response.data.data.account_list[0].bank_account
+          this.balance = Number(response.data.data.account_list[0].balance)
           console.log('data', response.data)
           console.log("로그인 여부", this.isLogin, this.name)
         }

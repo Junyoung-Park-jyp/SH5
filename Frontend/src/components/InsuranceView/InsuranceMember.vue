@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="title">보험료 결제</div>
-    <div class="explanation">함께 가입할 분이 있다면<br>추가해주세요</div>
+    <div class="explanation">함께 가입할 분이 있다면<br />추가해주세요</div>
     <div class="register-info">
       <div>본인 포함 최대 10명까지 가입할 수 있어요.</div>
     </div>
@@ -19,10 +19,20 @@
             <div>신한 SOL 트래블 해외여행보험</div>
             <div class="close" @click="showModal = false">&times;</div>
           </div>
-          <img class="qr-code" src="@/assets/img/qr-code.png" alt="QR" @click="navigateToUrl">
+          <img
+            class="qr-code"
+            src="@/assets/img/qr-code.png"
+            alt="QR"
+            @click="navigateToUrl"
+          />
           <div class="modal-content">
-            <div style="font-weight: bold;">카메라를 켜고 QR코드를 인식해주세요.</div>
-            <div class="detail">신한 SOL 트래블 해외여행보험 바코드<br>이미지 클릭시 다이렉트로 이동합니다.</div>
+            <div style="font-weight: bold">
+              카메라를 켜고 QR코드를 인식해주세요.
+            </div>
+            <div class="detail">
+              신한 SOL 트래블 해외여행보험 바코드<br />이미지 클릭시 다이렉트로
+              이동합니다.
+            </div>
           </div>
         </div>
       </div>
@@ -31,7 +41,7 @@
     <!-- 멤버 -->
     <div class="member">
       <div
-        v-for="(member, index) in tripMembers"
+        v-for="(member, index) in filteredMembers"
         :key="index"
         class="d-flex content"
       >
@@ -40,12 +50,18 @@
             class="member-symbol d-flex justify-center align-center"
             :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           >
-            <div class="member-familyname">{{ member.name.slice(0, 1) }}</div>
+            <div class="member-familyname">{{ member.member.slice(0, 1) }}</div>
           </div>
-          <div class="member-name">{{ member.name }}</div>
+          <div class="member-name">{{ member.member }}</div>
         </div>
         <div class="invite">
-          <button class="invite-btn" :class="{ 'clicked': member.invited }" @click="inviteMember(index)">{{ member.invited ? '초대완료' : '+ 초대하기' }}</button>
+          <button
+            class="invite-btn"
+            :class="{ clicked: clickedButtons[index] }"
+            @click="inviteMember(index)"
+          >
+            {{ clickedButtons[index] ? "초대완료" : "+ 초대하기" }}
+          </button>
         </div>
       </div>
     </div>
@@ -56,44 +72,86 @@
 
     <!-- 예상 보험료 -->
     <div class="bottom">
-      <div class="price-info">보험료
+      <div class="price-info">
+        보험료
         <div class="discount" v-if="totalInvited > 0">
           <span class="blue">{{ discountPercentage }}% 할인</span>
         </div>
       </div>
       <div class="amount">
         &nbsp; 인당
-        <div class="before" :class="{ 'cancel': totalInvited > 0 }">{{ formatWithComma(basePrice) }}원</div>
+        <div class="before" :class="{ cancel: totalInvited > 0 }">
+          {{ formatWithComma(basePrice) }}원
+        </div>
         <div class="after" v-if="totalInvited > 0">
-          <span class="blue">{{ formatWithComma(discountedPrice) }}</span>&nbsp;원
+          <span class="blue">{{ formatWithComma(discountedPrice) }}</span
+          >&nbsp;원
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
+import { useUserStore } from "@/stores/userStore";
+import { useTripStore } from "@/stores/tripStore";
 
 const showModal = ref(false);
 const basePrice = 15500;
 
 // 여행 멤버와 계좌번호
-const tripMembers = ref([
-  { name: "박준영", account: "신한 0276524561730773", invited: false },
-  { name: "이선재", account: "신한 000-000-000", invited: false },
-  { name: "임광영", account: "국민 000-000-000", invited: false },
-  { name: "정태완", account: "우리 000-000-000", invited: false },
-  { name: "최한진", account: "계좌 미등록", invited: false },
-]);
+// const tripMembers = ref([
+//   { name: "박준영", account: "신한 0276524561730773", invited: false },
+//   { name: "이선재", account: "신한 000-000-000", invited: false },
+//   { name: "임광영", account: "국민 000-000-000", invited: false },
+//   { name: "정태완", account: "우리 000-000-000", invited: false },
+//   { name: "최한진", account: "계좌 미등록", invited: false },
+// ]);
 
-const { memberColors, rgbaColor } = useMemberColors(tripMembers.value);
+const tripStore = useTripStore();
+const userStore = useUserStore();
+const tripMembers = computed(() => tripStore.members);
+
+const userName = computed(() => userStore.name);
+
+const filteredMembers = computed(() => {
+  return tripMembers.value.filter((member) => member.member !== userName.value);
+});
+
+const clickedButtons = ref([]);
+
+// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
+const membersWithColors = ref([]);
+
+const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(() => {
+  membersWithColors.value = tripMembers.value.map((member, index) => ({
+    ...member,
+    color: memberColors.value[index],
+  }));
+});
+
+// tripMembers가 변경될 때마다 clickedButtons 배열의 길이를 맞추어 초기화
+watch(
+  tripMembers,
+  (newMembers) => {
+    const filtered = newMembers.filter((member) => member.member !== userName);
+    clickedButtons.value = new Array(filtered.length).fill(false);
+    membersWithColors.value = filtered.map((member, index) => ({
+      ...member,
+      color: memberColors.value[index],
+    }));
+  },
+  { immediate: true, deep: true }
+);
 
 const totalInvited = computed(() => {
-  return tripMembers.value.filter(member => member.invited).length;
+  return clickedButtons.value.filter((clicked) => clicked).length;
 });
 
 const discountPercentage = computed(() => {
@@ -110,14 +168,14 @@ const discountedPrice = computed(() => {
   if (totalInvited.value === 1) {
     return (basePrice * 0.95).toFixed(0); // 5% 할인
   } else if (totalInvited.value > 1) {
-    return (basePrice * 0.90).toFixed(0); // 10% 할인
+    return (basePrice * 0.9).toFixed(0); // 10% 할인
   } else {
     return basePrice;
   }
 });
 
 const inviteMember = (index) => {
-  tripMembers.value[index].invited = !tripMembers.value[index].invited;
+  clickedButtons.value[index] = !clickedButtons.value[index];
 };
 
 // QR 모달
@@ -127,7 +185,7 @@ const qrInvite = () => {
 
 // 이미지 클릭 시 호출되는 함수
 const navigateToUrl = () => {
-  window.location.href = 'https://direct.shinhanez.co.kr/#PDROTIOTI_M01';
+  window.location.href = "https://direct.shinhanez.co.kr/#PDROTIOTI_M01";
 };
 </script>
 
@@ -240,7 +298,7 @@ const navigateToUrl = () => {
   margin: auto;
   display: flex;
   flex-direction: column;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
   align-content: center;
   text-align: center;
   margin: 20px auto 50px auto;
@@ -252,7 +310,7 @@ const navigateToUrl = () => {
   margin: auto;
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
+  justify-content: space-between;
   align-content: center;
   text-align: center;
   background-color: #ffffff;
@@ -297,7 +355,6 @@ const navigateToUrl = () => {
 .clicked {
   color: #4b72e1;
 }
-
 
 /* 이미지 */
 .image {
@@ -359,5 +416,4 @@ const navigateToUrl = () => {
   font-weight: bold;
   color: #4b72e1;
 }
-
 </style>
