@@ -109,15 +109,15 @@ def objection(request):
         withdrawal_user = Member.objects.filter(bank_account=withdrawal_bank_account)[0].user
         withdrawal_email = withdrawal_user.email
         username = withdrawal_user.username
-        result[username] = {"정산 취소 전 잔액": int(balance(withdrawal_email, withdrawal_bank_account)['REC']['accountBalance'])}
+        result[username] = {"before_balance": int(balance(withdrawal_email, withdrawal_bank_account)['REC']['accountBalance'])}
         for calculate in calculates:
             deposit_user = calculate.member
             deposit_bank_account = deposit_user.bank_account
             transfer(withdrawal_email, deposit_bank_account, withdrawal_bank_account, calculate.cost)
             temp_balance = int(balance(deposit_user.user.email, deposit_user.bank_account)['REC']['accountBalance'])
-            initial_balance = result[username]["정산 취소 전 잔액"]
-            result[username]["정산 전후 차액"] = temp_balance - initial_balance  # 정산 전후 차액
-            result[username]["정산 후 잔액"] = temp_balance  # 정산 후 잔액
+            initial_balance = result[username]["before_balance"]
+            result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
+            result[username]["after_balance"] = temp_balance  # 정산 후 잔액
         
         calculates.delete()
         return Response({'data': result}, status=status.HTTP_204_NO_CONTENT)

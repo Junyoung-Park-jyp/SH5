@@ -79,7 +79,7 @@ class CalculateCreateSerializer(serializers.Serializer):
         result = {}
         for member in members:
             if member.bank_account:
-                result[member.user.username] = {"정산 전 잔액": int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])}  # 정산 전 잔액
+                result[member.user.username] = {"before_balance": int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])}  # 정산 전 잔액
 
         # 각 payment에 대해 처리
         for payment_data in validated_data['payments']:
@@ -113,8 +113,8 @@ class CalculateCreateSerializer(serializers.Serializer):
             if member.bank_account:
                 username = member.user.username
                 temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
-                initial_balance = result[username]["정산 전 잔액"]
-                result[username]["정산 전후 차액"] = temp_balance - initial_balance  # 정산 전후 차액
-                result[username]["정산 후 잔액"] = temp_balance  # 정산 후 잔액
+                initial_balance = result[username]["before_balance"]
+                result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
+                result[username]["after_balance"] = temp_balance  # 정산 후 잔액
 
         return result
