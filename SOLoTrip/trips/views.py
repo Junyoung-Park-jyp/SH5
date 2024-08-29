@@ -45,7 +45,7 @@ def ongoing(request):
         trips = Trip.objects.filter(
             member__user=request.user,
             end_date__gte=current_date
-        ).distinct()
+        ).order_by('start_date')
         serializer = TripSerializer(trips, many=True)
         if serializer.data:
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
@@ -60,7 +60,7 @@ def finish(request):
         trips = Trip.objects.filter(
             member__user=request.user,
             end_date__lt=current_date
-        ).distinct()
+        ).order_by('start_date')
         serializer = TripSerializer(trips, many=True)
         if serializer.data:
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
