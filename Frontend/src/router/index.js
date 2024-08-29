@@ -30,13 +30,13 @@ const router = createRouter({
     },
     {
       // path: "/trip/:tripId",
-      path: "/trip/main",
+      path: "/trip/main/:id",
       name: "tripMain",
       component: TripMainView,
     },
     {
       // path: "/trip/:tripId",
-      path: "/trip/detail",
+      path: "/trip/detail/:id",
       name: "tripDetail",
       component: TripDetailView,
     },
@@ -58,7 +58,7 @@ const router = createRouter({
       component: InsuranceView,
     },
     {
-      path: '/gallery',
+      path: '/gallery/:id',
       name: 'gallery',
       component: GalleryView,
       props: true,

@@ -44,7 +44,7 @@ const userStore = useUserStore();
 
 const accounts = computed(() => balanceStore.accounts || []);
 const selectedAccount = ref(null);
-const settlementTime = ref(null);
+const settlementTime = ref('22:00');
 const isLoading = ref(true);  // 로딩 상태 추가
 
 onMounted(async () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div v-if="!loading" class="main-container">
     <!-- 수정 -->
     <div class="modify" @click="modifyTrip">
       <button class="icon-btn">
@@ -64,7 +64,7 @@
         </div>
 
         <!-- 계좌 -->
-        <div v-if="member.bank_account != ''" class="member-account">
+        <div v-if="member.account_list != ''" class="member-account">
           <div class="member-bankaccount">{{ member.bank_account }}</div>
           <div class="member-bankbalance">
             {{ formatWithComma(member.balance) }} 원
@@ -159,11 +159,14 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    Loading...
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
 import {
@@ -180,6 +183,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useBalanceStore } from "@/stores/balanceStore";
 
 const router = useRouter();
+const route = useRoute();
 const tripStore = useTripStore();
 const userStore = useUserStore();
 const balanceStore = useBalanceStore();
@@ -197,6 +201,14 @@ if (country === "대한민국") {
 // 오늘 날짜
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+
+const tripId = route.params.id
+
+// 여행 날짜
+// const startDate = new Date(2024, 7, 10); 
+// const endDate = new Date(2024, 7, 27);
+const startDate = ref(null)
+const endDate = ref(null)
 
 // 여행 상태
 const tripState = ref("");
@@ -305,25 +317,36 @@ function updateCurrencyRate() {
 //   updateCurrencyRate();
 // });
 
-onMounted(async () => {
-  const tripId = tripStore.tripId;
-  if (tripId) {
-    const tripData = await tripStore.getTrip(tripId);
-    if (tripData) {
-      // 데이터 할당
-      destination.value = tripData.locations[0].country || "Unknown";
-      updateTripState();
-      tripStore.startDate = tripData.start_date
-        ? new Date(tripData.start_date)
-        : null;
-      tripStore.endDate = tripData.end_date
-        ? new Date(tripData.end_date)
-        : null;
-    }
-  }
+const loading = ref(true);
 
-  await fetchExchangeRates();
-  updateCurrencyRate();
+onMounted(async () => {
+  try {
+    console.log("tripId", tripId);
+    if (tripId) {
+      const tripData = await tripStore.getTrip(tripId);
+      console.log("여행 정보", tripData);
+      if (tripData) {
+        // 데이터 할당
+        destination.value = tripData.locations[0].country || "Unknown";
+        updateTripState();
+        tripStore.startDate = tripData.start_date
+          ? new Date(tripData.start_date)
+          : null;
+        tripStore.endDate = tripData.end_date
+          ? new Date(tripData.end_date)
+          : null;
+
+        tripStore.members = tripData.members
+      }
+    }
+
+    await fetchExchangeRates();
+    updateCurrencyRate();
+  } catch (error) {
+    console.error("Error loading trip data:", error);
+  } finally {
+    loading.value = false; // 데이터 로드가 완료되면 로딩 상태를 false로 설정
+  }
 });
 
 const modifyTrip = () => {
@@ -331,7 +354,7 @@ const modifyTrip = () => {
 };
 
 const goDetail = () => {
-  return router.push({ name: "tripDetail" });
+  return router.push({ name: "tripDetail", params:{ id: tripId} });
 };
 
 const goInsurance = () => {
