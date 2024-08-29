@@ -42,7 +42,7 @@
             <v-icon icon="mdi-account-outline" size="24px"></v-icon>
           </button>
           <!-- HomeView 이외는 홈 아이콘 -->
-          <button v-if="isTraveling" class="icon-btn">
+          <button v-if="isTraveling" class="icon-btn" @click="goToTrip">
             <v-icon icon="mdi-home-outline" size="24px"></v-icon>
           </button>
         </div>
@@ -55,7 +55,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStateStore } from "@/stores/stateStore";
 import { useUserStore } from "./stores/userStore";
 import HomeView from "./views/HomeView.vue";
@@ -64,6 +64,7 @@ import "./assets/base.css";
 const stateStore = useStateStore();
 const userStore = useUserStore();
 const route = useRoute();
+const router = useRouter();
 const isTraveling = computed(() => stateStore.travel);
 // 토글 스위치 함수
 const toggleSwitch = () => {
@@ -71,7 +72,9 @@ const toggleSwitch = () => {
   stateStore.toggleTrip();
 };
 
-
+function goToTrip() {
+  router.push({ name: "home" });
+}
 </script>
 
 <style scoped>
