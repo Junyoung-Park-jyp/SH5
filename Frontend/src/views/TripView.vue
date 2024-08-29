@@ -7,9 +7,10 @@
     </div>
 
     <!-- 미래/현재 -->
-    <div class="non-past">
+    <div v-if="ongoingTrips"   class="non-past">
       <v-row class="d-flex align-center">
         <v-carousel
+
           :show-arrows="true"
           hide-delimiters
           :cycle="false"
