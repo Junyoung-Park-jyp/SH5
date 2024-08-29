@@ -210,9 +210,9 @@ const goTripMain = (tripId) => {
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
-const goTripGallery = () => {
-  router.push({ name: "gallery" });
-};
+// const goTripGallery = () => {
+//   router.push({ name: "gallery" });
+// };
 
 // cost 포맷팅
 const formatCost = (cost) => {
