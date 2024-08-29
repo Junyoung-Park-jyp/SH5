@@ -78,6 +78,8 @@ def adjustment(request):
         payments = request.data.get('payments')
         for payment in payments:    
             payment_id = payment.get('payment_id')
+            if Calculate.objects.filter(payment_id=payment_id).exists():
+                return Response({'error': "이미 정산이 완료된 정산이 포함되었습니다."}, status=status.HTTP_403_FORBIDDEN)
             bank_account = Payment.objects.get(id=payment_id).bank_account
             if not Member.objects.filter(bank_account=bank_account, user=request.user).exists():
                 return Response({'error': "현재 사용자는 해당 계좌를 사용하고 있지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
@@ -94,30 +96,37 @@ def objection(request):
     if request.method == 'POST':
         # trip_id에 떠있는 결제 내역을 클릭하면 취소할 수 있다.
         # 필요 데이터: payment_id
+        trip_id = request.data.get('trip_id')
         payment_id = request.data.get('payment_id')
         calculates = Calculate.objects.filter(payment=payment_id)
         
-        for calculate in calculates:
-            if calculate.member == request.user:
-                break
-        else:
+        if not Member.objects.filter(trip=trip_id, user=request.user).exists():
             return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
+        members = Member.objects.filter(trip=trip_id)
         result = {}
+        for member in members:
+            if member.bank_account:
+                result[member.user.username] = {"before_balance": int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])}  # 정산 전 잔액
+
         payment = Payment.objects.get(id=payment_id)
         withdrawal_bank_account = payment.bank_account
         withdrawal_user = Member.objects.filter(bank_account=withdrawal_bank_account)[0].user
         withdrawal_email = withdrawal_user.email
         username = withdrawal_user.username
-        result[username] = {"before_balance": int(balance(withdrawal_email, withdrawal_bank_account)['REC']['accountBalance'])}
+        # result[username] = {"before_balance": int(balance(withdrawal_email, withdrawal_bank_account)['REC']['accountBalance'])}
         for calculate in calculates:
             deposit_user = calculate.member
             deposit_bank_account = deposit_user.bank_account
             transfer(withdrawal_email, deposit_bank_account, withdrawal_bank_account, calculate.cost)
-            temp_balance = int(balance(deposit_user.user.email, deposit_user.bank_account)['REC']['accountBalance'])
-            initial_balance = result[username]["before_balance"]
-            result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
-            result[username]["after_balance"] = temp_balance  # 정산 후 잔액
+        
+        for member in members:
+            if member.bank_account:
+                username = member.user.username
+                temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
+                initial_balance = result[username]["before_balance"]
+                result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
+                result[username]["after_balance"] = temp_balance  # 정산 후 잔액
         
         calculates.delete()
         return Response({'data': result}, status=status.HTTP_204_NO_CONTENT)

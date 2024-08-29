@@ -40,7 +40,6 @@ class TripCreateSerializer(serializers.ModelSerializer):
             email = member_data['user']['email']
             bank_accounts = account_list(email)['REC']
             bank_account = ''
-            print(bank_accounts)
             for i in bank_accounts:
                 if i['bankName'] == "신한은행":
                     bank_account = i['accountNo']
