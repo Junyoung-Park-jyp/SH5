@@ -62,13 +62,7 @@ const router = createRouter({
       name: 'gallery',
       component: GalleryView,
       props: true,
-    },
-    // {
-    //   path: '/gallery/:id',
-    //   name: 'gallery',
-    //   component: GalleryView,
-    //   props: true,
-    // }
+    }
   ]
 });
 

@@ -60,7 +60,7 @@
         class="justify-center py-5 my-5"
       >
         <div class="record">
-          총 {{ tripStore.tripExperiences.length }}회 SOL로 여행을 다녀오셨네요!
+          총 {{ tripStore.pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
         <div class="record-carousel">
           <v-row class="d-flex align-center">
@@ -75,7 +75,7 @@
                 :show-arrows="false"
                 cycle
                 interval="3000"
-                @click="goTripGallery"
+                @click="goTripGallery(experience.id)"
               >
                 <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -102,7 +102,7 @@
                   v-for="(experience, index) in tripStore.pastTrips"
                   :key="index"
                   class="background-image"
-                  @click="goToGallery(experience.id)"
+                  @click="goTripGallery(experience.id)"
                 >
                   <div class="info2">
                     <v-img
@@ -219,12 +219,11 @@ const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
 
-// 실제 과거 여행 데이터 기준으로 짠 script
-// const pastTrips = computed(() => { return tripStore.pastTrips })
-
-const goToGallery = (tripId) => {
+const goTripGallery = (tripId) => {
   router.push({ name: 'gallery', params: { id: tripId }})
 }
+
+
 </script>
 
 <style scoped>
