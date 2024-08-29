@@ -42,14 +42,14 @@
             @click="goTripMain(ongoingTrip.id)"
           >
             <div class="background-layer"></div>
-            <!-- <div
+            <div
               class="background-layer"
               :style="{
                 backgroundImage: `url(${getBackgroundImage(
                   ongoingTrip.locations[0].country
                 )})`,
               }"
-            ></div> -->
+            ></div>
             <div class="info">
               <span>
                 <v-icon icon="mdi-music"></v-icon>
