@@ -9,7 +9,7 @@ User = get_user_model()
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ['country', 'city']
+        fields = ['country']
 
 class MemberEmailSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email')
@@ -88,8 +88,13 @@ class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip
         fields = "__all__"
-        
-        
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['locations'] = LocationSerializer(instance.location_set.all().order_by('country', 'city'), many=True).data
+        return representation
+
+
 class MemberDetailSerializer(serializers.ModelSerializer):
     member = serializers.CharField(source='user.username')
     class Meta:

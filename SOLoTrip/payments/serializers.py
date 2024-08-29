@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Payment, Calculate
 from trips.models import Member
-from shinhan_api.demand_deposit import inquire_transaction_history as transaction
 from shinhan_api.demand_deposit import update_demand_deposit_account_Transfer as transfer
 from shinhan_api.demand_deposit import inquire_demand_deposit_account_balance as balance
 
@@ -40,13 +39,13 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         bank_account = representation['bank_account']
-        transaction_unique_number = representation['transaction_unique_number']
 
         representation.pop('transaction_unique_number')
         user = Member.objects.filter(bank_account=bank_account).first().user
         email = user.email
         representation['username'] = user.username
-        representation['balance'] = transaction(bank_account, transaction_unique_number, email)['REC']['transactionAfterBalance']
+        
+        representation['balance'] = balance(email, bank_account)['REC']['accountBalance']
 
         return representation
 

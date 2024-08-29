@@ -24,15 +24,18 @@ def signup(request):
     }
     serializer = UserCreationSerializer(data=data)
     response = shinhan_signup(email)
+    flag = 1
     if 'userKey' in response:
         data['user_key'] = response['userKey']
     else:
         data['user_key'] = search(email)['userKey']
+        flag = 0
 
     if serializer.is_valid(raise_exception=True):
         user = serializer.save()
-        response = create_demand_deposit_account(email)
         serializer = UserSerializer(user)
+        if flag:
+            create_demand_deposit_account(email)
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
     else:
         return Response({"error": "이미 존재하는 사용자 이메일 혹은 닉네임입니다."}, status=status.HTTP_409_CONFLICT)
@@ -40,10 +43,6 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
-    print(email)
-    print(User.objects.all())
-    for user in User.objects.all():
-        print(user.email)
     username = User.objects.get(email=email).username
     password = 'rkskekfk'
     
