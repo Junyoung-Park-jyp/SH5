@@ -3,8 +3,7 @@
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>{{ userStore.userName }} 님
-      </span>
+      <span>{{ userStore.userName }} 님 </span>
     </div>
 
     <!-- 미래/현재 -->
@@ -41,6 +40,14 @@
             class="background-image-now"
             @click="goTripMain(ongoingTrip.id)"
           >
+            <div
+              class="background-layer"
+              :style="{
+                backgroundImage: `url(${getBackgroundImage(
+                  ongoingTrip.locations[0].country
+                )})`,
+              }"
+            ></div>
             <div class="info">
               <span>
                 <v-icon icon="mdi-music"></v-icon>
@@ -55,10 +62,7 @@
 
     <!-- 과거 -->
     <div class="past">
-      <v-row
-        v-if="pastTrips.length > 0"
-        class="justify-center py-5 my-5"
-      >
+      <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
         <div class="record">
           총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
@@ -103,6 +107,15 @@
                   class="background-image"
                   @click="goTripGallery(experience.id)"
                 >
+                  <div
+                    class="background-layer"
+                    :style="{
+                      backgroundImage: `url(${getBackgroundImage(
+                        experience.locations[0].country
+                      )})`,
+                    }"
+                  ></div>
+                  <!-- background-layer 추가 -->
                   <div class="info2">
                     <v-img
                       :src="experience.imageUrl"
@@ -139,9 +152,7 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
-  <div v-else>
-    Loading...
-  </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script setup>
@@ -156,8 +167,8 @@ import axios from "axios";
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
-const ongoingTrips = computed(() => tripStore.futureTrips)
-const pastTrips = computed(() => tripStore.pastTrips)
+const ongoingTrips = computed(() => tripStore.futureTrips);
+const pastTrips = computed(() => tripStore.pastTrips);
 const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
@@ -177,10 +188,7 @@ const getImageUrl = async (countryName) => {
 onMounted(async () => {
   try {
     // 데이터를 비동기적으로 가져옴
-    await Promise.all([
-      tripStore.getPastTrips(),
-      tripStore.getFutureTrips()
-    ]);
+    await Promise.all([tripStore.getPastTrips(), tripStore.getFutureTrips()]);
 
     // 비동기 처리 후 각 경험의 이미지를 가져옴
     for (const experience of tripStore.tripExperiences) {
@@ -189,7 +197,7 @@ onMounted(async () => {
 
     // 추가 API 호출 (예시로 추가한 부분)
     await stateStore.getAILABapi({});
-    console.log("로딩중", loading.value)
+    console.log("로딩중", loading.value);
   } catch (error) {
     console.error("Error loading data:", error);
   } finally {
@@ -221,12 +229,12 @@ const makeTrip = () => {
 };
 
 const goTripMain = (tripId) => {
-  console.log(tripId)
-  router.push({ name: "tripMain", params: {id: tripId} });
+  console.log(tripId);
+  router.push({ name: "tripMain", params: { id: tripId } });
 };
 
 const goTripGallery = (tripId) => {
-  console.log('Navigating to gallery with ID:', tripId);  // 디버그 로그 추가
+  console.log("Navigating to gallery with ID:", tripId); // 디버그 로그 추가
   router.push({ name: "gallery", params: { id: tripId } });
 };
 
@@ -235,6 +243,23 @@ const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
 
+// 여행 국가에 따른 carousel 배경 이미지 지정하기
+const getBackgroundImage = (country) => {
+  const images = {
+    한국: "@/assets/img/carousel/korea.jpg",
+    대한민국: "@/assets/img/carousel/korea.jpg",
+    일본: "@/assets/img/carousel/japan.jpg",
+    중국: "@/assets/img/carousel/china.jpg",
+    스페인: "@/assets/img/carousel/spain.jpg",
+    이탈리아: "@/assets/img/carousel/italy.jpg", //
+    프랑스: "@/assets/img/carousel/france.jpg",
+    영국: "@/assets/img/carousel/england.jpg",
+    독일: "@/assets/img/carousel/germany.png",
+    미국: "@/assets/img/carousel/usa.png",
+  };
+
+  return images[country] || "@/assets/img/carousel/default.jpg"; // 국가명에 해당하는 이미지가 없으면 기본 이미지 사용
+};
 </script>
 
 <style scoped>
@@ -244,7 +269,7 @@ const formatCost = (cost) => {
   overflow-x: hidden;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 60px;
+  padding-bottom: 100px;
   background-color: #f4f6fa;
 }
 
@@ -304,19 +329,52 @@ const formatCost = (cost) => {
 }
 
 .background-image-now {
-  background-image: url("@/assets/img/spain.jpg");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.8;
-  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
 }
 
 .background-image {
-  /* background-image: url("@/assets/img/travel.png"); */
+  position: relative; /* 추가 */
+  overflow: hidden; /* 추가 */
   background-color: lightgrey;
   background-size: cover;
   background-position: center;
   pointer-events: auto;
+}
+
+.background-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/img/spain.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+.info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: large;
+  height: 100%;
+}
+
+.info2 {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: large;
+  height: 65%;
 }
 
 .non-past {
@@ -328,23 +386,14 @@ const formatCost = (cost) => {
   height: 120px !important;
 }
 
-.info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: large;
-  height: 100%;
-}
-
-.info2 {
+/* .info2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   font-size: large;
   height: 65%;
-}
+} */
 
 .info * {
   font-size: x-large;
