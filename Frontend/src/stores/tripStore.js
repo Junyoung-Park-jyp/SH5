@@ -16,33 +16,34 @@ export const useTripStore = defineStore("trip", {
     endDate: null,
     adjustTime: null,
     payments: [],
+    experiences: [],
     // 다녔던 여행들 더미 데이터
-    experiences: [
-      {
-        tripName: "쥬쥬클럽",
-        country: "대한민국",
-        city: ["제주도", "재주도"],
-        cost: 963500,
-      },
-      {
-        tripName: "유럽일주",
-        country: "프랑스",
-        city: ["파리", "로마", "바르셀로나"],
-        cost: 3572600,
-      },
-      {
-        tripName: "아가리또",
-        country: "일본",
-        city: ["오키나와", "미야코지마"],
-        cost: 1572600,
-      },
-      {
-        tripName: "여름휴가",
-        country: "대한민국",
-        city: ["동해", "삼척", "강릉"],
-        cost: 678830,
-      },
-    ],
+    // experiences: [
+    //   {
+    //     tripName: "쥬쥬클럽",
+    //     country: "대한민국",
+    //     city: ["제주도", "재주도"],
+    //     cost: 963500,
+    //   },
+    //   {
+    //     tripName: "유럽일주",
+    //     country: "프랑스",
+    //     city: ["파리", "로마", "바르셀로나"],
+    //     cost: 3572600,
+    //   },
+    //   {
+    //     tripName: "아가리또",
+    //     country: "일본",
+    //     city: ["오키나와", "미야코지마"],
+    //     cost: 1572600,
+    //   },
+    //   {
+    //     tripName: "여름휴가",
+    //     country: "대한민국",
+    //     city: ["동해", "삼척", "강릉"],
+    //     cost: 678830,
+    //   },
+    // ],
 
     stage: 0,
     progressStage: 0,

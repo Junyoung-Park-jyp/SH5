@@ -30,6 +30,13 @@ export const useUserStore = defineStore('user', {
     userAccountNum(state) {
       return state.accountNum
     },
+    userAccountNumMasked(state) {
+      if (!state.accountNum) return '';
+      if (state.accountNum.length <= 5) return '*'.repeat(state.accountNum.length);
+      const visiblePart = state.accountNum.slice(0, -5);
+      const maskedPart = '*'.repeat(5);
+      return visiblePart + maskedPart;
+    },
     userBalance(state) {
       return state.balance
     }
@@ -88,16 +95,16 @@ export const useUserStore = defineStore('user', {
           const response = await axiosInstance.get('/trips/member/', { params: { email: email } })
           console.log(response.data)
           if (response.data) {
-            return response.data
+            return response.data;
           } else {
-            console.error('사용자가 존재하지 않습니다')
+            console.error('사용자가 존재하지 않습니다');
             return null
           }
         }
 
         
       } catch(error) {
-        console.error('사용자 검색 실패:', error)
+        console.error('사용자 검색 실패:', error);
         return null
       }
     },

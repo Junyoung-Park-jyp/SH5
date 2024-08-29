@@ -7,10 +7,8 @@
             <v-col cols="8" class="text-left p-3">
               <div class="mb-2 account-name">{{ userStore.userName }} 님</div>
               <div class="account-num">
-                <span>{{
-                  userStore.userBank.slice(0, userStore.userBank.length - 2)
-                }}</span>
-                <span class="mx-2">{{ userStore.userAccountNum }}</span>
+                <span>{{ userStore.userBank.slice(0, userStore.userBank.length - 2) }}</span>
+                <span class="mx-2">{{ userStore.userAccountNumMasked }}</span>
               </div>
               <div class="account-balance">
                 <span>잔액</span>
@@ -154,6 +152,7 @@ const stateStore = useStateStore();
 onMounted(() => {
   userStore.signIn({ email: "email9629@naver.com" });
 });
+
 
 // BridgeView로 라우팅하는 함수
 const navigateToBridge = () => {
