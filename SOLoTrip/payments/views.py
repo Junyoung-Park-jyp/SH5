@@ -66,7 +66,7 @@ def pay_list(request):
             bank_account__in=bank_accounts
         ).order_by('pay_date', 'pay_time')
         serializer = PaymentDetailSerializer(payments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
     
     
 @api_view(["POST"])
