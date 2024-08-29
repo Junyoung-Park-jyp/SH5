@@ -75,7 +75,6 @@
                 :show-arrows="false"
                 cycle
                 interval="3000"
-                @click="goTripGallery(experience.id)"
               >
                 <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -226,19 +225,15 @@ const goTripMain = (tripId) => {
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
-// const goTripGallery = () => {
-//   router.push({ name: "gallery" });
-// };
+const goTripGallery = (tripId) => {
+  console.log('Navigating to gallery with ID:', tripId);  // 디버그 로그 추가
+  router.push({ name: "gallery", params: { id: tripId } });
+};
 
 // cost 포맷팅
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
-
-const goTripGallery = (tripId) => {
-  router.push({ name: 'gallery', params: { id: tripId }})
-}
-
 
 </script>
 
@@ -313,6 +308,7 @@ const goTripGallery = (tripId) => {
   background-size: cover;
   background-position: center;
   opacity: 0.8;
+  pointer-events: auto;
 }
 
 .background-image {
@@ -320,6 +316,7 @@ const goTripGallery = (tripId) => {
   background-color: lightgrey;
   background-size: cover;
   background-position: center;
+  pointer-events: auto;
 }
 
 .non-past {
