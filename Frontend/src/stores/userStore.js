@@ -65,9 +65,13 @@ export const useUserStore = defineStore('user', {
           this.isLogin = true;
           this.name = response.data.data.username
           this.token = response.data.token
-          this.bank = response.data.data.account_list[0].bank_name
-          this.accountNum = response.data.data.account_list[0].bank_account
-          this.balance = Number(response.data.data.account_list[0].balance)
+
+          // 신한 은행의 계좌 정보
+          const searchResponse = response.data.data.account_list.filter(element => element.bank_name === '신한은행')[0]
+
+          this.bank = searchResponse.bank_name
+          this.accountNum = searchResponse.bank_account
+          this.balance = Number(searchResponse.balance)
           console.log('data', response.data)
           console.log("로그인 여부", this.isLogin, this.name)
         }
