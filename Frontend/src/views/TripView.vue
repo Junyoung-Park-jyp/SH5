@@ -220,7 +220,7 @@ const formatCost = (cost) => {
 };
 
 // 실제 과거 여행 데이터 기준으로 짠 script
-// const pastTrips = computed(() => { return tripStore.pastTrips })
+const pastTrips = computed(() => { return tripStore.pastTrips })
 
 const goToGallery = (tripId) => {
   router.push({ name: 'gallery', params: { id: tripId }})
