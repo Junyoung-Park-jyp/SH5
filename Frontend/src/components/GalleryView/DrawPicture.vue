@@ -19,10 +19,14 @@
 import { ref } from "vue";
 import axios from "axios";
 
+import { useStateStore } from "@/stores/stateStore";
+
 const selectedFile = ref(null);
 const resultImageUrl = ref(null);
 
 const loading = ref(false);
+
+const stateStore = useStateStore()
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -42,14 +46,15 @@ const uploadImage = async () => {
     const formData = new FormData();
     formData.append("image", selectedFile.value);
     formData.append("index", 0); // Vintage Comic
-    console.log("API_KEY 되냐", process.env.VUE_APP_AILAB_API_KEY);
+    console.log("API_KEY 되냐", stateStore.apiKey);
     const responsePost = await axios.post(
       "https://www.ailabapi.com/api/image/effects/ai-anime-generator",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          "ailabapi-api-key": process.env.VUE_APP_AILAB_API_KEY,
+          // "ailabapi-api-key": process.env.VUE_APP_AILAB_API_KEY,
+          "ailabapi-api-key": stateStore.apiKey,
         },
       }
     );
@@ -113,7 +118,7 @@ const getResult = async (taskId) => {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   /* border: 1px solid black; */
 }
 

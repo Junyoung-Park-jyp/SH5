@@ -86,20 +86,18 @@ export const useTripStore = defineStore("trip", {
     },
 
     setTrip(tripData) {
-      this.loactions = tripData.locations
+      this.loactions = tripData.locations;
       this.members = tripData.members;
-      this.startDate = tripData.startDate;
-      this.endDate = tripData.endDate;
+      this.startDate = tripData.start_date;
+      this.endDate = tripData.end_date;
       this.adjustTime = tripData.adjustTime;
     },
 
     async makeTrip(tripData) {
       try {
-        const response = await axiosInstance.post("/trips/", 
-          tripData,
-        );
+        const response = await axiosInstance.post("/trips/", tripData);
         if (response) {
-          console.log(response.data)
+          console.log(response.data);
           const tripId = response.data.data.id;
           this.tripId = tripId;
           this.setTrip(tripData);
@@ -138,13 +136,16 @@ export const useTripStore = defineStore("trip", {
     },
 
     async getTrip(tripId) {
-      console.log('tripId:', tripId)
+      console.log("tripId:", tripId);
       try {
-        const response = await axiosInstance.get(`/trips/main/`, { params:{ trip_id : tripId } });
+        const response = await axiosInstance.get(`/trips/main/`, {
+          params: { trip_id: tripId },
+        });
 
         if (response) {
-          console.log(response.data.data)
-          return response.data.data
+          console.log(response.data.data);
+          this.setTrip(response.data.data);
+          return response.data.data;
         }
       } catch (error) {
         console.error("여행 정보 조회 실패:", error);
@@ -153,15 +154,15 @@ export const useTripStore = defineStore("trip", {
 
     async getPastTrips() {
       try {
-        const response = await axiosInstance.get('/trips/finish/')
+        const response = await axiosInstance.get("/trips/finish/");
 
         if (response) {
-          console.log(response.data)
+          console.log(response.data);
 
           this.pastTrips = response.data.data
         }
-      } catch(error) {
-        console.error('과거 여행 조회 실패', error)
+      } catch (error) {
+        console.error("과거 여행 조회 실패", error);
       }
     },
 
@@ -187,5 +188,5 @@ export const useTripStore = defineStore("trip", {
         storage: sessionStorage,
       },
     ],
-  }, 
+  },
 });

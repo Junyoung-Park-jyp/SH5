@@ -20,10 +20,10 @@ export function useMemberColors(members) {
   // 로컬 스토리지에서 색상 불러오기
   const loadColors = () => {
     const storedColors = JSON.parse(localStorage.getItem("memberColors"));
-    if (storedColors && storedColors.length === members.length) {
+    if (storedColors && storedColors.length === members.value.length) {
       memberColors.value = storedColors;
     } else {
-      memberColors.value = members.map(
+      memberColors.value = members.value.map(
         (_, index) => colors[index % colors.length]
       );
     }
@@ -54,6 +54,15 @@ export function useMemberColors(members) {
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
+
+  // 멤버 목록이 변경될 때마다 색상 배열 업데이트
+  watch(
+    members,
+    () => {
+      loadColors();
+    },
+    { immediate: true }
+  );
 
   // 페이지 로드 시 색상 로드
   onMounted(() => {

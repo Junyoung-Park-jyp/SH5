@@ -6,7 +6,7 @@
       <div class="profile-status">
         {{ userName }} 님은<br />
         <span class="profile-destination">{{ locations[0].country }}</span>
-        여행 {{ tripState }}중
+        {{ tripState }}
       </div>
     </div>
 
@@ -89,12 +89,12 @@ import { useRouter, useRoute } from "vue-router";
 import { eachDayOfInterval, format, isSameDay } from "date-fns";
 import Detail from "@/components/TripDetailView/Detail.vue";
 import { usePaymentStore } from "@/stores/paymentStore";
-import { useUserStore } from '@/stores/userStore';
-import { useTripStore } from '@/stores/tripStore';
-// 여행 상태 (예: "준비", "진행 중", "완료")
-const tripState = ref("준비"); // 예시로 "준비"로 초기화
+import { useUserStore } from "@/stores/userStore";
+import { useTripStore } from "@/stores/tripStore";
+// 여행 상태
+const tripState = ref("");
 const userStore = useUserStore();
-const tripStore = useTripStore()
+const tripStore = useTripStore();
 const router = useRouter();
 const route = useRoute();
 const adjustmentDiv = ref(null); // 정산 버튼 참조
@@ -102,30 +102,41 @@ const isDragging = ref(false); // 드래그 상태를 관리하는 변수
 const startX = ref(0); // 드래그 시작 시 X 좌표 저장
 const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
 
-// const country = "대한민국";
-// const city = "부산";
-// const destination = ref(country === "대한민국" ? city : country);
-const country = computed(() => tripStore.country)
-const city = computed(() => tripStore.city)
-const locations = computed(() => tripStore.locations)
+const country = computed(() => tripStore.country);
+const city = computed(() => tripStore.city);
+const locations = computed(() => tripStore.locations);
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-const selectedDate = ref(today);
-const selectedView = ref("all");  // 선택된 뷰 ("all", "prepare", "date")
+// 여행 상태를 갱신하는 함수
+const updateTripState = () => {
+  if (tripStore.startDate && new Date(tripStore.startDate) > today) {
+    tripState.value = "여행 준비 중"; // 여행 준비중
+  } else if (tripStore.startDate && new Date(tripStore.endDate) >= today) {
+    tripState.value = "여행 중"; // 여행 진행중
+  } else {
+    tripState.value = "여행 종료"; // 종료된 경우 추가
+  }
+};
 
-const startDate = computed(() => new Date(tripStore.startDate)) ;
+const selectedDate = ref(today);
+const selectedView = ref("all"); // 선택된 뷰 ("all", "prepare", "date")
+
+const startDate = computed(() => new Date(tripStore.startDate));
 const endDate = computed(() => new Date(tripStore.endDate));
-const userName = computed(() => userStore.name)
-const date = computed(() => eachDayOfInterval({
-  start: startDate.value,
-  end: endDate.value,
-}));
+const userName = computed(() => userStore.name);
+const date = computed(() =>
+  eachDayOfInterval({
+    start: startDate.value,
+    end: endDate.value,
+  })
+);
 
 // const todayIndex = date.findIndex((day) => isToday(day));
 const todayIndex = computed(() => date.value.findIndex((day) => isToday(day)));
 
 onMounted(() => {
+  updateTripState();
   const dayScrollContainer = document.querySelector(".day-scroll");
   const todayElement = dayScrollContainer.children[todayIndex.value];
   if (todayElement) {
@@ -141,9 +152,6 @@ onMounted(() => {
   } else {
     arrowElement.style.display = "none";
   }
-
-
-
 });
 
 onMounted(async () => {
@@ -165,9 +173,11 @@ const paymentStore = usePaymentStore();
 // "ALL" 버튼이 선택되었을 때 모든 날짜의 지출 내역을, 특정 날짜가 선택되었을 때 해당 날짜의 지출 내역을 계산
 const payments = computed(() => {
   if (selectedView.value === "all") {
-    return paymentStore.getAllPayments();  // 모든 날짜의 지출 내역 가져오기
+    return paymentStore.getAllPayments(); // 모든 날짜의 지출 내역 가져오기
   } else {
-    return paymentStore.getPaymentsByDate(format(selectedDate.value, "yyyy-MM-dd"));  // 특정 날짜의 지출 내역 가져오기
+    return paymentStore.getPaymentsByDate(
+      format(selectedDate.value, "yyyy-MM-dd")
+    ); // 특정 날짜의 지출 내역 가져오기
   }
 });
 
@@ -202,7 +212,6 @@ const handlePrepareClick = () => {
 const isSelectedDay = (day) => {
   return selectedView.value === "date" && isSameDay(day, selectedDate.value);
 };
-
 
 
 const startDrag = (event) => {
