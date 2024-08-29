@@ -223,17 +223,14 @@ const goTripMain = (tripId) => {
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
-const goTripGallery = (id) => {
-  router.push({ name: "gallery", params: {id: id} });
+const goTripGallery = (tripId) => {
+  router.push({ name: "gallery", params: {id: tripId} });
 };
 
 // cost 포맷팅
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
-
-// 실제 과거 여행 데이터 기준으로 짠 script
-// const pastTrips = computed(() => { return tripStore.pastTrips })
 
 const goToGallery = (tripId) => {
   router.push({ name: 'gallery', params: { id: tripId }})
