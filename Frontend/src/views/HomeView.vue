@@ -152,7 +152,7 @@ const router = useRouter();
 const stateStore = useStateStore();
 
 onMounted(() => {
-  userStore.signIn({ email: "email9629@naver.com" });
+  userStore.signIn({ email: "email1@naver.com" });
 });
 
 

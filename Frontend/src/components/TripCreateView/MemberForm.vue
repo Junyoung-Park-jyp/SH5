@@ -30,6 +30,7 @@
             outlined
             type="email"
             v-model="email"
+            @keyup.enter="addMember"
           ></v-text-field>
         </v-col>
         <div class="btn-container">
@@ -38,7 +39,14 @@
       </v-row>
       <v-row>
         <v-col v-for="(member, index) in tripStore.members" :key="index">
-          <v-chip>{{ member.username }}</v-chip>
+          <v-chip
+            :key="index"
+            color="primary"
+            class="ma-1"
+            @click="removeMember(index)"
+          >
+            {{ member.username }}
+          </v-chip>
         </v-col>
       </v-row>
     </div>
@@ -51,7 +59,7 @@
         <v-col cols="12">
           <!-- 여행이름 입력 필드 -->
           <v-text-field
-            label="여행 이름"
+            label="여행 별칭"
             placeholder="여행 별칭"
             outlined
             type="text"
@@ -88,14 +96,18 @@ const addMember = async () => {
   }
 };
 
-const addTripName = async () => {
-  if (tripName.value != "") {
-    tripStore.tripName = tripName.value;
-    alert("여행 이름이 저장되었습니다.");
-    console.log(tripStore.tripName);
-  } else {
-    alert("여행 이름을 입력해주세요.");
-  }
+// const addTripName = async () => {
+//   if (tripName.value != "") {
+//     tripStore.tripName = tripName.value;
+//     alert("여행 이름이 저장되었습니다.");
+//     console.log(tripStore.tripName);
+//   } else {
+//     alert("여행 이름을 입력해주세요.");
+//   }
+// };
+
+const removeMember = (index) => {
+  tripStore.members.splice(index, 1);
 };
 </script>
 

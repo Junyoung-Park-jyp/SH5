@@ -345,23 +345,14 @@ const formattedMemberBalance = (balance) => {
   )}`;
 };
 
-const startDate = new Date(2024, 7, 10); // 여행 시작일
-
-// 결제 데이터를 날짜와 시간에 따라 정렬하는 함수
-const sortPaymentsByDateTime = (paymentsArray) => {
-  return paymentsArray.sort((a, b) => {
-    const dateA = new Date(`${a.pay_date}T${a.pay_time}`);
-    const dateB = new Date(`${b.pay_date}T${b.pay_time}`);
-    return dateA - dateB;
-  });
-};
+const startDate = computed(()=> new Date(tripStore.startDate))  
 
 // 사전 예약 결제 내역을 스토어에서 가져오기
 const bookingPayments = computed(() => {
   const filteredPayments = paymentStore.payments.filter(
     (payment) => new Date(payment.pay_date) < startDate
   );
-  return sortPaymentsByDateTime(filteredPayments);
+  return filteredPayments;
 });
 
 // 여행 중 결제 내역을 스토어에서 가져오기
@@ -369,7 +360,7 @@ const paymentsDuringTrip = computed(() => {
   const filteredPayments = paymentStore.payments.filter(
     (payment) => new Date(payment.pay_date) >= startDate
   );
-  return sortPaymentsByDateTime(filteredPayments);
+  return filteredPayments;
 });
 
 // 선택된 날짜에 해당하는 지출 내역 필터링

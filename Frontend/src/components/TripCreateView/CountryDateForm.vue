@@ -18,8 +18,7 @@
               :key="index"
               color="primary"
               class="ma-1"
-              close
-              @click:close="removeCountry(index)"
+              @click="removeCountry(index)"
             >
               {{ country }}
             </v-chip>
@@ -202,9 +201,6 @@ const removeCountry = (index) => {
 const removeCity = (index) => {
   tripStore.city.splice(index, 1);
 };
-
-// 국가가 변경될 때마다 도시 목록을 업데이트
-watch(countryInput);
 
 // 날짜 포맷팅 함수
 const getDay = (date) => {

@@ -4,9 +4,9 @@
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        {{ userName }} 님은<br />
-        <span class="profile-destination">{{ locations.country }}</span>
-        {{ tripState }}
+        {{ userName }} 님은 {{ tripState }}<br />
+        <!-- <span class="profile-destination">{{ locations.country }}</span> -->
+
       </div>
     </div>
 
@@ -152,16 +152,17 @@ onMounted(() => {
   } else {
     arrowElement.style.display = "none";
   }
+
+  console.log(paymentStore.payments)
 });
 
 onMounted(async () => {
   const tripId = route.params.id
-  console.log("tripId", tripId, "today", format(new Date(), 'yyyy-MM-dd'), 'endDate', tripStore.endDate)
   if (tripId) {
     const payments = await paymentStore.getPayments(tripId, format(tripStore.startDate, 'yyyy-MM-dd'), format(tripStore.endDate, 'yyyy-MM-dd'));
     if (payments) {
       // 데이터 할당
-      console.log(usePaymentStore)
+      console.log(paymentStore.payments)
     }
   }
 

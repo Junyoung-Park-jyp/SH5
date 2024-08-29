@@ -12,10 +12,10 @@
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        {{ myname }} 님은<br />
-        <span class="profile-destination">{{ destination }}</span>
+        {{ myname }} 님은 {{ tripState }}<br />
+        <!-- <span class="profile-destination">{{ destination }}</span> -->
         <!-- <span class="profile-destination">{{ tripStore.locations[0].country }}</span>-->
-        {{ tripState }}
+        
       </div>
     </div>
 
