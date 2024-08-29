@@ -50,8 +50,8 @@
             placeholder="여행 별칭"
             outlined
             type="text"
-            v-model="tripName"
-          ></v-text-field>
+            v-model="tripStore.tripName"
+          />
         </v-col>
         <!-- <div class="btn-container">
           <button @click="addTripName" class="mt-1 btn-add">저장</button>

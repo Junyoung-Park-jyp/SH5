@@ -159,7 +159,7 @@ const pastTrips = computed(() => tripStore.pastTrips)
 const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
-
+const loading = ref(true);
 const getImageUrl = async (countryName) => {
   // try {
   //   const response = await axios.get(
@@ -173,15 +173,27 @@ const getImageUrl = async (countryName) => {
 };
 
 onMounted(async () => {
-  await Promise.all([
-    tripStore.getPastTrips(),
-    tripStore.getFutureTrips()
-  ]);
+  try {
+    // 데이터를 비동기적으로 가져옴
+    await Promise.all([
+      tripStore.getPastTrips(),
+      tripStore.getFutureTrips()
+    ]);
 
-  for (const experience of tripStore.tripExperiences) {
-    experience.imageUrl = await getImageUrl(experience.country);
+    // 비동기 처리 후 각 경험의 이미지를 가져옴
+    for (const experience of tripStore.tripExperiences) {
+      experience.imageUrl = await getImageUrl(experience.country);
+    }
+
+    // 추가 API 호출 (예시로 추가한 부분)
+    await stateStore.getAILABapi({});
+
+  } catch (error) {
+    console.error("Error loading data:", error);
+  } finally {
+    // 로딩 상태를 false로 설정하여 데이터가 로드되었음을 알림
+    loading.value = false;
   }
-  stateStore.getAILABapi({});
 });
 
 const prevSlide = () => {
@@ -207,6 +219,7 @@ const makeTrip = () => {
 };
 
 const goTripMain = (tripId) => {
+  console.log(tripId)
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
