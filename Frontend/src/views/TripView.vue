@@ -3,8 +3,7 @@
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
-      <span>{{ userStore.userName }} 님
-      </span>
+      <span>{{ userStore.userName }} 님 </span>
     </div>
 
     <!-- 미래/현재 -->
@@ -55,10 +54,7 @@
 
     <!-- 과거 -->
     <div class="past">
-      <v-row
-        v-if="pastTrips.length > 0"
-        class="justify-center py-5 my-5"
-      >
+      <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
         <div class="record">
           총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
@@ -139,9 +135,7 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
-  <div v-else>
-    Loading...
-  </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script setup>
@@ -156,8 +150,8 @@ import axios from "axios";
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
-const ongoingTrips = computed(() => tripStore.futureTrips)
-const pastTrips = computed(() => tripStore.pastTrips)
+const ongoingTrips = computed(() => tripStore.futureTrips);
+const pastTrips = computed(() => tripStore.pastTrips);
 const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
@@ -177,10 +171,7 @@ const getImageUrl = async (countryName) => {
 onMounted(async () => {
   try {
     // 데이터를 비동기적으로 가져옴
-    await Promise.all([
-      tripStore.getPastTrips(),
-      tripStore.getFutureTrips()
-    ]);
+    await Promise.all([tripStore.getPastTrips(), tripStore.getFutureTrips()]);
 
     // 비동기 처리 후 각 경험의 이미지를 가져옴
     for (const experience of tripStore.tripExperiences) {
@@ -189,7 +180,7 @@ onMounted(async () => {
 
     // 추가 API 호출 (예시로 추가한 부분)
     await stateStore.getAILABapi({});
-    console.log("로딩중", loading.value)
+    console.log("로딩중", loading.value);
   } catch (error) {
     console.error("Error loading data:", error);
   } finally {
@@ -221,12 +212,12 @@ const makeTrip = () => {
 };
 
 const goTripMain = (tripId) => {
-  console.log(tripId)
-  router.push({ name: "tripMain", params: {id: tripId} });
+  console.log(tripId);
+  router.push({ name: "tripMain", params: { id: tripId } });
 };
 
 const goTripGallery = (tripId) => {
-  console.log('Navigating to gallery with ID:', tripId);  // 디버그 로그 추가
+  console.log("Navigating to gallery with ID:", tripId); // 디버그 로그 추가
   router.push({ name: "gallery", params: { id: tripId } });
 };
 
@@ -234,7 +225,6 @@ const goTripGallery = (tripId) => {
 const formatCost = (cost) => {
   return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
 };
-
 </script>
 
 <style scoped>
