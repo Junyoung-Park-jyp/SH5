@@ -12,7 +12,7 @@
     <div class="my-10 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
-        {{ userStore.name }} 님은<br />
+        {{ myname }} 님은<br />
         <span class="profile-destination">{{ destination }}</span>
         <!-- <span class="profile-destination">{{ tripStore.locations[0].country }}</span>-->
         {{ tripState }}
@@ -58,20 +58,22 @@
         <!-- 이름 -->
         <div class="member-name">{{ member.member }}</div>
 
-        <!-- 은행 -->
-        <div class="member-bankname">
-          {{ member.bank_name.slice(0, member.bank_name.length - 2) }}
-        </div>
-
-        <!-- 계좌 -->
-        <div v-if="member.account_list != ''" class="member-account">
-          <div class="member-bankaccount">{{ member.bank_account }}</div>
-          <div class="member-bankbalance">
-            {{ formatWithComma(member.balance) }} 원
+        <!-- 정보 -->
+        <div class="member-info">
+          <!-- 계좌 -->
+          <div v-if="member.account_list != ''" class="member-account">
+            <div class="member-bank">
+              <span class="member-bankname">{{ member.bank_name.slice(0, member.bank_name.length - 2) }}</span>&nbsp;
+              <span class="member-bankaccount">{{ member.bank_account }}</span>
+            </div>
+            <div class="member-bankbalance">
+              {{ formatWithComma(member.balance) }} 원
+            </div>
           </div>
-        </div>
-        <div v-else class="member-account">
-          계좌 미등록 - {{ member.budget }}
+          <!-- 없는 경우 -->
+          <div v-else class="member-account">
+            계좌 미등록 - {{ member.budget }}
+          </div>
         </div>
       </div>
     </div>
@@ -187,6 +189,9 @@ const route = useRoute();
 const tripStore = useTripStore();
 const userStore = useUserStore();
 const balanceStore = useBalanceStore();
+
+// 이름
+const myname = computed(() => userStore.name);
 
 // 여행 목적지
 const country = computed(() => tripStore.country.join(""));
@@ -470,6 +475,10 @@ const goInsurance = () => {
   margin: 0px auto;
 }
 
+.member .content {
+  border-bottom: 1px dashed grey;
+}
+
 .member-symbol {
   border: 1px solid black;
   border-radius: 50%;
@@ -481,8 +490,14 @@ const goInsurance = () => {
   width: 50px;
 }
 
-.member-account {
-  width: 200px;
+.member-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 210px; 
+}
+
+.member-bank * {
+  font-size: 13px;
 }
 
 /* 지출내역 */

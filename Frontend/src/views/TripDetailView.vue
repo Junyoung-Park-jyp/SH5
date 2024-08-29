@@ -1,11 +1,11 @@
 <template>
   <div class="main-container">
     <!-- 프로필 -->
-    <div class="my-10 profile">
+    <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ userName }} 님은<br />
-        <span class="profile-destination">{{ locations[0].country }}</span>
+        <span class="profile-destination">{{ locations.country }}</span>
         {{ tripState }}
       </div>
     </div>
@@ -274,7 +274,7 @@ const finishTrip = () => {
 
 <style scoped>
 .main-container {
-  height: 93vh;
+  height: 83vh;
   overflow-y: none;
   overflow-x: auto;
   scrollbar-width: none;
@@ -321,8 +321,8 @@ const finishTrip = () => {
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  height: 100px;
-  margin: -40px auto 20px auto;
+  height: 90px;
+  margin: -20px auto 15px auto;
 }
 
 .all,
@@ -441,7 +441,7 @@ const finishTrip = () => {
   left: 0;
   z-index: 1000;
   width: 100%;
-  height: 125px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;

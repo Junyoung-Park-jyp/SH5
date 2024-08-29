@@ -773,6 +773,10 @@ const formatTime = (time) => {
 
 /* 요약 */
 .summary {
+  /* position: fixed;
+  bottom: 150px;
+  left: 0;
+  z-index: 1000; */
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -781,7 +785,9 @@ const formatTime = (time) => {
   text-align: center;
   margin: 0 auto;
   /* border: 1px solid black; */
-  padding: 40px 0px;
+  padding: 20px 0px;
+  /* background-color: rgba(255, 255, 255); */
+  /* border-top: 2px solid #4b72e1; */
 }
 
 /* 쓴 돈 */
@@ -812,6 +818,10 @@ const formatTime = (time) => {
 
 /* 정산 금액 */
 .calculation {
+  position: fixed;
+  bottom: 85px;
+  left: 0;
+  z-index: 1000;
   width: 100%;
   height: 90px;
   display: flex;
