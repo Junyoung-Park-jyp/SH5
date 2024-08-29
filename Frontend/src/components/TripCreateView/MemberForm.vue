@@ -36,6 +36,11 @@
           <button @click="addMember" class="mt-1 btn-add">+ 등록</button>
         </div>
       </v-row>
+      <v-row>
+        <v-col v-for="(member, index) in tripStore.members" :key="index">
+          <v-chip>{{ member.username }}</v-chip>
+        </v-col>
+      </v-row>
     </div>
 
     <!-- 여행 별칭 입력창 -->

@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div v-if="!loading" class="main-container">
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
@@ -56,11 +56,11 @@
     <!-- 과거 -->
     <div class="past">
       <v-row
-        v-if="tripStore.tripExperiences.length > 0"
+        v-if="pastTrips.length > 0"
         class="justify-center py-5 my-5"
       >
         <div class="record">
-          총 {{ tripStore.pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
+          총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
         <div class="record-carousel">
           <v-row class="d-flex align-center">
@@ -99,7 +99,7 @@
                   </div>
                 </v-carousel-item> -->
                 <v-carousel-item
-                  v-for="(experience, index) in tripStore.pastTrips"
+                  v-for="(experience, index) in pastTrips"
                   :key="index"
                   class="background-image"
                   @click="goTripGallery(experience.id)"
@@ -139,6 +139,9 @@
     <div class="bottom" ref="bottomDiv">
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
+  </div>
+  <div v-else>
+    Loading...
   </div>
 </template>
 
@@ -187,7 +190,7 @@ onMounted(async () => {
 
     // 추가 API 호출 (예시로 추가한 부분)
     await stateStore.getAILABapi({});
-
+    console.log("로딩중", loading.value)
   } catch (error) {
     console.error("Error loading data:", error);
   } finally {
