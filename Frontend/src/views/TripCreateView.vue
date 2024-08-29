@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import CountryDateForm from "@/components/TripCreateView/CountryDateForm.vue";
 import MemberForm from "@/components/TripCreateView/MemberForm.vue";
@@ -165,6 +165,10 @@ const showLoadingSequence = () => {
     }, 1200);
   }, 2000);
 };
+
+onMounted(async ()=> {
+  tripStore.clearTrip()
+})
 </script>
 
 <style scoped>
