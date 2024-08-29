@@ -56,7 +56,7 @@
     <!-- 과거 -->
     <div class="past">
       <v-row
-        v-if="pastTrips.length > 0"
+        v-if="pastTrips"
         class="justify-center py-5 my-5"
       >
         <div class="record">
