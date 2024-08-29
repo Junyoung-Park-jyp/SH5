@@ -239,10 +239,7 @@ const formatDay = (date) => {
 // ];
 
 const tripMembers = computed(() => tripStore.members);
-
-// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
 const membersWithColors = ref([]);
-
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
 
 // `onMounted`에서 `membersWithColors`를 초기화
