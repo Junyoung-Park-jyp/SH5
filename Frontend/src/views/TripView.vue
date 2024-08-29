@@ -60,7 +60,7 @@
         class="justify-center py-5 my-5"
       >
         <div class="record">
-          총 {{ tripStore.tripExperiences.length }}회 SOL로 여행을 다녀오셨네요!
+          총 {{ tripStore.pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
         <div class="record-carousel">
           <v-row class="d-flex align-center">
@@ -75,7 +75,7 @@
                 :show-arrows="false"
                 cycle
                 interval="3000"
-                @click="goTripGallery"
+                @click="goTripGallery(experience.id)"
               >
                 <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
@@ -102,7 +102,7 @@
                   v-for="(experience, index) in tripStore.pastTrips"
                   :key="index"
                   class="background-image"
-                  @click="goToGallery(experience.id)"
+                  @click="goTripGallery(experience.id)"
                 >
                   <div class="info2">
                     <v-img
@@ -210,8 +210,8 @@ const goTripMain = (tripId) => {
   router.push({ name: "tripMain", params: {id: tripId} });
 };
 
-const goTripGallery = () => {
-  router.push({ name: "gallery" });
+const goTripGallery = (id) => {
+  router.push({ name: "gallery", params: {id: id} });
 };
 
 // cost 포맷팅

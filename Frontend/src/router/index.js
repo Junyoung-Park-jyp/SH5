@@ -58,17 +58,11 @@ const router = createRouter({
       component: InsuranceView,
     },
     {
-      path: '/gallery',
+      path: '/gallery/:id',
       name: 'gallery',
       component: GalleryView,
       props: true,
-    },
-    // {
-    //   path: '/gallery/:id',
-    //   name: 'gallery',
-    //   component: GalleryView,
-    //   props: true,
-    // }
+    }
   ]
 });
 

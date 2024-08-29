@@ -320,6 +320,7 @@ function updateCurrencyRate() {
 const loading = ref(true);
 
 onMounted(async () => {
+  tripStore.clearTrip()
   try {
     console.log("tripId", tripId);
     if (tripId) {
