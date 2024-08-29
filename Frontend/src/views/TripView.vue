@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div v-if="!loading" class="main-container">
     <!-- 프로필 -->
     <div class="my-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
@@ -98,7 +98,7 @@
                   </div>
                 </v-carousel-item> -->
                 <v-carousel-item
-                  v-for="(experience, index) in tripStore.pastTrips"
+                  v-for="(experience, index) in pastTrips"
                   :key="index"
                   class="background-image"
                   @click="goTripGallery(experience.id)"
@@ -139,6 +139,9 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
+  <div v-else>
+    Loading...
+  </div>
 </template>
 
 <script setup>
@@ -158,7 +161,7 @@ const pastTrips = computed(() => tripStore.pastTrips)
 const stateStore = useStateStore();
 const currentSlide = ref(0);
 const bottomDiv = ref(null);
-
+const loading = ref(true);
 const getImageUrl = async (countryName) => {
   // try {
   //   const response = await axios.get(
@@ -172,15 +175,27 @@ const getImageUrl = async (countryName) => {
 };
 
 onMounted(async () => {
-  await Promise.all([
-    tripStore.getPastTrips(),
-    tripStore.getFutureTrips()
-  ]);
+  try {
+    // 데이터를 비동기적으로 가져옴
+    await Promise.all([
+      tripStore.getPastTrips(),
+      tripStore.getFutureTrips()
+    ]);
 
-  for (const experience of tripStore.tripExperiences) {
-    experience.imageUrl = await getImageUrl(experience.country);
+    // 비동기 처리 후 각 경험의 이미지를 가져옴
+    for (const experience of tripStore.tripExperiences) {
+      experience.imageUrl = await getImageUrl(experience.country);
+    }
+
+    // 추가 API 호출 (예시로 추가한 부분)
+    await stateStore.getAILABapi({});
+    console.log("로딩중", loading.value)
+  } catch (error) {
+    console.error("Error loading data:", error);
+  } finally {
+    // 로딩 상태를 false로 설정하여 데이터가 로드되었음을 알림
+    loading.value = false;
   }
-  stateStore.getAILABapi({});
 });
 
 const prevSlide = () => {
@@ -206,8 +221,8 @@ const makeTrip = () => {
 };
 
 const goTripMain = (tripId) => {
-  console.log('Navigating to tripMain with ID:', tripId);  // 디버그 로그 추가
-  router.push({ name: "tripMain", params: { id: tripId } });
+  console.log(tripId)
+  router.push({ name: "tripMain", params: {id: tripId} });
 };
 
 const goTripGallery = (tripId) => {

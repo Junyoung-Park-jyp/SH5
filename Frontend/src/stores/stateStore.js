@@ -25,7 +25,6 @@ export const useStateStore = defineStore('states', {
 
         if (response) {
           this.apiKey = response.data.data.key
-          console.log(this.apiKey)
         }
       } catch (error) {
         console.error('apikey 호출 실패', error)
