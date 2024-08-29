@@ -64,7 +64,7 @@
 
     <!-- 과거 -->
     <div class="past">
-      <v-row v-if="pastTrips" class="justify-center py-5 my-5">
+      <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
         <div class="record">
           총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
