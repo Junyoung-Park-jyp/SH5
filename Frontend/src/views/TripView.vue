@@ -41,14 +41,15 @@
             class="background-image-now"
             @click="goTripMain(ongoingTrip.id)"
           >
-            <div
+            <div class="background-layer"></div>
+            <!-- <div
               class="background-layer"
               :style="{
                 backgroundImage: `url(${getBackgroundImage(
                   ongoingTrip.locations[0].country
                 )})`,
               }"
-            ></div>
+            ></div> -->
             <div class="info">
               <span>
                 <v-icon icon="mdi-music"></v-icon>
@@ -63,10 +64,7 @@
 
     <!-- 과거 -->
     <div class="past">
-      <v-row
-        v-if="pastTrips"
-        class="justify-center py-5 my-5"
-      >
+      <v-row v-if="pastTrips" class="justify-center py-5 my-5">
         <div class="record">
           총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
         </div>
@@ -111,14 +109,15 @@
                   class="background-image"
                   @click="goTripGallery(experience.id)"
                 >
-                  <div
+                  <div class="background-layer"></div>
+                  <!-- <div
                     class="background-layer"
                     :style="{
                       backgroundImage: `url(${getBackgroundImage(
                         experience.locations[0].country
                       )})`,
                     }"
-                  ></div>
+                  ></div> -->
                   <!-- background-layer 추가 -->
                   <div class="info2">
                     <v-img
@@ -126,11 +125,14 @@
                       class="align-center"
                     ></v-img>
                     <div class="trip-name">{{ experience.trip_name }}</div>
-                    <div class="city">
+                    <div class="trip-country">
+                      <!-- 모든 country명을 나열, experience.locations가 undefined일 경우 빈 문자열 반환 -->
                       {{
-                        Array.isArray(experience.city)
-                          ? experience.city.join(", ")
-                          : experience.city
+                        experience.locations
+                          ? experience.locations
+                              .map((location) => location.country)
+                              .join(", ")
+                          : ""
                       }}
                     </div>
                   </div>
@@ -352,7 +354,6 @@ const getBackgroundImage = (country) => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("@/assets/img/spain.jpg");
   background-size: cover;
   background-position: center;
   opacity: 0.8;
@@ -390,15 +391,6 @@ const getBackgroundImage = (country) => {
   height: 120px !important;
 }
 
-/* .info2 {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: large;
-  height: 65%;
-} */
-
 .info * {
   font-size: x-large;
   font-weight: bolder;
@@ -409,7 +401,7 @@ const getBackgroundImage = (country) => {
   font-weight: 500;
 }
 
-.city {
+.trip-country {
   font-size: 18px;
   font-weight: 500;
 }
