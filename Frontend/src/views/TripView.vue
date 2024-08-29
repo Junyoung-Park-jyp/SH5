@@ -109,7 +109,7 @@
                       :src="experience.imageUrl"
                       class="align-center"
                     ></v-img>
-                    <div class="trip-name">{{ experience.tripName }}</div>
+                    <div class="trip-name">{{ experience.trip_name }}</div>
                     <div class="city">
                       {{
                         Array.isArray(experience.city)
@@ -148,6 +148,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStateStore } from "@/stores/stateStore";
+
 import axios from "axios";
 
 const userStore = useUserStore();

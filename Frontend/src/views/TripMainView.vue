@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div v-if="!loading" class="main-container">
     <!-- 수정 -->
     <div class="modify" @click="modifyTrip">
       <button class="icon-btn">
@@ -53,21 +53,21 @@
           :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
           @click="changeColor(index)"
         >
-          <div class="member-familyname">{{ member.username.slice(0, 1) }}</div>
+          <div class="member-familyname">{{ member.member.slice(0, 1) }}</div>
         </div>
         <!-- 이름 -->
-        <div class="member-name">{{ member.username }}</div>
+        <div class="member-name">{{ member.member }}</div>
 
         <!-- 은행 -->
         <div class="member-bankname">
-          <!-- {{ member.bank_name.slice(0, member.bank_name.length - 2) }} -->
+          {{ member.bank_name.slice(0, member.bank_name.length - 2) }}
         </div>
 
         <!-- 계좌 -->
         <div v-if="member.account_list != ''" class="member-account">
-          <div class="member-bankaccount">{{ member.account_list[0].bank_account }}</div>
+          <div class="member-bankaccount">{{ member.bank_account }}</div>
           <div class="member-bankbalance">
-            {{ formatWithComma(member.account_list[0].balance) }} 원
+            {{ formatWithComma(member.balance) }} 원
           </div>
         </div>
         <div v-else class="member-account">
@@ -158,6 +158,9 @@
         </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+    Loading...
   </div>
 </template>
 
@@ -314,25 +317,36 @@ function updateCurrencyRate() {
 //   updateCurrencyRate();
 // });
 
-onMounted(async () => {
-  const tripId = tripStore.tripId;
-  if (tripId) {
-    const tripData = await tripStore.getTrip(tripId);
-    if (tripData) {
-      // 데이터 할당
-      destination.value = tripData.locations[0].country || "Unknown";
-      updateTripState();
-      tripStore.startDate = tripData.start_date
-        ? new Date(tripData.start_date)
-        : null;
-      tripStore.endDate = tripData.end_date
-        ? new Date(tripData.end_date)
-        : null;
-    }
-  }
+const loading = ref(true);
 
-  await fetchExchangeRates();
-  updateCurrencyRate();
+onMounted(async () => {
+  try {
+    console.log("tripId", tripId);
+    if (tripId) {
+      const tripData = await tripStore.getTrip(tripId);
+      console.log("여행 정보", tripData);
+      if (tripData) {
+        // 데이터 할당
+        destination.value = tripData.locations[0].country || "Unknown";
+        updateTripState();
+        tripStore.startDate = tripData.start_date
+          ? new Date(tripData.start_date)
+          : null;
+        tripStore.endDate = tripData.end_date
+          ? new Date(tripData.end_date)
+          : null;
+
+        tripStore.members = tripData.members
+      }
+    }
+
+    await fetchExchangeRates();
+    updateCurrencyRate();
+  } catch (error) {
+    console.error("Error loading trip data:", error);
+  } finally {
+    loading.value = false; // 데이터 로드가 완료되면 로딩 상태를 false로 설정
+  }
 });
 
 const modifyTrip = () => {
