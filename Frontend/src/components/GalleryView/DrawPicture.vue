@@ -10,14 +10,26 @@
       <v-img :src="resultImageUrl" />
     </div>
 
-    <div v-if="!loading" class="pick mt-0 mb-3">
-      <input type="file" @change="onFileChange" accept="image/*" />
+    <div v-if="!loading && !saveImageFlag" class="pick mt-0 mb-3">
+      <!-- <input type="file" @change="onFileChange" accept="image/*" /> -->
+
+      <div class="file-container">
+        <label class="file-input">
+          <input type="file" @change="onFileChange" accept="image/*" />
+          <span>{{ selectedFileName }}</span>
+          <v-icon class="upload-icon" icon="mdi-upload"></v-icon>
+        </label>
+      </div>
+
     </div>
-    <div v-if="!loading && !resultImageUrl" class="create">
+    <div v-if="!loading && !resultImageUrl && !saveImageFlag" class="create">
       <button class="create-btn" @click="uploadImage">사진 생성</button>
     </div>
-    <div v-if="!loading && resultImageUrl" class="create">
+    <div v-if="!loading && resultImageUrl && !saveImageFlag" class="create">
       <button class="create-btn" @click="saveImage">사진 저장</button>
+    </div>
+    <div v-if="saveImageFlag">
+      저장이 완료되었습니다.
     </div>
 
   </div>
@@ -29,6 +41,7 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 
 import { useStateStore } from "@/stores/stateStore";
+import { useTripStore } from "@/stores/tripStore";
 import { useErrorStore } from "@/stores/errorStore";
 
 import axiosInstance from '@/axios';
@@ -38,15 +51,20 @@ const route = useRoute();
 const tripId = route.params.id
 
 const selectedFile = ref(null);
+const selectedFileName = ref(null);
 const resultImageUrl = ref(null);
 
 const loading = ref(false);
 
+const saveImageFlag = ref(false)
+
 const stateStore = useStateStore()
+const tripStore = useTripStore()
 const errorStore = useErrorStore()
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
+  selectedFileName.value = event.target.files[0].name;
 };
 
 const uploadImage = async () => {
@@ -132,9 +150,14 @@ const saveImage = async () => {
     });
   } catch (error) {
     console.error('saveImage 실패: ', error);
+  } finally {
+    await Promise.all([
+      tripStore.getTrip(tripId),
+    ]);
+    saveImageFlag.value = true
+    console.log('Image 저장 완료')
   }
 }
-
 </script>
 
 <style scoped>
@@ -188,5 +211,39 @@ img {
 .create-text {
   font-size: large !important;
   font-weight: bold;
+}
+
+/* 파일 업로드 */
+.file-container {
+  display: inline-block;
+  width: 90%;
+}
+
+.file-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.file-input input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.file-input span {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.upload-icon {
+  color: #888;
 }
 </style>
