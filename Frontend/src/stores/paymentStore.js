@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
 import { useTripStore } from '@/stores/tripStore'
+import { useBalanceStore } from '@/stores/balanceStore'
+import { useUserStore } from './userStore';
 export const usePaymentStore = defineStore('paymentStore', {
   state: () => ({
     payments: [
     ],
     bills: [
-    ]
+    ],
   }),
   getters: {
     getPaymentsByDate: (state) => (date) => {
@@ -34,7 +36,8 @@ export const usePaymentStore = defineStore('paymentStore', {
 
     async getPayments(tripId) {
       const tripStore = useTripStore();
-
+      const userStore = useUserStore();
+    
       try {
         const response = await axiosInstance.get('/payments/list/', {
           params: {
@@ -44,16 +47,22 @@ export const usePaymentStore = defineStore('paymentStore', {
     
         if (response) {
           console.log("정산 내역", response.data);
-          console.log("여행 멤버", tripStore.members)
+          console.log("여행 멤버", tripStore.members);
+    
           // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
           this.payments = response.data.data.map(payment => {
+            const paymentMembers = tripStore.members.map(member => ({
+              member: member.member,  // member 객체에서 필요한 필드를 사용
+              bank_account: member.bank_account // 기본적으로 동일한 계좌 사용
+            }));
+    
             return {
               ...payment,
-              members: [{member: payment.username}] // 기본값으로 username을 members에 할당
+              members: paymentMembers // tripStore.members를 기반으로 새로 생성한 members 배열을 할당
             };
           });
     
-          console.log(this.payments);
+          console.log("멤버가 추가된 정산 내역" , this.payments);
         } else {
           console.error('정산 내역 조회 실패');
         }
@@ -62,23 +71,50 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async makeAdjustment() {
-      const tripStore = useTripStore()
+    async makeAdjustment(tripId, selectedPayments) {
+      console.log('makeAdjustment 가 받은 데이터', selectedPayments)
+      // 각 payment 객체를 적절한 형식으로 변환
+      const adjustments = selectedPayments.map(payment => {
+        const memberCount = payment.members.length;
+        const dividedCost = Math.floor(payment.amount / memberCount);
+        return {
+          payment_id: payment.id,
+          bills: payment.members.map(member => {
+            return {
+              cost: dividedCost, // or use any logic to distribute the amount among members
+              bank_account: member.bank_account, // 기본적으로 payment의 계좌를 사용
+            };
+          }),
+        };
+      });
+      console.log(adjustments);
+      
       try {
         const response = await axiosInstance.post('/payments/adjustment/', { 
-          trip_id: tripStore.tripId,
-          payment_id: this.paymentId,
-          bills: this.bills
+          trip_id: tripId,
+          payments: adjustments,
+        });
+    
+    if (response) {
+      // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
+      this.payments = this.payments.map(payment => {
+        const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
+        if (isCompleted) {
+          return {
+            ...payment,
+            is_completed: 1, // is_completed 값을 1로 변경
+          };
         }
-      )
-      if (response) {
-        this.payments = []
-        console.log('정산에 성공했습니다')
-      } else {
-        "요청이 거부되었습니다."
-      }
+        return payment;
+      });
+
+          
+          console.log('정산에 성공했습니다');
+        } else {
+          console.error("요청이 거부되었습니다.");
+        }
       } catch(error) {
-        console.error('정산 실패', error)
+        console.error('정산 실패', error);
       }
     },
     // 특정 날짜 이후의 결제 내역 필터링
