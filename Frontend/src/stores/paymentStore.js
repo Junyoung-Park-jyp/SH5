@@ -8,6 +8,9 @@ export const usePaymentStore = defineStore('paymentStore', {
     payments: [
     ],
     budgets: [
+    ],
+    adjustmentResult:[
+
     ]
   }),
   getters: {
@@ -31,6 +34,21 @@ export const usePaymentStore = defineStore('paymentStore', {
 
       } catch(error) {
         console.error("결제 실패: ", error)
+      }
+    },
+
+    async deletePayment(paymentId) {
+      try {
+        const response = await axiosInstance.post('/payments/delete/', {
+          payment_id: paymentId
+        })
+        if (response) {
+          console.log(response.data)
+        } else {
+          console.error('결제 내역 삭제 오류')
+        }
+      } catch(error) {
+        console.error("결제 내역 삭제 실패", error)
       }
     },
 
