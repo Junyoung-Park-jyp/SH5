@@ -47,7 +47,7 @@
     <div class="trip money">
       <div class="title">나의 지출</div>
       <div class="content">
-        <!-- <PieChart /> -->
+        <PieChart />
       </div>
     </div>
 
@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { useTripStore } from "@/stores/tripStore";
 import { usePaymentStore } from "@/stores/paymentStore";
 import { useRoute } from "vue-router";
@@ -170,9 +170,18 @@ const membersWithColors = ref([]);
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
 onMounted(async () => {
-  tripStore.getTrip(tripId)
-  paymentStore.getPayments(tripId)
-  loading.value = false
+  try {
+    await Promise.all([
+      tripStore.getTrip(tripId),
+      paymentStore.getPayments(tripId)
+    ]);
+
+    if (paymentStore.getAllPayments().length > 0) {
+      loading.value = false
+    }
+  } catch (error) {
+    loading.value = false
+  }
 })
 
 onMounted(() => {
