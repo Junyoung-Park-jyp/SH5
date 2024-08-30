@@ -160,9 +160,6 @@ def delete(request):
 def prepare(request):
     if request.method == "POST":
         trip_id = request.data.get('trip_id')
-        # amount = request.data.get('amount')
-        # brand_name = request.data.get('brand_name')
-        # category = request.data.get('category')
         data = request.data
         
         trip = Trip.objects.get(id=trip_id)

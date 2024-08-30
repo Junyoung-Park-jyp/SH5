@@ -12,10 +12,17 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = ['amount', 'pay_date', 'pay_time', 'brand_name', 'category', 'bank_account']
-        # fields = ['amount', 'pay_date', 'pay_time', 'brand_name', 'category', 'bank_account', 'transaction_unique_number', 'transaction_type']
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         return representation
+    
+    
+class CalculateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='member.user.username', read_only=True)
+    
+    class Meta:
+        model = Calculate
+        fields = ['username', 'cost']
         
         
 class PaymentDetailSerializer(serializers.ModelSerializer):
@@ -33,15 +40,15 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         bank_account = representation['bank_account']
 
         user = Member.objects.filter(bank_account=bank_account).first().user
-        representation['username'] = user.username        
-
+        representation['username'] = user.username
+        
+        calculates = Calculate.objects.filter(payment=instance)
+        if calculates.exists():
+            representation['is_completed'] = 1
+            representation['calculates'] = CalculateSerializer(calculates, many=True).data
+        else:
+            representation['is_completed'] = 0
         return representation
-
-
-class CalculateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Calculate
-        fields = "__all__"
 
 
 class BillSerializer(serializers.Serializer):
