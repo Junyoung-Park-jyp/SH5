@@ -202,11 +202,6 @@ onMounted(async () => {
     // 데이터를 비동기적으로 가져옴
     await Promise.all([tripStore.getPastTrips(), tripStore.getFutureTrips()]);
 
-    // 비동기 처리 후 각 경험의 이미지를 가져옴
-    for (const experience of tripStore.tripExperiences) {
-      experience.imageUrl = await getImageUrl(experience.country);
-    }
-
     // 추가 API 호출 (예시로 추가한 부분)
     await stateStore.getAILABapi({});
     console.log("로딩중", loading.value);
