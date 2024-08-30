@@ -34,7 +34,6 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 
         user = Member.objects.filter(bank_account=bank_account).first().user
         representation['username'] = user.username        
-        # representation['balance'] = balance(user.email, bank_account)['REC']['accountBalance']
 
         return representation
 

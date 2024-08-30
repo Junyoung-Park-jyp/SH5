@@ -160,13 +160,19 @@ def delete(request):
 def prepare(request):
     if request.method == "POST":
         trip_id = request.data.get('trip_id')
-        amount = request.data.get('amount')
-        brand_name = request.data.get('brand_name')
-        category = request.data.get('category')
+        # amount = request.data.get('amount')
+        # brand_name = request.data.get('brand_name')
+        # category = request.data.get('category')
+        data = request.data
         
         trip = Trip.objects.get(id=trip_id)
         # pay_date
+        data['pay_date'] = trip.start_date
         # pay_time
+        data['pay_time'] = '00:00:00'
         # bank_account
-        return Response({"data": "으아모르겠다 형 미안해요 이거 아직 안만들었어요 ㅋㅋ"}, status=status.HTTP_201_CREATED)
-    pass
+        data['bank_account'] = Member.objects.get(trip=trip, user=request.user).bank_account
+        serializer = PaymentCreateSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
