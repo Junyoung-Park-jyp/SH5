@@ -4,7 +4,29 @@
       <v-row>
         <v-col cols="12">
           <v-card v-if="userStore.isLogin" class="account-card">
-            <v-col cols="8" class="text-left p-3">
+            <div class="upper">
+              <div class="logo">
+                <img src="@/assets/img/shinhan.png" alt="로고">
+              </div>
+              <div class="account-info">
+                <div class="first">
+                  <span class="first-type">입출금</span>
+                  <span class="first-name">쏠편한 정기예금</span>
+                </div>
+                <div class="second">
+                  <span class="account-bank">{{ userStore.bank.slice(0, userStore.bank.length - 2) }}</span>
+                  <span class="account-num">{{ userStore.accountNum }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="medium">
+              <div class="balance">
+                {{ formatCost(userStore.userBalance) }}
+              </div>
+            </div>
+
+            <!-- <v-col cols="8" class="text-left p-3">
               <div class="mb-2 account-name">{{ userStore.userName }} 님</div>
               <div class="account-num">
                 <span>{{
@@ -25,7 +47,7 @@
                 alt="account"
                 style="width: 100%"
               />
-            </v-col>
+            </v-col> -->
           </v-card>
         </v-col>
       </v-row>
@@ -193,9 +215,35 @@ const formatCost = (cost) => {
   font-size: large;
   font-weight: bold;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content:flex-start;
+  align-items: left;
 }
+
+/* upper */
+.upper {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  border: 1px solid black;
+  margin: 10px 20px;
+}
+
+.logo {
+  width: 60px;
+  margin: 10px 5px 10px 0;
+  border: 1px solid blue;
+}
+
+.logo > img {
+  width: 100%;
+}
+
+.account-info {
+
+}
+
 
 .account-name {
   font-size: xx-large;
