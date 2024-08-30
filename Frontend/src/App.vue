@@ -50,6 +50,9 @@
       <HomeView v-if="!isTraveling" />
       <router-view v-else />
     </div>
+
+    <!-- 에러 메세지 모달 -->
+    <ErrorDialog></ErrorDialog>
   </v-app>
 </template>
 
@@ -59,6 +62,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useStateStore } from "@/stores/stateStore";
 import { useUserStore } from "./stores/userStore";
 import HomeView from "./views/HomeView.vue";
+import ErrorDialog from "./components/ErrorMessage/ErrorDialog.vue";
 import "./assets/base.css";
 
 const stateStore = useStateStore();

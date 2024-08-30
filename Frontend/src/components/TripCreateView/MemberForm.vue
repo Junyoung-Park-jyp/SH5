@@ -5,7 +5,7 @@
       <v-row>
         <div class="question">누구와 여행을 떠나시나요?</div>
         <div class="explanation">
-          이메일 입력시 자동으로 초대 PUSH 알림 전송
+          이메일 입력시 자동으로 멤버 초대
         </div>
         <v-col cols="12">
           <!-- <v-row>
@@ -81,22 +81,27 @@
 import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
+import { useErrorStore } from "@/stores/errorStore";
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
+const errorStore = useErrorStore()
 const userName = ref("");
 const email = ref("");
 const tripName = ref("");
 
 const addMember = async () => {
-  const userData = await userStore.getUser(email.value);
-
-  if (userData) {
+  if (email.value === userStore.userEmail) {
+    errorStore.showError("자기 자신을 초대할 수 없습니다")
+  } else if (tripStore.members.some(element => element.email === email.value)) {
+    errorStore.showError("멤버를 중복으로 추가할 수 없습니다")
+  } else {
+    const userData = await userStore.getUser(email.value);
     tripStore.members.push(userData);
     email.value = "";
-  } else {
-    console.error("멤버 추가 실패");
   }
+  console.log(tripStore.members)
+
 };
 
 // const addTripName = async () => {

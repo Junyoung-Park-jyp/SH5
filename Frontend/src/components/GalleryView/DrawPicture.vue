@@ -1,7 +1,8 @@
 <template>
   <div class="main-container">
     <div v-if="loading">
-      <v-progress-circular v-if="loading" indeterminate :size="50" :width="8" color="#4b72e1" class="mb-5"></v-progress-circular>
+      <v-progress-circular v-if="loading" indeterminate :size="50" :width="8" color="#4b72e1"
+        class="mb-5"></v-progress-circular>
       <div class="create-text">사진 생성 중입니다</div>
     </div>
 
@@ -12,8 +13,11 @@
     <div v-if="!loading" class="pick mt-0 mb-3">
       <input type="file" @change="onFileChange" accept="image/*" />
     </div>
-    <div v-if="!loading" class="create">
+    <div v-if="!loading && !resultImageUrl" class="create">
       <button class="create-btn" @click="uploadImage">사진 생성</button>
+    </div>
+    <div v-if="!loading && resultImageUrl" class="create">
+      <button class="create-btn" @click="saveImage">사진 저장</button>
     </div>
 
   </div>
@@ -22,8 +26,16 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { useRoute } from "vue-router";
 
 import { useStateStore } from "@/stores/stateStore";
+import { useErrorStore } from "@/stores/errorStore";
+
+import axiosInstance from '@/axios';
+
+const route = useRoute();
+
+const tripId = route.params.id
 
 const selectedFile = ref(null);
 const resultImageUrl = ref(null);
@@ -31,6 +43,7 @@ const resultImageUrl = ref(null);
 const loading = ref(false);
 
 const stateStore = useStateStore()
+const errorStore = useErrorStore()
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -39,8 +52,8 @@ const onFileChange = (event) => {
 const uploadImage = async () => {
   // 이미지가 업로드 되지 않았을 경우
   if (!selectedFile.value) {
-    alert("이미지가 업로드 되지 않았습니다.");
-    return;
+    errorStore.showError("이미지가 업로드 되지 않았습니다")
+    return
   }
 
   loading.value = true;
@@ -110,6 +123,18 @@ const getResult = async (taskId) => {
     }, 5000);
   });
 };
+
+const saveImage = async () => {
+  try {
+    await axiosInstance.post('/trips/save_image/', {
+      trip_id: tripId,
+      image_url: resultImageUrl.value
+    });
+  } catch (error) {
+    console.error('saveImage 실패: ', error);
+  }
+}
+
 </script>
 
 <style scoped>
