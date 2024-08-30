@@ -137,5 +137,6 @@ def save_image(request):
             return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         trip = Trip.objects.get(id=trip_id)
         trip.image_url = request.data.get('image_url')
+        trip.save()
         return Response({'message': "image url이 성공적으로 저장되었습니다."}, status=status.HTTP_202_ACCEPTED)
     
