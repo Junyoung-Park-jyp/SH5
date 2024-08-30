@@ -4,6 +4,7 @@
     <div class="header my-2">
       <div class="back">
         <v-icon
+          v-if="tripFormStage > 0"
           class="btns"
           icon="mdi-arrow-left"
           size="xx-large"

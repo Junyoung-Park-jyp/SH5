@@ -21,7 +21,10 @@
             </div>
 
             <div class="medium">
-              <div class="balance">
+              <div class="account-name">
+                {{ userStore.userName }} 님
+              </div>
+              <div class="account-balance">
                 {{ formatCost(userStore.userBalance) }}
               </div>
             </div>
@@ -186,7 +189,7 @@ const navigateToBridge = () => {
 
 // cost 포맷팅
 const formatCost = (cost) => {
-  return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+  return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
 };
 </script>
 
@@ -226,14 +229,15 @@ const formatCost = (cost) => {
   flex-direction: row;
   justify-content: left;
   align-items: center;
-  border: 1px solid black;
-  margin: 10px 20px;
+  margin: 24px 30px 15px 30px;
+  /* border: 1px solid black; */
 }
 
 .logo {
-  width: 60px;
-  margin: 10px 5px 10px 0;
-  border: 1px solid blue;
+  width: 70px;
+  margin: 10px 15px 10px 0;
+  display: flex;
+  /* border: 1px solid blue; */
 }
 
 .logo > img {
@@ -241,18 +245,69 @@ const formatCost = (cost) => {
 }
 
 .account-info {
-
+  width: 90%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4%;
+  /* border: 1px solid green; */
 }
 
+.first {
+  width: 100%;
+  font-size: 17px;
+  display: flex;
+  /* border: 1px solid red; */
+}
+
+.first-type {
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.first-name {
+  color: #626569;
+  font-weight: 400;
+}
+
+.second {
+  font-size: 12px;
+  color: #626569;
+  font-weight: lighter;
+}
+
+.account-bank {
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: 350;
+}
+
+.account-num {
+  font-size: 14px;
+  font-weight: 350;
+}
+
+.medium {
+  width: 85%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-left: 35px;
+  gap: 8%;
+  /* border: 1px solid black; */
+}
 
 .account-name {
-  font-size: xx-large;
-  font-weight: bolder;
+  font-size: 19px;
+  font-weight: 500;
+  padding-top: 6px;
 }
 
-.account-num,
 .account-balance {
-  font-size: 14px;
+  font-size: 26px;
+  font-weight: 900;
 }
 
 .text-left {

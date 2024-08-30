@@ -44,7 +44,7 @@ const backStep = () => {
 
 .header {
   position: fixed;
-  top: 60px;
+  top: 45px;
   left: 0;
   z-index: 1000;
   width: 100%;
