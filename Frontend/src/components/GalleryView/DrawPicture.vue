@@ -24,6 +24,7 @@ import { ref } from "vue";
 import axios from "axios";
 
 import { useStateStore } from "@/stores/stateStore";
+import { useErrorStore } from "@/stores/errorStore";
 
 const selectedFile = ref(null);
 const resultImageUrl = ref(null);
@@ -31,6 +32,7 @@ const resultImageUrl = ref(null);
 const loading = ref(false);
 
 const stateStore = useStateStore()
+const errorStore = useErrorStore()
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -39,10 +41,10 @@ const onFileChange = (event) => {
 const uploadImage = async () => {
   // 이미지가 업로드 되지 않았을 경우
   if (!selectedFile.value) {
-    alert("이미지가 업로드 되지 않았습니다.");
-    return;
+    errorStore.showError("이미지가 업로드 되지 않았습니다")
+    return
   }
-
+  
   loading.value = true;
   resultImageUrl.value = null;
 

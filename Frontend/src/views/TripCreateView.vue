@@ -45,8 +45,7 @@
       </div>
     </v-dialog>
 
-    <!-- 에러 메세지 모달 -->
-     <ErrorDialog />
+    <!-- <ErrorDialog></ErrorDialog> -->
   </div>
 </template>
 
@@ -110,7 +109,7 @@ const nextStep = () => {
     if (tripStore.members.length > 0 && tripStore.tripName != null) {
       tripFormStage.value++;
     } else {
-      alert("누락된 정보가 있습니다!");
+      errorStore.showError('멤버 초대와 여행 별칭을 다시 확인해주세요');
       // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 2) {
@@ -137,7 +136,7 @@ const nextStep = () => {
       });
       showLoadingSequence(); // 여행 생성 중 -> 여행 생성 완료 -> 이동 시퀀스 시작
     } else {
-      alert("누락된 정보가 있습니다!");
+      errorStore.showError('다시 확인해주세요');
       // showLoadingSequence();
     }
   }

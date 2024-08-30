@@ -5,7 +5,7 @@
       <v-row>
         <div class="question">누구와 여행을 떠나시나요?</div>
         <div class="explanation">
-          이메일 입력시 자동으로 초대 PUSH 알림 전송
+          이메일 입력시 자동으로 멤버 초대
         </div>
         <v-col cols="12">
           <!-- <v-row>

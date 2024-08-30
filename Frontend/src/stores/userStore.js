@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
 import axios from 'axios'
+import { useErrorStore } from './errorStore';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -82,7 +83,7 @@ export const useUserStore = defineStore('user', {
           console.log('data', response.data)
           console.log("로그인 여부", this.isLogin, this.name)
         }
-        
+
 
       } catch (error) {
         console.error('로그인 실패:', error);
@@ -90,9 +91,11 @@ export const useUserStore = defineStore('user', {
     },
 
     async getUser(email) {
+      const errorStore = useErrorStore()
+
       try {
         if (email == this.email) {
-          alert('자기 자신을 초대할 수 없습니다.')
+          errorStore.showError('자기 자신을 초대할 수 없습니다')
         }
         else if (this.isLogin) {
           const response = await axiosInstance.get('/trips/member/', { params: { email: email } })
@@ -105,8 +108,8 @@ export const useUserStore = defineStore('user', {
           }
         }
 
-        
-      } catch(error) {
+
+      } catch (error) {
         console.error('사용자 검색 실패:', error);
         return null
       }
@@ -129,5 +132,5 @@ export const useUserStore = defineStore('user', {
         storage: localStorage,
       },
     ],
-  },  
+  },
 });
