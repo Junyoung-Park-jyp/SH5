@@ -164,7 +164,9 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
@@ -517,5 +519,11 @@ const getBackgroundImage = (country) => {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

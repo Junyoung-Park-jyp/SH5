@@ -59,7 +59,9 @@
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
@@ -349,5 +351,11 @@ const calculatePadding = (index) => {
 @keyframes fadeInOut {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>
