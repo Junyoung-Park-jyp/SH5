@@ -142,12 +142,59 @@
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
           >
-            <!-- 테스트 데이터 -->
-            <div>
-                {{payment.username}} {{ payment.catrgory }} {{ payment.brand_name }} - {{ payment.amount }}
-            </div>
             <!-- 체크 버튼 -->
-            
+            <div class="check-area">
+              <v-btn
+                @click="toggleCheck(paymentIndex, 'trip')"
+                variant="text"
+                :color="payment.checked ? 'primary' : 'grey'"
+                :icon="
+                  payment.checked
+                    ? 'mdi-check-circle'
+                    : 'mdi-checkbox-blank-circle-outline'
+                "
+              ></v-btn>
+            </div>
+
+            <!-- 카테고리 -->
+            <div class="category-area">
+              <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
+              <div>{{ payment.category }}</div>
+            </div>
+
+            <!-- 결제 금액 및 내역 -->
+            <div class="cost-area">
+              <div class="cost" @click="toggleCurrency">
+                {{ formattedCost(payment.amount) }}
+              </div>
+              <div class="name">{{ payment.brand_name }}</div>
+            </div>
+
+            <!-- 정산 대상 -->
+            <div class="person-area">
+              <div
+                v-for="(member, index) in tripMembers"
+                :key="index"
+                class="person-info"
+              >
+                {{ member.member[0] }}
+                <!-- <div
+                  class="person-symbol d-flex justify-center align-center"
+                  :style="personStyle(member.member, index)"
+                  @click="personClick(paymentIndex, member.member, 'trip')"
+                >
+                  <div class="person-familyname">
+                    {{ member.member.slice(0, 1) }}
+                  </div>
+                </div> -->
+              </div>
+            </div>
+
+            <!-- 결제 날짜 -->
+            <div class="date-area">
+              {{ formatDate(payment.pay_date) }}
+              {{ formatTime(payment.pay_time) }}
+            </div>
           </div>
         </div>
       </div>
@@ -348,7 +395,7 @@ const paymentsDuringTrip = computed(() => {
 const totalCheckedCost = computed(() => {
   return [...bookingPayments.value, ...paymentsDuringTrip.value]
     .filter((payment) => payment.checked)
-    .reduce((sum, payment) => sum + payment.cost, 0);
+    .reduce((sum, payment) => sum + payment.amount, 0);
 });
 
 const toggleCurrencyInResult = () => {
