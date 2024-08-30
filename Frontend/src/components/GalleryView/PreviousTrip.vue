@@ -65,6 +65,7 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { useTripStore } from "@/stores/tripStore";
+import { usePaymentStore } from "@/stores/paymentStore";
 import { useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
@@ -83,6 +84,8 @@ import PieChart from "./PieChart.vue";
 
 const route = useRoute()
 const tripStore = useTripStore()
+const paymentStore = usePaymentStore()
+
 const tripId = route.params.id
 // const tripData = computed(() => {
 //   return tripStore.getTrip(tripId)
@@ -166,6 +169,7 @@ const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
 onMounted(async () => {
   tripStore.getTrip(tripId)
+  paymentStore.getPayments(tripId)
   loading.value = false
 })
 

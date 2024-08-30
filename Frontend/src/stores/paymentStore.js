@@ -42,7 +42,6 @@ export const usePaymentStore = defineStore('paymentStore', {
         if (response) {
           console.log("정산 내역", response.data)
           this.payments=response.data.data
-          console.log(this.payments)
         } else {
           console.error('정산 내역 조회 실패')
         }

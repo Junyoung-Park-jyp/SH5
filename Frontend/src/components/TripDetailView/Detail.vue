@@ -745,7 +745,7 @@ const formatTime = (time) => {
   text-align: center;
   margin: 0 auto;
   /* border: 1px solid black; */
-  padding: 20px 0px;
+  padding: 40px 0px 0px 0px;
   /* background-color: rgba(255, 255, 255); */
   /* border-top: 2px solid #4b72e1; */
 }
