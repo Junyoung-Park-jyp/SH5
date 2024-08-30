@@ -76,7 +76,8 @@ const getResult = async (taskId) => {
           "https://www.ailabapi.com/api/common/query-async-task-result",
           {
             headers: {
-              "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
+              // "ailabapi-api-key": import.meta.env.VITE_AILABAPI_API_KEY,
+              "ailabapi-api-key": stateStore.apiKey,
             },
             params: {
               task_id: taskId,
