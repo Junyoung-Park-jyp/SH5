@@ -133,6 +133,8 @@ def budget(request):
 def save_image(request):
     if request.method == 'POST':
         trip_id = request.data.get('trip_id')
+        if not Member.objects.filter(trip=trip_id, user=request.user).exists():
+            return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         trip = Trip.objects.get(id=trip_id)
         trip.image_url = request.data.get('image_url')
         return Response({'message': "image url이 성공적으로 저장되었습니다."}, status=status.HTTP_202_ACCEPTED)
