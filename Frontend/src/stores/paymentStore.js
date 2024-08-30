@@ -9,9 +9,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     ],
     budgets: [
     ],
-    adjustmentResult:[
-
-    ]
+    adjustmentResult:null
   }),
   getters: {
     getPaymentsByDate: (state) => (date) => {
@@ -64,8 +62,6 @@ export const usePaymentStore = defineStore('paymentStore', {
         });
     
         if (response) {
-          console.log("정산 내역", response.data.data);
-          console.log("예산 내역", response.data.budget);
           this.budgets = response.data.budget
           // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
           this.payments = response.data.data.map(payment => {
@@ -99,6 +95,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         });
     
         if (response) {
+          this.adjustmentResult = response.data
           // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
           this.payments = this.payments.map(payment => {
             const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
@@ -110,7 +107,7 @@ export const usePaymentStore = defineStore('paymentStore', {
             }
             return payment;
           });
-    
+          
           
           console.log('정산에 성공했습니다');
         } else {

@@ -28,15 +28,6 @@
 
     <!-- 입금/출금 -->
     <div class="type">
-      <!-- <div class="deposit">
-        <div class="deposit-img">
-          <img src="@/assets/img/deposit.png" alt="입금" />
-        </div>
-        <div class="deposit-list">
-          <div>박준영님에게 172,860원 출금</div>
-          <div>임광영님에게 252,440원 출금</div>
-        </div>
-      </div> -->
       <div class="withdraw">
         <div class="withdraw-img">
           <img src="@/assets/img/withdraw.png" alt="출금" />
@@ -111,6 +102,7 @@ import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
 import { useRoute, useRouter } from "vue-router";
 import { useTripStore } from "@/stores/tripStore";
+import { usePaymentStore } from "@/stores/paymentStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -118,9 +110,10 @@ const tripId = route.params.id;
 
 const amount = ref(route.query.amount || 0);
 const tripStore = useTripStore();
-
+const paymentStore = usePaymentStore();
 const tripMembers = computed(() => tripStore.members);
 
+const adjustmentResult = computed(() => paymentStore.adjustmentResult)
 // computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
 const membersWithColors = ref([]);
 
