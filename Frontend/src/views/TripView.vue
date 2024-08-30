@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loading" class="main-container">
     <!-- 프로필 -->
-    <div class="my-5 profile">
+    <div class="mt-2 mb-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <span>{{ userStore.userName }} 님 </span>
     </div>
@@ -283,7 +283,7 @@ const getBackgroundImage = (country) => {
 
 <style scoped>
 .main-container {
-  height: 92vh;
+  height: 93vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -332,8 +332,8 @@ const getBackgroundImage = (country) => {
   /* background-color: grey; */
   display: flex;
   gap: 2%;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 500;
   margin: 30px 0 10px 20px;
   /* border: 1px solid black; */
 }
@@ -395,7 +395,7 @@ const getBackgroundImage = (country) => {
 }
 
 .info > span {
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .info2 {
