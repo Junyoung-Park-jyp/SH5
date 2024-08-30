@@ -9,6 +9,11 @@
     <!-- 미래/현재 -->
     <div v-if="ongoingTrips" class="non-past">
       <v-row class="d-flex align-center">
+        <div class="record">
+          <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
+          다가오는 여행 <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
+          <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
+        </div>
         <v-carousel
           :show-arrows="true"
           hide-delimiters
@@ -51,9 +56,9 @@
             ></div>
             <div class="info">
               <span>
-                <v-icon icon="mdi-music"></v-icon>
+                <!-- <v-icon icon="mdi-music"></v-icon> -->
                 {{ ongoingTrip.trip_name }}
-                <v-icon icon="mdi-music"></v-icon>
+                <!-- <v-icon icon="mdi-music"></v-icon> -->
               </span>
             </div>
           </v-carousel-item>
@@ -64,8 +69,10 @@
     <!-- 과거 -->
     <div class="past">
       <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
-        <div class="record">
-          총 {{ pastTrips.length }}회 SOL로 여행을 다녀오셨네요!
+        <div class="record" style="margin-top: 20px;">
+          <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
+          지난 여행 <span style="color: gray; font-weight: bold;">{{ pastTrips.length }}</span>
+          <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <div class="record-carousel">
           <v-row class="d-flex align-center">
@@ -306,7 +313,7 @@ const getBackgroundImage = (country) => {
 
 .past {
   /* margin: 50px; */
-  padding-top: 20px;
+  /* padding-top: 20px; */
   margin: 0 auto;
   width: 100%;
   justify-content: center;
@@ -319,12 +326,12 @@ const getBackgroundImage = (country) => {
   text-align: center;
   font-size: 20px;
   font-weight: bold;
+  margin: 30px auto 10px auto;
 }
 
 .record-carousel {
   width: 85%;
   margin: 0 auto;
-  margin-top: 15px;
 }
 
 .v-carousel {
@@ -399,7 +406,7 @@ const getBackgroundImage = (country) => {
 }
 
 .non-past-carousel {
-  margin-top: 0px;
+  margin: 0 auto;
   height: 120px !important;
 }
 

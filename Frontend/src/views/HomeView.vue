@@ -10,7 +10,7 @@
                 <span>{{
                   userStore.bank.slice(0, userStore.bank.length - 2)
                 }}</span>
-                <span class="mx-2">{{ userStore.userAccountNumMasked }}</span>
+                <span class="mx-2">{{ userStore.accountNum }}</span>
               </div>
               <div class="account-balance">
                 <span>잔액</span>

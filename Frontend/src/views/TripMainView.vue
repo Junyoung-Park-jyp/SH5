@@ -76,7 +76,13 @@
                 member.bank_name.slice(0, member.bank_name.length - 2)
               }}</span
               >&nbsp;
-              <span class="member-bankaccount">{{ member.bank_account }}</span>
+              <span class="member-bankaccount">
+                {{
+                  member.member === myname
+                    ? member.bank_account
+                    : maskAccount(member.bank_account)
+                }}
+              </span>
             </div>
             <div class="member-bankbalance">
               {{ formatWithComma(member.balance) }} 원
@@ -256,6 +262,12 @@ const formatDay = (date) => {
 const tripMembers = computed(() => tripStore.members);
 const membersWithColors = ref([]);
 const { memberColors, changeColor, rgbaColor } = useMemberColors(tripMembers);
+
+// 계좌번호를 마스킹하는 함수
+const maskAccount = (account) => {
+  return account.slice(0, -5) + "*****";
+};
+
 
 // `onMounted`에서 `membersWithColors`를 초기화
 onMounted(() => {
