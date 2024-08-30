@@ -7,7 +7,7 @@
         class="budget-container"
         @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between" >
+        <div class="title d-flex justify-space-between" @click="checkData" >
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -259,16 +259,24 @@
               <strong>정산 대상:</strong>
               <ul>
                 <li v-for="(member, index) in selectedPayment.members" :key="index">
-                  <div v-if="member.member!=selectedPayment.username">
                     {{ member.member }}
-                  </div>
+                    <v-text-field
+                      v-model="memberCosts[index]"
+                      type="number"
+                      min="0"
+                      :placeholder="getPlaceholder(selectedPayment.id, member.bank_account, index)"
+                      @input="updateRemainingAmount"
+                      hide-details
+                      dense
+                    ></v-text-field>
                 </li>
               </ul>
-              <v-btn color=primary>확인</v-btn>
+              <p>남은 금액: {{ remainingAmount }}</p>
+              <v-btn @click="modifyCost" color="primary">확인</v-btn>
             </div>
           </v-card-subtitle>
           <v-card-actions>
-            <v-btn text @click=closeModal>닫기</v-btn>
+            <v-btn text @click="closeModal">닫기</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -342,6 +350,8 @@ const budgets = computed(() => paymentStore.budgets)
 const budgetTypes = ['initial', 'used', 'remain'];
 const currentBudgetType = ref('initial'); 
 const selectedPayment = ref(null);
+const memberCosts = ref([]);
+const remainingAmount = ref(0);
 
 const getMemberBudget = (memberName) => {
       return budgets.value[memberName] || { initial_budget: 0, remain_budget: 0, used_budget: 0 };
@@ -374,22 +384,103 @@ const openModal = (payment) => {
 
   };
 
-  const closeModal = () => {
+const modifyCost = () => {
+  // 각 멤버의 정산 금액을 selectedPayment에 반영
+  selectedPayment.value.members.forEach((member, index) => {
+    member.assignedCost = memberCosts.value[index];
+  });
+
+  // payment 데이터를 adjustment 형식으로 변환
+  const paymentData = {
+    payment_id: selectedPayment.value.id, // payment의 id가 payment_id에 해당
+    bills: selectedPayment.value.members.map((member) => {
+      return {
+        cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
+        bank_account: member.bank_account  // 멤버의 bank_account
+      };
+    }),
+  };
+
+  const tripData = {
+    trip_id: route.params.id,
+    payments: [paymentData],
+  };
+
   const existingIndex = adjustment.value.findIndex(
-    (p) => p === selectedPayment.value
+    (p) => p.payments.some(payment => payment.payment_id === selectedPayment.value.id)
   );
 
   if (existingIndex !== -1) {
     // 이미 adjustment에 있는 데이터라면 해당 데이터를 업데이트
-    adjustment.value[existingIndex] = { ...selectedPayment.value };
+    adjustment.value[existingIndex] = tripData;
   } else {
     // 없으면 새로 추가
-    adjustment.value.push({ ...selectedPayment.value });
+    adjustment.value.push(tripData);
     selectedPayment.value.checked = true; // 상태를 체크 상태로 변경
   }
 
-  dialog.value = false;
+  updateRemainingAmount();
+
+  if (remainingAmount.value < 2 && remainingAmount.value >= -2) { // 남은 금액이 0일 때만 모달 닫기
+    dialog.value = false;
+  } else {
+    alert('금액이 일치하지 않습니다. 모든 금액을 분배해주세요.');
+  }
 };
+
+const updateRemainingAmount = () => {
+  const totalAssigned = memberCosts.value.reduce((sum, cost) => sum + parseInt(cost || 0), 0);
+
+  remainingAmount.value = selectedPayment.value.amount - totalAssigned;
+  console.log(remainingAmount.value)
+};
+
+
+const closeModal = () => {
+  dialog.value = false;
+}
+
+const defaultCostPerMember = computed(() => {
+  return Math.floor(selectedPayment.value.amount / selectedPayment.value.members.length);
+});
+
+const getPlaceholder = (paymentId, bankAccount) => {
+  // adjustment에서 payment_id가 일치하는 항목을 찾음
+  const adjustmentEntry = adjustment.value.find((entry) =>
+    entry.payments.some((payment) => payment.payment_id === paymentId)
+  );
+
+  if (adjustmentEntry) {
+    // payment_id가 일치하는 payment 데이터를 찾음
+    const paymentData = adjustmentEntry.payments.find(
+      (payment) => payment.payment_id === paymentId
+    );
+
+    // 해당 paymentData에서 bank_account가 일치하는 bill을 찾음
+    const bill = paymentData.bills.find(
+      (b) => b.bank_account === bankAccount
+    );
+
+    if (bill) {
+      return bill.cost.toString(); // 해당 멤버의 cost를 반환
+    }
+  }
+
+  // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
+  return defaultCostPerMember.value.toString();
+};
+
+watch(dialog, (newVal) => {
+  if (newVal) {
+    // 각 멤버별 초기 금액 설정
+    memberCosts.value = selectedPayment.value.members.map((member, index) => {
+      const existingBill = getPlaceholder(selectedPayment.value.id, member.bank_account);
+      return parseInt(existingBill) || defaultCostPerMember.value;
+    });
+    updateRemainingAmount();
+  }
+});
+
 
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
@@ -400,11 +491,32 @@ const toggleCheck = (index, type) => {
     );
     const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
 
-    if (adjustment.value.includes(paymentToUpdate)) {
-      adjustment.value.splice(adjustment.value.indexOf(paymentToUpdate), 1);
+    const adjustmentIndex = adjustment.value.findIndex(
+      (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
+    );
+
+    if (adjustmentIndex !== -1) {
+      // adjustment에 이미 존재하는 경우 해당 항목 제거
+      adjustment.value.splice(adjustmentIndex, 1);
       paymentToUpdate.checked = false;
     } else {
-      adjustment.value.push(paymentToUpdate);
+      // adjustment에 없으면 새로운 항목 추가
+      const newPaymentData = {
+        payment_id: paymentToUpdate.id, // payment의 id가 payment_id에 해당
+        bills: paymentToUpdate.members.map((member) => {
+          return {
+            cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
+            bank_account: member.bank_account  // 멤버의 bank_account
+          };
+        }),
+      };
+
+      const newTripData = {
+        trip_id: route.params.id,
+        payments: [newPaymentData],
+      };
+
+      adjustment.value.push(newTripData);
       paymentToUpdate.checked = true;
     }
   }
@@ -426,6 +538,7 @@ const checkData = () => {
   console.log("const payments", payments.value)
   console.log('booking payments', bookingPayments.value)
   console.log('selected payments', selectedPayments.value)
+  console.log('adjustment', adjustment.value)
 }
 
 // 결제 카테고리별 아이콘 설정
@@ -747,9 +860,9 @@ const updateCheckedCost = (cost) => {
 // 정산 완료 버튼 슬라이딩
 const finishTrip = () => {
   adjustmentDiv.value.style.transform = `translateX(100%)`;
-
+  console.log(adjustment.value)
   setTimeout(() => {
-    paymentStore.makeAdjustment(route.params.id, selectedPayments.value)
+    paymentStore.makeAdjustment(route.params.id, adjustment.value)
     router.push({
       name: "tripFinish",
       query: { amount: checkedCost.value }, // Use query instead of params

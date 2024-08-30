@@ -89,24 +89,9 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async makeAdjustment(tripId, selectedPayments) {
-      console.log('makeAdjustment 가 받은 데이터', selectedPayments)
-      // 각 payment 객체를 적절한 형식으로 변환
-      const adjustments = selectedPayments.map(payment => {
-        const memberCount = payment.members.length;
-        const dividedCost = Math.floor(payment.amount / memberCount);
-        return {
-          payment_id: payment.id,
-          bills: payment.members.map(member => {
-            return {
-              cost: dividedCost, // or use any logic to distribute the amount among members
-              bank_account: member.bank_account, // 기본적으로 payment의 계좌를 사용
-            };
-          }),
-        };
-      });
-      console.log(adjustments);
-      
+    async makeAdjustment(tripId, adjustments) {
+      console.log('makeAdjustment 가 받은 데이터', adjustments)
+      // 각 payment 객체를 적절한 형식으로 변환      
       try {
         const response = await axiosInstance.post('/payments/adjustment/', { 
           trip_id: tripId,
