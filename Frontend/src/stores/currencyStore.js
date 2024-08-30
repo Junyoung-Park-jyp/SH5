@@ -1,5 +1,6 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import axiosInstance from "@/axios";
 
 // 환율 데이터를 저장하는 상태
 export const exchangeArray = ref([]);
@@ -27,23 +28,24 @@ export const currencyText = {
 };
 
 // 환율 데이터를 가져오는 함수
-// export function fetchExchangeRates() {
-//   axios({
-//     url: "http://52.79.246.151:8000/exchange_rate/",
-//     method: "get",
-//   })
-//     .then((res) => {
-//       exchangeArray.value = res.data;
-//       console.log(exchangeArray.value);
-//     })
-//     .catch((err) => console.log(err));
-// }
+export function fetchExchangeRates() {
+  try {
+    const response = axiosInstance.get('/exchange_rates/')
+    console.log(response)
+
+    if (response) {
+      exchangeArray.value = response
+    }
+  } catch (error) {
+    console.log('환율 조회 실패', error)
+  }
+}
 
 // Dummy exchange rates (환율 데이터를 저장)
 // 환율 데이터를 가져오는 함수
-export function fetchExchangeRates() {
+// export function fetchExchangeRates() {
   // 임의의 dummy 데이터를 사용하도록 설정
-  exchangeArray.value = [
+  // exchangeArray.value = [
     // {
     //   id: 5399,
     //   currency: "CAD",
@@ -65,13 +67,13 @@ export function fetchExchangeRates() {
     //   exchangeMin: "800",
     //   created: "2024-08-22 16:31:47",
     // },
-    {
-      id: 5402,
-      currency: "EUR",
-      exchangeRate: "1,486.49",
-      exchangeMin: "100",
-      created: "2024-08-22 16:31:47",
-    },
+    // {
+    //   id: 5402,
+    //   currency: "EUR",
+    //   exchangeRate: "1,486.49",
+    //   exchangeMin: "100",
+    //   created: "2024-08-22 16:31:47",
+    // },
     // {
     //   id: 5403,
     //   currency: "GBP",
@@ -79,22 +81,22 @@ export function fetchExchangeRates() {
     //   exchangeMin: "80",
     //   created: "2024-08-22 16:31:47",
     // },
-    {
-      id: 5404,
-      currency: "JPY",
-      exchangeRate: "919.63",
-      exchangeMin: "100",
-      created: "2024-08-22 16:31:47",
-    },
-    {
-      id: 5406,
-      currency: "USD",
-      exchangeRate: "1,332.4",
-      exchangeMin: "100",
-      created: "2024-08-22 16:31:47",
-    },
-  ];
-}
+//     {
+//       id: 5404,
+//       currency: "JPY",
+//       exchangeRate: "919.63",
+//       exchangeMin: "100",
+//       created: "2024-08-22 16:31:47",
+//     },
+//     {
+//       id: 5406,
+//       currency: "USD",
+//       exchangeRate: "1,332.4",
+//       exchangeMin: "100",
+//       created: "2024-08-22 16:31:47",
+//     },
+//   ];
+// }
 
 // 금액을 소수점 둘째 자리까지 포맷하는 함수
 export function formatToTwoDecimal(value) {
