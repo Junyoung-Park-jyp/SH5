@@ -54,6 +54,17 @@
             )
           }}
         </div>
+        <div class="progress" v-else>
+          <div class="progress-container">
+            <div
+              class="progress-bar"
+              :style="{ width: animatedWidth + '%' }"
+            ></div>
+          </div>
+          <div class="progress-text">
+            {{ calculateProgress(tripStore.startDate, tripStore.endDate, today) }}%
+          </div>
+        </div>
       </div>
       <div class="content">
         <p>시작일 &nbsp; | &nbsp; {{ formatDay(tripStore.startDate) }}</p>
@@ -199,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
@@ -265,6 +276,31 @@ const formatDay = (date) => {
   // date가 유효한 경우에만 포맷팅, 그렇지 않으면 빈 문자열 반환
   return date ? format(new Date(date), "yyyy년 MM월 dd일") : "";
 };
+
+/// 여행 진행율
+const calculateProgress = (startDate, endDate, currentDate) => {
+  if (!startDate || !endDate || currentDate < startDate) return 0;
+  if (currentDate > endDate) return 100;
+
+  const totalDays = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  const elapsedDays = (currentDate - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  
+  return Math.ceil((elapsedDays / totalDays) * 100);
+};
+
+// 애니메이션용 상태
+const animatedWidth = ref(0);
+
+watch(
+  () => calculateProgress(tripStore.startDate, tripStore.endDate, today),
+  (newProgress) => {
+    animatedWidth.value = 0;
+    setTimeout(() => {
+      animatedWidth.value = newProgress;
+    }, 100); 
+  },
+  { immediate: true }
+);
 
 // 여행 멤버와 계좌번호
 // const tripMembers = [
@@ -376,8 +412,8 @@ onMounted(async () => {
         tripStore.endDate = tripData.end_date
           ? new Date(tripData.end_date)
           : null;
-
         tripStore.members = tripData.members;
+
       }
     }
 
@@ -557,6 +593,52 @@ const backStep = () => {
 .dday {
   font-size: large;
   margin: auto;
+}
+
+/* 진행율 */
+.progress {
+  /* border: 1px solid black; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 120px;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 25px;
+  overflow: hidden;
+  height: 10px;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4b72e1;
+  width: 0; /* 초기 너비를 0으로 설정 */
+  transition: width 1.5s ease-in-out;
+}
+
+@keyframes fillProgressBar {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.progress-bar.animate {
+  animation: fillProgressBar 1s forwards;
+}
+
+.progress-text {
+  text-align: center;
+  margin-left: 10px;
+  font-size: 0.9rem;
+  color: #4b72e1;
+  font-size: 12px;
 }
 
 /* 멤버 */
