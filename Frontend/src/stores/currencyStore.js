@@ -44,27 +44,27 @@ export const currencyText = {
 export function fetchExchangeRates() {
   // 임의의 dummy 데이터를 사용하도록 설정
   exchangeArray.value = [
-    {
-      id: 5399,
-      currency: "CAD",
-      exchangeRate: "980.82",
-      exchangeMin: "140",
-      created: "2024-08-22 16:31:47",
-    },
-    {
-      id: 5400,
-      currency: "CHF",
-      exchangeRate: "1,566.15",
-      exchangeMin: "100",
-      created: "2024-08-22 16:31:47",
-    },
-    {
-      id: 5401,
-      currency: "CNY",
-      exchangeRate: "186.91",
-      exchangeMin: "800",
-      created: "2024-08-22 16:31:47",
-    },
+    // {
+    //   id: 5399,
+    //   currency: "CAD",
+    //   exchangeRate: "980.82",
+    //   exchangeMin: "140",
+    //   created: "2024-08-22 16:31:47",
+    // },
+    // {
+    //   id: 5400,
+    //   currency: "CHF",
+    //   exchangeRate: "1,566.15",
+    //   exchangeMin: "100",
+    //   created: "2024-08-22 16:31:47",
+    // },
+    // {
+    //   id: 5401,
+    //   currency: "CNY",
+    //   exchangeRate: "186.91",
+    //   exchangeMin: "800",
+    //   created: "2024-08-22 16:31:47",
+    // },
     {
       id: 5402,
       currency: "EUR",
@@ -72,13 +72,13 @@ export function fetchExchangeRates() {
       exchangeMin: "100",
       created: "2024-08-22 16:31:47",
     },
-    {
-      id: 5403,
-      currency: "GBP",
-      exchangeRate: "1,744.64",
-      exchangeMin: "80",
-      created: "2024-08-22 16:31:47",
-    },
+    // {
+    //   id: 5403,
+    //   currency: "GBP",
+    //   exchangeRate: "1,744.64",
+    //   exchangeMin: "80",
+    //   created: "2024-08-22 16:31:47",
+    // },
     {
       id: 5404,
       currency: "JPY",

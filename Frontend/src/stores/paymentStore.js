@@ -64,8 +64,8 @@ export const usePaymentStore = defineStore('paymentStore', {
         });
     
         if (response) {
-          console.log("정산 내역", response.data);
-          console.log("여행 멤버", tripStore.members);
+          console.log("정산 내역", response.data.data);
+          console.log("예산 내역", response.data.budget);
           this.budgets = response.data.budget
           // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
           this.payments = response.data.data.map(payment => {

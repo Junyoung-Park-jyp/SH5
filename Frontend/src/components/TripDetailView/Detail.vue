@@ -5,21 +5,33 @@
       <div
         v-if="showAllContainers || showBudgetAndBookingOnly"
         class="budget-container"
+        @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between" @click="checkData">
-          <div class="prepare">준비</div>
-          <div class="line">&nbsp;|&nbsp;</div>
+        <div class="title d-flex justify-space-between" >
+          <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
+          <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
+          <div v-else class="prepare">잔여</div>
+          <div class="line">&nbsp;&nbsp;</div>
           <div class="budget">예산</div>
           <v-spacer></v-spacer>
-          <div class="sum" @click="toggleCurrency">
+          <!-- <div class="sum" @click="toggleCurrency">
             {{ formattedTotalBalance }}
+          </div> -->
+          <div v-if="currentBudgetType ==='initial'" class="sum">
+            ₩ {{ totalInitialBudget }}
+          </div>
+          <div v-else-if="currentBudgetType === 'used'">
+            ₩ {{ totalUsedBudget }}
+          </div>
+          <div v-else class="sum">
+            ₩ {{ totalRemainBudget }}
           </div>
         </div>
         <div class="budget-content">
           <div class="left-detail">
             <v-icon icon="mdi-wallet-outline" color="grey" size="28px"></v-icon>
           </div>
-          <div class="right-detail">
+          <div class="right-detail">  
             <div
               v-for="(member, index) in tripMembers"
               :key="index"
@@ -37,8 +49,19 @@
                   {{ member.member.slice(0, 1) }}
                 </div>
               </div>
-              <div class="member-balance" @click="toggleCurrency">
+              <!-- <div class="member-balance" @click="toggleCurrency">
                 {{ formattedMemberBalance(member.balance) }}
+              </div> -->
+              <div class="member-balance" >
+                <template v-if="currentBudgetType === 'initial'">
+                  ₩ {{ getMemberBudget(member.member).initial_budget }}
+                </template>
+                <template v-else-if="currentBudgetType === 'used'">
+                  ₩ {{ getMemberBudget(member.member).used_budget }}
+                </template>
+                <template v-else>
+                  ₩ {{ getMemberBudget(member.member).remain_budget }}
+                </template>
               </div>
             </div>
           </div>
@@ -152,6 +175,7 @@
             class="payment"
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
+            
           >
             <!-- 체크 버튼 -->
             <div v-if="accountNum==payment.bank_account" class="check-area">
@@ -178,8 +202,8 @@
             </div>
 
             <!-- 결제 금액 및 내역 -->
-            <div class="cost-area">
-              <div class="cost" @click="toggleCurrency">
+            <div class="cost-area" @click="openModal(payment)">
+              <div class="cost">
                 {{ formattedCost(payment.amount) }}
               </div>
               <div class="name">{{ payment.brand_name }}</div>
@@ -219,7 +243,36 @@
         </div>
       </div>
 
-      <div class="summary">
+      <v-dialog v-model="dialog" max-width="600px">
+        <v-card>
+          <v-card-title>
+            결제 상세 정보
+          </v-card-title>
+          <v-card-subtitle>
+            <div>
+              <strong>금액:</strong> {{ selectedPayment.amount }}
+            </div>
+            <div>
+              <strong>브랜드명:</strong> {{ selectedPayment.brand_name }}
+            </div>
+            <div>
+              <strong>정산 대상:</strong>
+              <ul>
+                <li v-for="(member, index) in selectedPayment.members" :key="index">
+                  <div v-if="member.member!=selectedPayment.username">
+                    {{ member.member }}
+                  </div>
+                </li>
+              </ul>
+              <v-btn color=primary>확인</v-btn>
+            </div>
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn text @click="dialog = false">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- <div class="summary">
         <div class="spend">
           <div class="type">쓴 돈</div>
           <div class="today">₩ 4057</div>
@@ -230,7 +283,7 @@
           <div class="today">₩ 6024</div>
           <div class="total">₩ 426864</div>
         </div>
-      </div>
+      </div> -->
 
       <div class="calculation">
         <div class="result" @click="toggleCurrencyInResult">
@@ -285,7 +338,45 @@ const router = useRouter();
 
 const payments = computed(() => paymentStore.payments)
 const accountNum = computed(() => userStore.accountNum)
+const budgets = computed(() => paymentStore.budgets)
+const budgetTypes = ['initial', 'used', 'remain'];
+const currentBudgetType = ref('initial'); 
+const selectedPayment = ref(null);
 
+const getMemberBudget = (memberName) => {
+      return budgets.value[memberName] || { initial_budget: 0, remain_budget: 0, used_budget: 0 };
+    };
+
+const toggleBudget = () => {
+      const currentIndex = budgetTypes.indexOf(currentBudgetType.value);
+      currentBudgetType.value = budgetTypes[(currentIndex + 1) % budgetTypes.length];
+    };
+
+const totalInitialBudget = computed(() => {
+  return Object.values(budgets.value).reduce((sum, budget) => sum + budget.initial_budget, 0);
+});
+
+const totalUsedBudget = computed(() => {
+  return Object.values(budgets.value).reduce((sum, budget) => sum + budget.used_budget, 0);
+});
+
+const totalRemainBudget = computed(() => {
+  return Object.values(budgets.value).reduce((sum, budget) => sum + budget.remain_budget, 0);
+});
+
+const dialog = ref(false);
+
+const openModal = (payment) => {
+  if(payment.bank_account == userStore.accountNum) {
+    selectedPayment.value = payment;
+    dialog.value = true;
+  }
+
+  };
+
+const closeModal = () => {
+    dialog.value = false;
+  };
 // Props
 const props = defineProps({
   selectedDate: Date,
