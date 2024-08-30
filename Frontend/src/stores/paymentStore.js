@@ -2,30 +2,11 @@ import { defineStore } from 'pinia';
 import axiosInstance from '@/axios';
 import { useTripStore } from '@/stores/tripStore'
 export const usePaymentStore = defineStore('paymentStore', {
-  // state: () => ({
-  //   payments: [],
-  //   cost: null,
-  //   category: null,
-    
-  // }),
-
-  // getters: {
-  //   tripPayments(state) {
-  //     return state.payments
-  //   }
-  // },
-
-  // actions: {
-  // },
-
   state: () => ({
     payments: [
     ],
   }),
   getters: {
-    getAllPayments(state) {
-      return state.payments; // 모든 결제 내역을 반환
-    },
     getPaymentsByDate: (state) => (date) => {
       return state.payments.filter(payment => payment.pay_date === date);
     }
@@ -87,6 +68,52 @@ export const usePaymentStore = defineStore('paymentStore', {
         console.error('정산 실패', error)
       }
     },
+    // 특정 날짜 이후의 결제 내역 필터링
+    filterPaymentsAfterDate(startDate) {
+      return this.payments.filter(payment => new Date(payment.pay_date) >= new Date(startDate));
+    },
 
-  }
+    // 특정 날짜 이전의 결제 내역 필터링 (예: 사전 예약)
+    filterPaymentsBeforeDate(startDate) {
+      return this.payments.filter(payment => new Date(payment.pay_date) < new Date(startDate));
+    },
+
+    // 특정 날짜의 결제 내역 필터링
+    filterPaymentsByDate(selectedDate) {
+      return this.payments.filter(payment =>
+        new Date(payment.pay_date).toDateString() === new Date(selectedDate).toDateString()
+      );
+    },
+
+    // 모든 결제 내역 반환
+    getAllPayments() {
+      return this.payments;
+    },
+
+    // 결제 항목 체크 상태 토글
+    togglePaymentCheck(paymentIndex, type, startDate) {
+      const paymentList =
+        type === 'booking'
+          ? this.filterPaymentsBeforeDate(startDate)
+          : this.filterPaymentsAfterDate(startDate);
+
+      paymentList[paymentIndex].checked = !paymentList[paymentIndex].checked;
+    },
+
+    // 정산 대상 토글
+    toggleMemberInPayment(paymentIndex, memberName, type, startDate) {
+      const paymentList =
+        type === 'booking'
+          ? this.filterPaymentsBeforeDate(startDate)
+          : this.filterPaymentsAfterDate(startDate);
+
+      const payment = paymentList[paymentIndex];
+
+      if (payment.members.includes(memberName)) {
+        payment.members = payment.members.filter(name => name !== memberName);
+      } else {
+        payment.members.push(memberName);
+      }
+    },
+  },
 });

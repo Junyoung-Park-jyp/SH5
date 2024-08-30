@@ -1,12 +1,12 @@
 <template>
-  <div class="main-container">
+  <div v-if="payments" class="main-container">
     <div class="content-container">
       <!-- 예산 -->
       <div
         v-if="showAllContainers || showBudgetAndBookingOnly"
         class="budget-container"
       >
-        <div class="title d-flex justify-space-between">
+        <div class="title d-flex justify-space-between" @click="checkData">
           <div class="prepare">준비</div>
           <div class="line">&nbsp;|&nbsp;</div>
           <div class="budget">예산</div>
@@ -53,7 +53,7 @@
         "
         class="booking-container"
       >
-        <div class="title d-flex justify-space-between">
+        <div class="title d-flex justify-space-between" >
           <div class="subtitle">준비 &nbsp;|&nbsp; 사전 예약</div>
           <v-spacer></v-spacer>
           <div class="sum" @click="toggleCurrency">
@@ -88,9 +88,9 @@
             <!-- 결제 금액 및 내역 -->
             <div class="cost-area">
               <div class="cost" @click="toggleCurrency">
-                {{ formattedCost(payment.cost) }}
+                {{ formattedCost(payment.amount) }}
               </div>
-              <div class="name">{{ payment.name }}</div>
+              <div class="name">{{ payment.brand_name }}</div>
             </div>
 
             <!-- 정산 대상 -->
@@ -142,6 +142,10 @@
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
           >
+            <!-- 테스트 데이터 -->
+            <div>
+                {{payment.username}} {{ payment.catrgory }} {{ payment.brand_name }} - {{ payment.amount }}
+            </div>
             <!-- 체크 버튼 -->
             <div class="check-area">
               <v-btn
@@ -164,7 +168,7 @@
             <!-- 결제 금액 및 내역 -->
             <div class="cost-area">
               <div class="cost" @click="toggleCurrency">
-                {{ formattedCost(payment.cost) }}
+                {{ formattedCost(payment.amount) }}
               </div>
               <div class="name">{{ payment.name }}</div>
             </div>
@@ -178,7 +182,7 @@
               >
                 <div
                   class="person-symbol d-flex justify-center align-center"
-                  :style="personStyle(member.member, payment.members, index)"
+                  :style="personStyle(member.member, index)"
                   @click="personClick(paymentIndex, member.member, 'trip')"
                 >
                   <div class="person-familyname">
@@ -237,6 +241,7 @@ import { usePaymentStore } from "@/stores/paymentStore";
 const tripStore = useTripStore();
 const paymentStore = usePaymentStore();
 
+const payments = computed(() => paymentStore.payments)
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -248,15 +253,12 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(["updateCheckedCost"]);
 
-// 멤버별 예산 더미 데이터
-// const tripMembers = [
-//   { name: "박준영", balance: 3000000 },
-//   { name: "이선재", balance: 3500000 },
-//   { name: "임광영", balance: 4000000 },
-//   { name: "정태완", balance: 4500000 },
-//   { name: "최한진", balance: 5000000 },
-// ];
-
+const checkData = () => {
+  console.log('startDate', paymentsDuringTrip.value)
+  console.log("store payments", paymentStore.payments)
+  console.log("const payments", payments.value)
+  console.log('booking payments', bookingPayments.value)
+}
 const tripMembers = computed(() => tripStore.members);
 
 const totalBalance = computed(() => {
@@ -346,32 +348,50 @@ const formattedMemberBalance = (balance) => {
 const startDate = computed(() => new Date(tripStore.startDate));
 
 // 사전 예약 결제 내역을 스토어에서 가져오기
-const bookingPayments = computed(() => {
-  const filteredPayments = paymentStore.payments.filter(
-    (payment) => new Date(payment.pay_date) < startDate
-  );
-  return filteredPayments;
-});
+// const bookingPayments = computed(() => {
+//   const filteredPayments = paymentStore.payments.filter(
+//     (payment) => new Date(payment.pay_date) < startDate
+//   );
+//   return filteredPayments;
+// });
 
 // 여행 중 결제 내역을 스토어에서 가져오기
-const paymentsDuringTrip = computed(() => {
-  const filteredPayments = paymentStore.payments.filter(
-    (payment) => new Date(payment.pay_date) >= startDate
-  );
-  return filteredPayments;
+// const paymentsDuringTrip = computed(() => {
+//   const filteredPayments = paymentStore.payments.filter(
+//     (payment) => new Date(payment.pay_date) >= startDate
+//   );
+//   return filteredPayments;
+// });
+
+// // 선택된 날짜에 해당하는 지출 내역 필터링
+// const filteredPayments = computed(() => {
+//   if (props.selectedView === "all") {
+
+//     return paymentsDuringTrip.value; // 모든 결제 내역을 반환
+//   } else {
+//     return paymentsDuringTrip.value.filter(
+//       (payment) =>
+//         new Date(payment.pay_date).toDateString() ===
+//         props.selectedDate.toDateString()
+//     );
+//   }
+// });
+
+
+const filteredPayments = computed(() => {
+  if (props.selectedView === 'all') {
+    return paymentStore.filterPaymentsAfterDate(startDate.value);
+  } else {
+    return paymentStore.filterPaymentsByDate(props.selectedDate);
+  }
 });
 
-// 선택된 날짜에 해당하는 지출 내역 필터링
-const filteredPayments = computed(() => {
-  if (props.selectedView === "all") {
-    return paymentsDuringTrip.value; // 모든 결제 내역을 반환
-  } else {
-    return paymentsDuringTrip.value.filter(
-      (payment) =>
-        new Date(payment.pay_date).toDateString() ===
-        props.selectedDate.toDateString()
-    );
-  }
+const bookingPayments = computed(() => {
+  return paymentStore.filterPaymentsBeforeDate(startDate.value);
+});
+
+const paymentsDuringTrip = computed(() => {
+  return paymentStore.filterPaymentsAfterDate(startDate.value);
 });
 
 const totalCheckedCost = computed(() => {
@@ -422,7 +442,7 @@ const toggleCheck = (index, type) => {
 
 const formattedTotalCost = (paymentArray) => {
   const totalCost = paymentArray.reduce(
-    (sum, payment) => sum + payment.cost,
+    (sum, payment) => sum + payment.amount,
     0
   );
   const exchangeRate = getExchangeRate();
@@ -774,7 +794,7 @@ const formatTime = (time) => {
   text-align: center;
   margin: 0 auto;
   /* border: 1px solid black; */
-  padding: 20px 0px;
+  padding: 40px 0px 0px 0px;
   /* background-color: rgba(255, 255, 255); */
   /* border-top: 2px solid #4b72e1; */
 }

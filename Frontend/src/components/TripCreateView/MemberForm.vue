@@ -38,16 +38,19 @@
         </div>
       </v-row>
       <v-row>
-        <v-col v-for="(member, index) in tripStore.members" :key="index">
-          <v-chip
-            :key="index"
-            color="primary"
-            class="ma-1"
-            @click="removeMember(index)"
-          >
-            {{ member.username }}
-          </v-chip>
-        </v-col>
+        <div class="chip-container">
+          <v-col v-for="(member, index) in tripStore.members" :key="index">
+            <v-chip
+              :key="index"
+              color="primary"
+              class="ma-1"
+              @click="removeMember(index)"
+            >
+              {{ member.username }}
+            </v-chip>
+          </v-col>
+        </div>
+
       </v-row>
     </div>
 
@@ -132,6 +135,12 @@ const removeMember = (index) => {
   margin-bottom: 5px;
   margin-left: 15px;
   width: 90%;
+}
+
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 8px;
 }
 
 .explanation {
