@@ -89,7 +89,8 @@ class CalculateCreateSerializer(serializers.Serializer):
             for bill_data in bills_data:
                 cost = bill_data['cost']
                 withdrawal_bank_account = bill_data['bank_account']
-
+                if deposit_bank_account == withdrawal_bank_account:
+                    continue
                 try:
                     member = Member.objects.get(trip=trip_id, bank_account=withdrawal_bank_account)
                 except Member.DoesNotExist:
