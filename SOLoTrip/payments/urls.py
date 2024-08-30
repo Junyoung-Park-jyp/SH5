@@ -8,4 +8,5 @@ urlpatterns = [
     path('list/', pay_list),
     path('adjustment/', adjustment), 
     path('objection/', objection), 
+    path('delete/', delete), 
 ]

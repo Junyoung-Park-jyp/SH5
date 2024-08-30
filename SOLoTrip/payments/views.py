@@ -132,3 +132,24 @@ def objection(request):
         
         calculates.delete()
         return Response({'data': result}, status=status.HTTP_204_NO_CONTENT)
+    
+    
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def delete(request):
+    if request.method == 'POST':
+        payment_id = request.data.get('payment_id')
+        try:
+            payment = Payment.objects.get(id=payment_id)
+        except:
+            return Response({"error": "결제 내역이 없습니다."}, status=status.HTTP_410_GONE)
+        bank_account = payment.bank_account
+        # 내가 결제한거 아니면 삭제할 수 없음
+        if not Member.objects.filter(user=request.user, bank_account=bank_account).exists():
+            return Response({"error": "사용자의 결제 내역이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        # 정산이 완료된 결제 내역은 삭제할 수 없음
+        if Calculate.objects.filter(payment=payment).exists():
+            return Response({'error': "정산이 완료된 결제 내역입니다."}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        brand_name = payment.brand_name
+        payment.delete()
+        return Response({"messagae": f"{brand_name} 결제 내역이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
