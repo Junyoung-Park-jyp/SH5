@@ -14,7 +14,7 @@
           ></v-text-field>
           <div class="chip-container">
             <v-chip
-              v-for="(country, index) in tripStore.country"
+              v-for="(country, index) in country"
               :key="index"
               color="primary"
               class="ma-1"
@@ -78,9 +78,10 @@
               ></v-text-field>
             </template>
             <v-date-picker
+              show-adjacent-months
               v-model="departureDate"
               @update:modelValue="updateDepartureDate"
-              locale="ko"
+              locale="ko-KR"
               class="custom-picker"
               :weekday-format="getDay"
               :month-format="getMonth"
@@ -118,6 +119,8 @@
               :header-date-format="getHeaderTitleMonth"
             ></v-date-picker>
           </v-menu>
+          <!-- 출발 날짜를 선택하고 도착 날짜를 잘못 선택했을 때 -->
+          <div v-if="dateError" class="error-message">도착일자가 출발일자보다 빠릅니다.</div>
         </v-col>
       </v-row>
     </div>
@@ -125,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useTripStore } from "@/stores/tripStore";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -137,17 +140,28 @@ const countryInput = ref("");
 // const cities = ref([]);
 
 // 출발일시 및 도착일시 관리
-const departureDate = ref(null);
-const arrivalDate = ref(null);
-const departureDateFormatted = ref("");
-const arrivalDateFormatted = ref("");
+const departureDate = ref(tripStore.startDate ? new Date(tripStore.startDate) : null);
+const arrivalDate = ref(tripStore.endDate ? new Date(tripStore.endDate) : null);
+const departureDateFormatted = ref(departureDate.value ? format(departureDate.value, "yyyy-MM-dd", { locale: ko }) : '');
+const arrivalDateFormatted = ref(arrivalDate.value ? format(arrivalDate.value, "yyyy-MM-dd", { locale: ko }) : '');
 const departureMenu = ref(false);
 const arrivalMenu = ref(false);
+
+// 날짜 역전 현상 변수
+const dateError = ref(false)
 
 // 날짜 포맷을 업데이트하는 함수
 const updateDepartureDate = (newDate) => {
   departureDate.value = newDate;
   departureDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
+
+  // 날짜 역전 현상
+  if (arrivalDateFormatted.value && arrivalDateFormatted.value < departureDateFormatted.value) {
+    dateError.value = true
+  } else {
+    dateError.value = false
+  }
+  
   tripStore.startDate = departureDateFormatted.value;
   departureMenu.value = false;
 };
@@ -155,6 +169,14 @@ const updateDepartureDate = (newDate) => {
 const updateArrivalDate = (newDate) => {
   arrivalDate.value = newDate;
   arrivalDateFormatted.value = format(newDate, "yyyy-MM-dd", { locale: ko });
+  
+  // 날짜 역전 현상
+  if (departureDateFormatted.value && arrivalDateFormatted.value < departureDateFormatted.value) {
+    dateError.value = true
+  } else {
+    dateError.value = false
+  }
+
   tripStore.endDate = arrivalDateFormatted.value;
   arrivalMenu.value = false;
 };
@@ -192,9 +214,14 @@ const addCity = () => {
   }
 };
 
+const country = computed(() => {
+  return tripStore.country
+})
+
 // 추가된 국가를 제거하는 함수
 const removeCountry = (index) => {
   tripStore.country.splice(index, 1);
+  console.log(country.value, tripStore.country)
 };
 
 // 추가된 도시를 제거하는 함수
@@ -316,6 +343,12 @@ const getHeaderTitleMonth = (date) => {
   width: 80%;
   text-align: center;
   cursor: pointer;
+}
+
+.error-message {
+  font-size: small;
+  color: red;
+  padding: auto;
 }
 
 /* 날짜 */

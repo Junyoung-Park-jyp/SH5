@@ -59,7 +59,7 @@ export default {
     const calculateCategoryData = () => {
       const payments = paymentStore.getAllPayments;
       const categoryMap = {};
-
+      console.log("Payments", payments)
       payments.forEach((payment) => {
         const category = payment.category;
         if (!categoryMap[category]) {

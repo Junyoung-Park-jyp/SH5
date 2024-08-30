@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loading" class="main-container">
     <!-- 프로필 -->
-    <div class="my-5 profile">
+    <div class="mt-2 mb-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <span>{{ userStore.userName }} 님 </span>
     </div>
@@ -164,7 +164,9 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
@@ -278,7 +280,7 @@ const getBackgroundImage = (country) => {
 
 <style scoped>
 .main-container {
-  height: 92vh;
+  height: 93vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -327,8 +329,8 @@ const getBackgroundImage = (country) => {
   /* background-color: grey; */
   display: flex;
   gap: 2%;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 500;
   margin: 30px 0 10px 20px;
   /* border: 1px solid black; */
 }
@@ -390,7 +392,7 @@ const getBackgroundImage = (country) => {
 }
 
 .info > span {
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .info2 {
@@ -512,5 +514,11 @@ const getBackgroundImage = (country) => {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

@@ -12,6 +12,7 @@
           ></v-icon>
         </button>
       </div>
+      
       <!-- 수정 -->
       <div class="modify" @click="modifyTrip">
         <button class="icon-btn">
@@ -23,7 +24,7 @@
 
 
     <!-- 프로필 -->
-    <div class="my-10 profile">
+    <div class="mt-8 mb-6 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ myname }} 님은 {{ tripState }}<br />
@@ -60,6 +61,11 @@
       </div>
     </div>
 
+    <!-- 지출 내역 -->
+    <div class="trip money">
+      <button class="detail-btn" @click="goDetail">지 출 내 역</button>
+    </div>
+
     <!-- 멤버 -->
     <div class="trip member">
       <div class="title">멤버</div>
@@ -82,38 +88,32 @@
         <div class="member-name">{{ member.member }}</div>
 
         <!-- 정보 -->
-        <div class="member-info">
+        <div class="member-info" v-if="member.account_list != ''">
           <!-- 계좌 -->
-          <div v-if="member.account_list != ''" class="member-account">
-            <div class="member-bank">
-              <span class="member-bankname">{{
-                member.bank_name.slice(0, member.bank_name.length - 2)
-              }}</span
-              >&nbsp;
-              <span class="member-bankaccount">
-                {{
-                  member.member === myname
-                    ? member.bank_account
-                    : maskAccount(member.bank_account)
-                }}
-              </span>
-            </div>
-            <div class="member-bankbalance">
-              {{ formatWithComma(member.balance) }} 원
-            </div>
+          <div class="member-bank">
+            <span class="member-bankname">{{
+              member.bank_name.slice(0, member.bank_name.length - 2)
+            }}</span
+            >&nbsp;
+            <span class="member-bankaccount">
+              {{
+                member.member === myname
+                  ? member.bank_account
+                  : maskAccount(member.bank_account)
+              }}
+            </span>
           </div>
-          <!-- 없는 경우 -->
-          <div v-else class="member-account">
-            계좌 미등록 - {{ member.budget }}
+          <div class="member-bankbalance">
+            {{ formatWithComma(member.balance) }} 원
           </div>
+        </div>
+        <!-- 없는 경우 -->
+        <div v-else class="member-info">
+          계좌 미등록 - {{ member.budget }}
         </div>
       </div>
     </div>
 
-    <!-- 지출 내역 -->
-    <div class="trip money">
-      <button class="detail-btn" @click="goDetail">지 출 내 역</button>
-    </div>
 
     <!-- 환율 -->
     <div class="trip exchange">
@@ -193,7 +193,9 @@
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
@@ -411,18 +413,18 @@ const backStep = () => {
 
 <style scoped>
 .main-container {
-  height: 92vh;
-  overflow-y: auto;
+  height: 93vh;
+  overflow-y: none;
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 0px;
   background-color: #f4f6fa;
 }
 
 .header {
   position: fixed;
-  top: 60px;
+  top: 45px;
   left: 0;
   z-index: 1000;
   width: 100%;
@@ -441,6 +443,7 @@ const backStep = () => {
   display: flex;
   justify-content: right;
   align-items: center;
+  font-size: 12px;
   /* padding: 10px 10px 20px 20px; */
   /* margin: 0px auto -52px auto; */
 }
@@ -557,6 +560,10 @@ const backStep = () => {
 }
 
 /* 멤버 */
+.member {
+  padding-bottom: 30px;
+}
+
 .member * {
   margin: 0px auto;
 }
@@ -566,10 +573,10 @@ const backStep = () => {
 }
 
 .member-symbol {
-  border: 1px solid black;
   border-radius: 50%;
   width: 35px;
   height: 35px;
+  border: 1px solid black;
 }
 
 .member-name {
@@ -580,10 +587,29 @@ const backStep = () => {
   display: flex;
   flex-direction: column;
   min-width: 210px;
+  padding-left: 2px;
+  /* border: 1px solid black; */
+}
+
+.member-bank {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  text-align: left;
+  /* border: 1px solid blue; */
 }
 
 .member-bank * {
   font-size: 13px;
+}
+
+.member-bankbalance {
+  width: 80%;
+  padding-left: 5px;
+  text-align: left;
+  /* border: 1px solid green; */
 }
 
 /* 지출내역 */
@@ -592,7 +618,7 @@ const backStep = () => {
   text-align: center;
   padding: 10px 0;
   margin: 0 auto;
-  padding: 20px 0 50px 0;
+  padding: 10px 0 10px 0;
 }
 
 .detail-btn {
@@ -664,7 +690,7 @@ const backStep = () => {
 
 /* 여행자 보험 */
 .insurance {
-  padding: 30px 0;
+  padding: 40px 0;
 }
 
 .invite-btn {
@@ -700,5 +726,11 @@ const backStep = () => {
   font-size: large;
   font-weight: 500;
   margin-bottom: 10px;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

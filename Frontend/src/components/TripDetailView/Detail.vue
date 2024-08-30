@@ -217,12 +217,32 @@
           {{ formattedCheckedCost }}
         </div>
       </div>
+
+      <!-- 정산하기 -->
+      <div class="adjustment">
+        <div class="adjust-background">
+          <button
+            class="adjust-btn"
+            @mousedown="startDrag"
+            @mousemove="onDrag"
+            @mouseup="stopDrag"
+            @touchstart="startDrag"
+            @touchmove="onDrag"
+            @touchend="stopDrag"
+            ref="adjustmentDiv"
+          >
+            정 산 하 기
+          </button>
+          <button class="slide-btn">> > ></button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useMemberColors } from "@/stores/colorStore";
 import { format } from "date-fns";
 import {
@@ -235,11 +255,12 @@ import {
 } from "@/stores/currencyStore";
 import { useTripStore } from "@/stores/tripStore";
 import { usePaymentStore } from "@/stores/paymentStore";
-import { useRoute } from 'vue-router'
 
 const tripStore = useTripStore();
 const paymentStore = usePaymentStore();
 const route = useRoute();
+const router = useRouter();
+
 const payments = computed(() => paymentStore.payments)
 // Props
 const props = defineProps({
@@ -524,6 +545,70 @@ const formatDate = (date) => {
 const formatTime = (time) => {
   return format(new Date(`1970-01-01T${time}`), "HH:mm");
 };
+
+// 정산
+const adjustmentDiv = ref(null); // 정산 버튼 참조
+const isDragging = ref(false); // 드래그 상태를 관리하는 변수
+const startX = ref(0); // 드래그 시작 시 X 좌표 저장
+const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
+
+const startDrag = (event) => {
+  isDragging.value = true;
+  startX.value = event.clientX || event.touches[0].clientX;
+  currentX.value = startX.value;
+};
+
+const onDrag = (event) => {
+  if (isDragging.value) {
+    const x = event.clientX || event.touches[0].clientX;
+    const deltaX = x - startX.value;
+
+    const maxDragDistance =
+      adjustmentDiv.value.parentElement.offsetWidth -
+      adjustmentDiv.value.offsetWidth;
+
+    if (deltaX > 0 && deltaX <= maxDragDistance) {
+      adjustmentDiv.value.style.transform = `translateX(${deltaX}px)`;
+      currentX.value = x;
+    }
+  }
+};
+
+const stopDrag = () => {
+  if (isDragging.value) {
+    isDragging.value = false;
+
+    const dragDistance = currentX.value - startX.value;
+    const threshold = adjustmentDiv.value.offsetWidth / 2;
+
+    if (dragDistance > threshold) {
+      finishTrip();
+    } else {
+      adjustmentDiv.value.style.transform = `translateX(0)`;
+    }
+  }
+};
+
+// 체크된 비용 저장
+const checkedCost = ref("");
+
+// Detail 컴포넌트에서 업데이트된 비용을 저장하는 함수
+const updateCheckedCost = (cost) => {
+  checkedCost.value = cost; // Update when Detail.vue emits
+};
+
+// 정산 완료 버튼 슬라이딩
+const finishTrip = () => {
+  adjustmentDiv.value.style.transform = `translateX(100%)`;
+
+  setTimeout(() => {
+    router.push({
+      name: "tripFinish",
+      query: { amount: checkedCost.value }, // Use query instead of params
+    });
+  }, 300);
+};
+
 </script>
 
 <style scoped>
@@ -534,7 +619,7 @@ const formatTime = (time) => {
   overflow-y: auto;
   background-color: #f4f6fa;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 22%;
   display: flex;
   flex-direction: column;
 }
@@ -834,23 +919,95 @@ const formatTime = (time) => {
 /* 정산 금액 */
 .calculation {
   position: fixed;
-  bottom: 85px;
+  bottom: 80px;
   left: 0;
-  z-index: 1000;
+  z-index: 1001;
   width: 100%;
-  height: 90px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   background-color: #ffffff;
   color: #4b72e1;
-  /* padding-top: 20px; */
+  padding-top: 14px;
   margin: 0 auto;
+  margin-bottom: -5px;
+  /* border: 1px solid black; */
+  border-radius: 30px 30px 0px 0px;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .result {
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+/* 정산하기 */
+.adjustment {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-align: center;
+  padding: 0;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255);
+  /* border: 1px solid black; */
+}
+
+.adjust-background {
+  width: 80%;
+  height: 60%;
+  background-color: lightgrey;
+  border-radius: 30px;
+  margin: 8px 20px;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.adjust-btn {
+  width: 60%;
+  height: 100%;
+  background-color: #4b72e1;
+  border-radius: 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  transition: transform 0.3s ease; /* 슬라이딩 애니메이션 */
+  position: relative;
+  z-index: 1;
+}
+
+.slide-btn {
+  width: 40%;
+  height: 100%;
+  border-radius: 30px;
+  color: rgb(78, 78, 78);
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  position: absolute;
+  right: 0;
+  z-index: 0;
 }
 </style>
