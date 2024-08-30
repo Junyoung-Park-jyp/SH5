@@ -669,7 +669,7 @@ const backStep = () => {
   display: flex;
   flex-direction: column;
   min-width: 210px;
-  padding-left: 2px;
+  padding-left: 15px;
   /* border: 1px solid black; */
 }
 
@@ -680,6 +680,7 @@ const backStep = () => {
   justify-content: left;
   align-items: center;
   text-align: left;
+  margin: 0;
   /* border: 1px solid blue; */
 }
 
@@ -687,10 +688,22 @@ const backStep = () => {
   font-size: 13px;
 }
 
+.member-bankname {
+  width: 30px;
+  margin: 0;
+  padding: 0;
+  /* border: 1px solid blue; */
+}
+
+.member-bankaccount {
+  margin: 0;
+}
+
 .member-bankbalance {
   width: 80%;
-  padding-left: 5px;
+  /* padding-left: 5px; */
   text-align: left;
+  margin: 0;
   /* border: 1px solid green; */
 }
 
@@ -812,7 +825,16 @@ const backStep = () => {
 
 /* 로딩 화면 */
 .loading {
+  height: 93vh;
+  overflow-y: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding-bottom: 0px;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin-top: 150px;
 }
 </style>

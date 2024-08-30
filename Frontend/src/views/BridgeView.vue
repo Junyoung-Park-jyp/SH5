@@ -1,18 +1,18 @@
 <template>
   <div class="main-container">
-    <v-card class="py-6 px-10 upper-card">
-      <v-card-text class="pt-3 title">SOL로 여행으로</v-card-text>
+    <v-card class="py-4 px-10 upper-card">
+      <v-card-text class="pt-3 title">골치 아픈 정산은 그만<br>혼자 하는 여행처럼 간편하게!</v-card-text>
       <v-card-text class="pt-2 text"
-        >여행의 시작부터 끝까지<br />지출 관리와 정산으로 편리하게!</v-card-text
+        >소비 패턴 분석으로<br />여행 성향까지 알려주는 여행 SOL루션</v-card-text
       >
-      <div class="mt-5 btn-container">
-        <button class="btn-click" @click="goToTrip">여행 시작</button>
+      <div class="mt-2 btn-container">
+        <button class="btn-click" @click="goToTrip">SOL로 여행</button>
       </div>
     </v-card>
 
     <div class="mt-8 px-7 pb-7">
       <div class="my-5">
-        <div class="my-5" style="font-size: large; font-weight: bold">
+        <div class="my-4" style="font-size: large; font-weight: bold">
           여행 짐만큼 중요한 혜택 챙기기
         </div>
         <v-btn-toggle v-model="selectedCardType" mandatory class="toggle">
@@ -125,7 +125,7 @@ const userStore = useUserStore();
   letter-spacing: 0.5px;
   word-spacing: 2px;
   line-height: 19px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .btn-container {
@@ -135,7 +135,7 @@ const userStore = useUserStore();
 
 .btn-click {
   width: 95%;
-  height: 60px;
+  height: 55px;
   margin: 0px auto;
   padding: 5px;
   border-radius: 10px;
@@ -166,7 +166,7 @@ const userStore = useUserStore();
   flex-direction: column;
   border: 1px solid black;
   border-radius: 10px;
-  padding: 20px 10px;
+  padding: 15px 10px;
   margin: auto;
   margin-top: 20px;
   /* background-color: #f4f6fa; */
@@ -179,7 +179,7 @@ const userStore = useUserStore();
 }
 
 .benefit-list {
-  margin: 15px auto;
+  margin: 10px auto;
 }
 
 .benefit-item {
@@ -207,6 +207,7 @@ const userStore = useUserStore();
   box-shadow: none;
   border-radius: 10px;
   background-color: grey;
+  margin-bottom: 10px;
 }
 
 .benefit-btn-click {

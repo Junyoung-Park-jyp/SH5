@@ -178,13 +178,23 @@ onMounted(async ()=> {
 }
 
 .header {
+  position: fixed;
+  top: 45px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  padding-top: 20px;
+  background-color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .main {
-  margin: 30px auto 0px auto;
+  margin: 40px auto 0px auto;
   width: 100%;
   overflow-y: scroll;
   scrollbar-width: none;
