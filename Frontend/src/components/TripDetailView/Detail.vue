@@ -80,9 +80,14 @@
               ></v-btn>
             </div>
 
+            <div v-else class="check-area">
+              <v-btn icon="mdi-close-circle" variant="text" color="grey" disabled></v-btn>
+            </div>
+
             <!-- 카테고리 -->
             <div class="category-area">
-              <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
+              <v-icon class="category-icon" :icon="getCategoryIcon(payment.category)" color="grey" size="large"></v-icon>
+              <!-- <div>{{ payment.category }}</div> -->
             </div>
 
             <!-- 결제 금액 및 내역 -->
@@ -100,12 +105,18 @@
                 :key="index"
                 class="person-info"
               >
-                <div
-                  class="person-symbol d-flex justify-center align-center"
-                  :style="personStyle(member.member, payment.members, index)"
-                  @click="personClick(paymentIndex, member.member, 'booking')"
+              <div
+                class="person-symbol d-flex justify-center align-center"
+                :style="personStyle(member.member, payment.members, index)"
+                @click="personClick(paymentIndex, member.member, 'trip')"
                 >
-                  <div class="person-familyname">
+                  <img class="crown" v-if="member.bank_account === payment.bank_account" src="@/assets/img/crown.png" alt="crown">
+                  <div
+                    :class="{
+                      'person-familyname-crown': member.bank_account === payment.bank_account,
+                      'person-familyname': member.bank_account !== payment.bank_account
+                    }"
+                  >
                     {{ member.member.slice(0, 1) }}
                   </div>
                 </div>
@@ -156,10 +167,14 @@
               ></v-btn>
             </div>
 
+            <div v-else class="check-area">
+              <v-btn icon="mdi-close-circle" variant="text" color="grey" disabled></v-btn>
+            </div>
+
             <!-- 카테고리 -->
             <div class="category-area">
-              <v-icon icon="mdi-airplane" color="grey" size="large"></v-icon>
-              <div>{{ payment.category }}</div>
+              <v-icon class="category-icon" :icon="getCategoryIcon(payment.category)" color="grey" size="large"></v-icon>
+              <!-- <div>{{ payment.category }}</div> -->
             </div>
 
             <!-- 결제 금액 및 내역 -->
@@ -177,13 +192,18 @@
                 :key="index"
                 class="person-info"
               >
-                <div
-                  class="person-symbol d-flex justify-center align-center"
-                  :class="addCrownClass(member, payment)"
-                  :style="personStyle(member.member, payment.members, index)"
-                  @click="personClick(paymentIndex, member.member, 'trip')"
+              <div
+                class="person-symbol d-flex justify-center align-center"
+                :style="personStyle(member.member, payment.members, index)"
+                @click="personClick(paymentIndex, member.member, 'trip')"
                 >
-                  <div class="person-familyname">
+                  <img class="crown" v-if="member.bank_account === payment.bank_account" src="@/assets/img/crown.png" alt="crown">
+                  <div
+                    :class="{
+                      'person-familyname-crown': member.bank_account === payment.bank_account,
+                      'person-familyname': member.bank_account !== payment.bank_account
+                    }"
+                  >
                     {{ member.member.slice(0, 1) }}
                   </div>
                 </div>
@@ -265,6 +285,7 @@ const router = useRouter();
 
 const payments = computed(() => paymentStore.payments)
 const accountNum = computed(() => userStore.accountNum)
+
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -283,6 +304,26 @@ const checkData = () => {
   console.log('booking payments', bookingPayments.value)
   console.log('selected payments', selectedPayments.value)
 }
+
+// 결제 카테고리별 아이콘 설정
+const categoryIcons = {
+  "항공": "mdi-airplane",
+  "숙소": "mdi-bed",
+  "식비": "mdi-silverware-fork-knife",
+  "카페": "mdi-coffee",
+  "교통": "mdi-bus",
+  "쇼핑": "mdi-shopping",
+  "관광": "mdi-bank",
+  "기타": "mdi-dots-horizontal-circle",
+};
+
+// 카테고리 아이콘을 반환하는 함수
+const getCategoryIcon = (category) => {
+  return categoryIcons[category] || "mdi-help-circle-outline"; // 기본값으로 도움말 아이콘 사용
+};
+
+
+
 const tripMembers = computed(() => tripStore.members);
 
 const totalBalance = computed(() => {
@@ -720,7 +761,8 @@ const finishTrip = () => {
 }
 
 .member-balance {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: light;
   color: rgb(78, 160, 120);
   white-space: nowrap;
   overflow: hidden;
@@ -750,19 +792,24 @@ const finishTrip = () => {
 }
 
 .check-area {
-  width: 11%;
+  width: 7%;
 }
 
 .category-area {
-  width: 11%;
+  width: 12%;
+  margin-left: 5px !important;
+  /* border: 1px solid black; */
 }
 
 .cost-area {
+  margin-left: -25px !important;
   width: 50%;
+  /* border: 1px solid black; */
 }
 
 .person-area {
   width: 16%;
+  padding-top: 3px;
 }
 
 .date-area {
@@ -804,12 +851,15 @@ const finishTrip = () => {
 }
 
 .cost-area .name {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 300;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+  overflow: hidden; /* 넘치는 텍스트를 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트에 '...' 표시 */
+  /* text-overflow: clip; */
+  max-width: 97%; /* 요소의 최대 너비를 지정 */
 }
+
 /* 정산 대상 */
 .person-area {
   height: 80%;
@@ -842,6 +892,8 @@ const finishTrip = () => {
   justify-content: center;
   align-items: center;
   padding: 2px 0;
+  position: relative;
+  /* border: 1px solid black; */
 }
 
 .person-symbol {
@@ -851,6 +903,8 @@ const finishTrip = () => {
   height: 20px;
   justify-content: center;
   align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .person-familyname {
@@ -1024,4 +1078,22 @@ const finishTrip = () => {
   z-index: 0;
 }
 
+.crown {
+  transform: rotate(-35deg);
+  z-index: 10;
+  width: 20px;
+  z-index: 1000;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  margin-left: -14px;
+  margin-bottom: 17px;
+  position: absolute;
+}
+
+.person-familyname-crown {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+}
 </style>
