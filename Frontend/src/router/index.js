@@ -42,7 +42,7 @@ const router = createRouter({
     },
     {
       // path: "/trip/:tripId",
-      path: "/trip/finish",
+      path: "/trip/finish/:id",
       name: "tripFinish",
       component: TripFinishView,
     },
@@ -53,7 +53,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/insurance',
+      path: '/insurance/:id',
       name: 'insurance',
       component: InsuranceView,
     },
