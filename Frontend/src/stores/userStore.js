@@ -94,10 +94,10 @@ export const useUserStore = defineStore('user', {
       const errorStore = useErrorStore()
 
       try {
-        if (email == this.email) {
-          errorStore.showError('자기 자신을 초대할 수 없습니다')
-        }
-        else if (this.isLogin) {
+        // if (email == this.email) {
+        //   errorStore.showError('자기 자신을 초대할 수 없습니다')
+        // }
+        if (this.isLogin) {
           const response = await axiosInstance.get('/trips/member/', { params: { email: email } })
           console.log(response.data)
           if (response.data) {

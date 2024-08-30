@@ -91,15 +91,15 @@ const email = ref("");
 const tripName = ref("");
 
 const addMember = async () => {
-  const userData = await userStore.getUser(email.value);
-
-  if (userData && !tripStore.members.some(element => element.email === userData.email)) {
+  if (email.value === userStore.userEmail) {
+    errorStore.showError("자기 자신을 초대할 수 없습니다")
+  } else if (tripStore.members.some(element => element.email === email.value)) {
+    errorStore.showError("멤버를 중복으로 추가할 수 없습니다")
+  } else {
+    const userData = await userStore.getUser(email.value);
     tripStore.members.push(userData);
     email.value = "";
-  } else {
-    errorStore.showError("멤버를 중복으로 추가할 수 없습니다")
   }
-
   console.log(tripStore.members)
 
 };
