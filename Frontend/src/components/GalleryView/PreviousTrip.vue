@@ -1,8 +1,8 @@
 <template>
-  <div class="main-container">
+  <div v-if="!loading" class="main-container">
     <!-- 국가 -->
-    <div class="my-10 trip country">
-      {{ destination }}
+    <div class="my-10 trip country fade" :key="currentIndex">
+      {{ locations[currentIndex].country }}
     </div>
 
     <!-- 날짜 -->
@@ -59,6 +59,7 @@
       </div>
     </div>
   </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script setup>
@@ -80,24 +81,30 @@ import {
 import DrawPicture from "./DrawPicture.vue";
 import PieChart from "./PieChart.vue";
 
-// const route = useRoute()
-// const tripStore = useTripStore()
-// const tripId = route.params.tripId
+const route = useRoute()
+const tripStore = useTripStore()
+const tripId = route.params.id
 // const tripData = computed(() => {
 //   return tripStore.getTrip(tripId)
 // })
 
-const tripStore = useTripStore();
-
 // 여행 목적지
-const country = computed(() => tripStore.country.join(""));
-const city = computed(() => tripStore.city.join(""));
+// const country = computed(() => tripStore.country.join(""));
+// const city = computed(() => tripStore.city.join(""));
 
 // 대한민국 여행일 경우 목적지는 도시로 설정
-const destination = ref(country);
-if (country === "대한민국") {
-  destination.value = city;
-}
+// const destination = ref(country);
+// if (country === "대한민국") {
+//   destination.value = city;
+// }
+
+const loading = ref(true)
+
+// 여행 목적지
+const locations = computed(() => tripStore.locations)
+
+// 여행 인덱스
+const currentIndex = ref(0)
 
 // 오늘 날짜
 const today = new Date();
@@ -157,8 +164,18 @@ const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
-// `onMounted`에서 `membersWithColors`를 초기화
+onMounted(async () => {
+  tripStore.getTrip(tripId)
+  loading.value = false
+})
+
 onMounted(() => {
+  // locations 배열 순회
+  setInterval(() => {
+    currentIndex.value = (currentIndex.value + 1) % locations.value.length;
+  }, 3000);
+  
+  // `onMounted`에서 `membersWithColors`를 초기화
   membersWithColors.value = tripMembers.value.map((member, index) => ({
     ...member,
     color: memberColors.value[index],
@@ -316,5 +333,17 @@ const calculatePadding = (index) => {
 
 .sketch .content {
   padding: 30px 20px;
+}
+
+/* 페이드인 / 페이드아웃 */
+.fade {
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+  animation: fadeInOut 3s infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 </style>
