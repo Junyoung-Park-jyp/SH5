@@ -130,10 +130,12 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { useTripStore } from "@/stores/tripStore";
+import { useErrorStore } from "@/stores/errorStore";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 
 const tripStore = useTripStore();
+const errorStore = useErrorStore()
 
 const countryInput = ref("");
 // const cityInput = ref("");
@@ -193,12 +195,16 @@ const updateArrivalDate = (newDate) => {
 
 // 국가를 배열에 추가하는 함수
 const addCountry = () => {
-  if (countryInput.value && !tripStore.country.includes(countryInput.value)) {
-    tripStore.country.push(countryInput.value);
-    tripStore.locations.push({
-      country: countryInput.value
-    })
-    countryInput.value = "";
+  if (countryInput.value) {
+    if (tripStore.country.includes(countryInput.value)) {
+      errorStore.showError('국가를 중복으로 추가할 수 없습니다')
+    } else {
+      tripStore.country.push(countryInput.value);
+      tripStore.locations.push({
+        country: countryInput.value
+      })
+    }
+    countryInput.value = "";  
   }
 };
   
