@@ -282,7 +282,6 @@ const checkData = () => {
   console.log("const payments", payments.value)
   console.log('booking payments', bookingPayments.value)
   console.log('selected payments', selectedPayments.value)
-  paymentStore.makeAdjustment(route.params.id ,selectedPayments.value)
 }
 const tripMembers = computed(() => tripStore.members);
 
@@ -429,8 +428,7 @@ const totalCheckedCost = computed(() => {
 });
 
 const selectedPayments = computed(() => {
-  return [...bookingPayments.value, ...paymentsDuringTrip.value]
-  .filter(payment => payment.checked);
+  return [...bookingPayments.value, ...paymentsDuringTrip.value].filter(payment => payment.checked);
 });
 
 const toggleCurrencyInResult = () => {
@@ -616,6 +614,7 @@ const finishTrip = () => {
   adjustmentDiv.value.style.transform = `translateX(100%)`;
 
   setTimeout(() => {
+    paymentStore.makeAdjustment(route.params.id, selectedPayments.value)
     router.push({
       name: "tripFinish",
       query: { amount: checkedCost.value }, // Use query instead of params
@@ -1024,4 +1023,5 @@ const finishTrip = () => {
   right: 0;
   z-index: 0;
 }
+
 </style>

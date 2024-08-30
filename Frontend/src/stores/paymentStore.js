@@ -76,18 +76,19 @@ export const usePaymentStore = defineStore('paymentStore', {
       // 각 payment 객체를 적절한 형식으로 변환
       const adjustments = selectedPayments.map(payment => {
         const memberCount = payment.members.length;
-        const dividedCost = payment.amount / memberCount;
+        const dividedCost = Math.floor(payment.amount / memberCount);
         return {
           payment_id: payment.id,
           bills: payment.members.map(member => {
             return {
               cost: dividedCost, // or use any logic to distribute the amount among members
-              bank_account: payment.bank_account, // 기본적으로 payment의 계좌를 사용
+              bank_account: member.bank_account, // 기본적으로 payment의 계좌를 사용
             };
           }),
         };
       });
-    
+      console.log(adjustments);
+      
       try {
         const response = await axiosInstance.post('/payments/adjustment/', { 
           trip_id: tripId,
@@ -95,7 +96,19 @@ export const usePaymentStore = defineStore('paymentStore', {
         });
     
         if (response) {
-          this.payments = []; // 정산 후 payments 초기화
+          // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
+          this.payments = this.payments.map(payment => {
+            const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
+            if (isCompleted) {
+              return {
+                ...payment,
+                is_completed: 1, // is_completed 값을 1로 변경
+              };
+            }
+            return payment;
+          });
+    
+          
           console.log('정산에 성공했습니다');
         } else {
           console.error("요청이 거부되었습니다.");
