@@ -235,10 +235,11 @@ import {
 } from "@/stores/currencyStore";
 import { useTripStore } from "@/stores/tripStore";
 import { usePaymentStore } from "@/stores/paymentStore";
+import { useRoute } from 'vue-router'
 
 const tripStore = useTripStore();
 const paymentStore = usePaymentStore();
-
+const route = useRoute();
 const payments = computed(() => paymentStore.payments)
 // Props
 const props = defineProps({
@@ -256,6 +257,8 @@ const checkData = () => {
   console.log("store payments", paymentStore.payments)
   console.log("const payments", payments.value)
   console.log('booking payments', bookingPayments.value)
+  console.log('selected payments', selectedPayments.value)
+  paymentStore.makeAdjustment(route.params.id ,selectedPayments.value)
 }
 const tripMembers = computed(() => tripStore.members);
 
@@ -396,6 +399,11 @@ const totalCheckedCost = computed(() => {
   return [...bookingPayments.value, ...paymentsDuringTrip.value]
     .filter((payment) => payment.checked)
     .reduce((sum, payment) => sum + payment.amount, 0);
+});
+
+const selectedPayments = computed(() => {
+  return [...bookingPayments.value, ...paymentsDuringTrip.value]
+  .filter(payment => payment.checked);
 });
 
 const toggleCurrencyInResult = () => {

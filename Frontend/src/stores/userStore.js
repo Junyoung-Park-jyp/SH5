@@ -100,6 +100,8 @@ export const useUserStore = defineStore('user', {
             console.error('사용자가 존재하지 않습니다');
             return null
           }
+        } else if (email == this.email) {
+          alert('자기 자신을 초대할 수는 없습니다.')
         }
 
         
