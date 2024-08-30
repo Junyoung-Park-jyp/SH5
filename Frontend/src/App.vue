@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div class="main-container">
-      <v-toolbar class="px-5 py-1">
+      <v-toolbar class="px-5">
         <!-- 커스텀 스위치 버튼 -->
         <div
           class="custom-switch d-flex align-center rounded-xl"
@@ -79,8 +79,8 @@ function goToTrip() {
 
 <style scoped>
 .main-container {
-  padding-bottom: 100px;
-  height: 85vh;
+  padding-bottom: 0px;
+  height: 87vh;
   background-color: #f4f6fa;
 }
 
@@ -88,7 +88,7 @@ function goToTrip() {
 .v-toolbar {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 9999;
   background-color: white;
   background-color: #f4f6fa;
   font-size: 1.1rem;
