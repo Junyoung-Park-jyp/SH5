@@ -235,6 +235,9 @@ const makeTrip = () => {
   setTimeout(() => {
     router.push({ name: "createTrip" });
   }, 1000); // 애니메이션 길이와 일치시켜야 함
+
+  // 여행 출발 날짜와 도착 날짜 초기화
+  tripStore.clearTrip()
 };
 
 const goTripMain = (tripId) => {
@@ -518,7 +521,16 @@ const getBackgroundImage = (country) => {
 
 /* 로딩 화면 */
 .loading {
+  height: 93vh;
+  overflow-y: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding-bottom: 0px;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin-top: 150px;
 }
 </style>

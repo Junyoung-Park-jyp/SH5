@@ -32,15 +32,10 @@
             v-model="email"
             @keyup.enter="addMember"
           ></v-text-field>
-        </v-col>
-        <div class="btn-container">
-          <button @click="addMember" class="mt-1 btn-add">+ 등록</button>
-        </div>
-      </v-row>
-      <v-row>
-        <div class="chip-container">
-          <v-col v-for="(member, index) in tripStore.members" :key="index">
+          <div class="chip-container">
+          <!-- <v-col v-for="(member, index) in tripStore.members" :key="index"> -->
             <v-chip
+              v-for="(member, index) in tripStore.members"
               :key="index"
               color="primary"
               class="ma-1"
@@ -48,9 +43,14 @@
             >
               {{ member.username }}
             </v-chip>
-          </v-col>
+          <!-- </v-col> -->
+          </div>
+        </v-col>
+        <div class="btn-container">
+          <button @click="addMember" class="mt-1 btn-add">+ 등록</button>
         </div>
-
+      </v-row>
+      <v-row>
       </v-row>
     </div>
 

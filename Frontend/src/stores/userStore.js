@@ -91,7 +91,10 @@ export const useUserStore = defineStore('user', {
 
     async getUser(email) {
       try {
-        if (this.isLogin) {
+        if (email == this.email) {
+          alert('자기 자신을 초대할 수 없습니다.')
+        }
+        else if (this.isLogin) {
           const response = await axiosInstance.get('/trips/member/', { params: { email: email } })
           console.log(response.data)
           if (response.data) {
@@ -100,8 +103,6 @@ export const useUserStore = defineStore('user', {
             console.error('사용자가 존재하지 않습니다');
             return null
           }
-        } else if (email == this.email) {
-          alert('자기 자신을 초대할 수는 없습니다.')
         }
 
         
