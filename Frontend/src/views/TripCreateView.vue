@@ -44,6 +44,9 @@
         </div>
       </div>
     </v-dialog>
+
+    <!-- 에러 메세지 모달 -->
+     <ErrorDialog />
   </div>
 </template>
 
@@ -53,11 +56,14 @@ import { useRouter } from "vue-router";
 import CountryDateForm from "@/components/TripCreateView/CountryDateForm.vue";
 import MemberForm from "@/components/TripCreateView/MemberForm.vue";
 import AccountAdjustForm from "@/components/TripCreateView/AccountAdjustForm.vue";
+import ErrorDialog from "@/components/ErrorMessage/ErrorDialog.vue";
 import { useTripStore } from "@/stores/tripStore";
 import { useBalanceStore } from "@/stores/balanceStore";
+import { useErrorStore } from "@/stores/errorStore";
 
 const tripStore = useTripStore();
 const balanceStore = useBalanceStore();
+const errorStore = useErrorStore();
 const tripFormStage = ref(0); // 초기 스테이지 설정
 const showCancelModal = ref(false);
 const router = useRouter();
@@ -85,9 +91,10 @@ const backStep = () => {
 };
 
 const nextStep = () => {
+  // CountryDateForm
   if (tripFormStage.value == 0) {
     if (tripStore.startDate && tripStore.endDate && tripStore.endDate < tripStore.startDate) {
-      alert("도착일자가 출발일자보다 빠릅니다. 다시 선택해주세요.");
+      errorStore.showError("출발 일시와 도착 일시를 다시 확인해주세요")
     } else if (
       tripStore.country.length > 0 &&
       tripStore.startDate != null &&
@@ -96,7 +103,7 @@ const nextStep = () => {
       tripFormStage.value++;
     } else {
       console.log(tripStore.locations, tripStore.startDate, tripStore.endDate);
-      alert("누락된 정보가 있습니다!");
+      errorStore.showError('여행 목적지와 일시를 다시 확인해주세요')
       // tripFormStage.value++;
     }
   } else if (tripFormStage.value == 1) {
