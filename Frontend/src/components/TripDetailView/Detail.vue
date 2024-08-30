@@ -128,11 +128,11 @@
                 :key="index"
                 class="person-info"
               >
-              <div
-                class="person-symbol d-flex justify-center align-center"
-                :style="personStyle(member.member, payment.members, index)"
-                @click="personClick(paymentIndex, member.member, 'trip')"
-                >
+                <div
+                  class="person-symbol d-flex justify-center align-center"
+                  :style="personStyle(member.member, payment.members, index)"
+                  @click="personClick(paymentIndex, member.member, 'trip')"
+                  >
                   <img class="crown" v-if="member.bank_account === payment.bank_account" src="@/assets/img/crown.png" alt="crown">
                   <div
                     :class="{
@@ -268,7 +268,7 @@
             </div>
           </v-card-subtitle>
           <v-card-actions>
-            <v-btn text @click="dialog = false">닫기</v-btn>
+            <v-btn text @click=closeModal>닫기</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -374,9 +374,41 @@ const openModal = (payment) => {
 
   };
 
-const closeModal = () => {
-    dialog.value = false;
-  };
+  const closeModal = () => {
+  const existingIndex = adjustment.value.findIndex(
+    (p) => p === selectedPayment.value
+  );
+
+  if (existingIndex !== -1) {
+    // 이미 adjustment에 있는 데이터라면 해당 데이터를 업데이트
+    adjustment.value[existingIndex] = { ...selectedPayment.value };
+  } else {
+    // 없으면 새로 추가
+    adjustment.value.push({ ...selectedPayment.value });
+    selectedPayment.value.checked = true; // 상태를 체크 상태로 변경
+  }
+
+  dialog.value = false;
+};
+
+// 체크 토글 기능 수정
+const toggleCheck = (index, type) => {
+  if (type === "trip") {
+    const payment = filteredPayments.value[index];
+    const actualIndex = paymentsDuringTrip.value.findIndex(
+      (p) => p === payment
+    );
+    const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
+
+    if (adjustment.value.includes(paymentToUpdate)) {
+      adjustment.value.splice(adjustment.value.indexOf(paymentToUpdate), 1);
+      paymentToUpdate.checked = false;
+    } else {
+      adjustment.value.push(paymentToUpdate);
+      paymentToUpdate.checked = true;
+    }
+  }
+};
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -506,36 +538,7 @@ const formattedMemberBalance = (balance) => {
 
 const startDate = computed(() => new Date(tripStore.startDate));
 
-// 사전 예약 결제 내역을 스토어에서 가져오기
-// const bookingPayments = computed(() => {
-//   const filteredPayments = paymentStore.payments.filter(
-//     (payment) => new Date(payment.pay_date) < startDate
-//   );
-//   return filteredPayments;
-// });
-
-// 여행 중 결제 내역을 스토어에서 가져오기
-// const paymentsDuringTrip = computed(() => {
-//   const filteredPayments = paymentStore.payments.filter(
-//     (payment) => new Date(payment.pay_date) >= startDate
-//   );
-//   return filteredPayments;
-// });
-
-// // 선택된 날짜에 해당하는 지출 내역 필터링
-// const filteredPayments = computed(() => {
-//   if (props.selectedView === "all") {
-
-//     return paymentsDuringTrip.value; // 모든 결제 내역을 반환
-//   } else {
-//     return paymentsDuringTrip.value.filter(
-//       (payment) =>
-//         new Date(payment.pay_date).toDateString() ===
-//         props.selectedDate.toDateString()
-//     );
-//   }
-// });
-
+const adjustment = ref([]);
 
 const filteredPayments = computed(() => {
   if (props.selectedView === 'all') {
@@ -588,20 +591,20 @@ watch(formattedCheckedCost, (newCost) => {
   emit("updateCheckedCost", newCost);
 });
 
-const toggleCheck = (index, type) => {
-  if (type === "booking") {
-    bookingPayments.value[index].checked =
-      !bookingPayments.value[index].checked;
-  } else if (type === "trip") {
-    // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
-    const payment = filteredPayments.value[index];
-    const actualIndex = paymentsDuringTrip.value.findIndex(
-      (p) => p === payment
-    );
-    paymentsDuringTrip.value[actualIndex].checked =
-      !paymentsDuringTrip.value[actualIndex].checked;
-  }
-};
+// const toggleCheck = (index, type) => {
+//   if (type === "booking") {
+//     bookingPayments.value[index].checked =
+//       !bookingPayments.value[index].checked;
+//   } else if (type === "trip") {
+//     // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
+//     const payment = filteredPayments.value[index];
+//     const actualIndex = paymentsDuringTrip.value.findIndex(
+//       (p) => p === payment
+//     );
+//     paymentsDuringTrip.value[actualIndex].checked =
+//       !paymentsDuringTrip.value[actualIndex].checked;
+//   }
+// };
 
 const formattedTotalCost = (paymentArray) => {
   const totalCost = paymentArray.reduce(
