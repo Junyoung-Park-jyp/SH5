@@ -5,6 +5,8 @@ export const usePaymentStore = defineStore('paymentStore', {
   state: () => ({
     payments: [
     ],
+    bills: [
+    ]
   }),
   getters: {
     getPaymentsByDate: (state) => (date) => {
@@ -56,7 +58,7 @@ export const usePaymentStore = defineStore('paymentStore', {
         const response = await axiosInstance.post('/payments/adjustment/', { 
           trip_id: tripStore.tripId,
           payment_id: this.paymentId,
-          bills: this.payments
+          bills: this.bills
         }
       )
       if (response) {
