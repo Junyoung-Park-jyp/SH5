@@ -98,7 +98,7 @@ class MemberDetailSerializer(serializers.ModelSerializer):
     member = serializers.CharField(source='user.username')
     class Meta:
         model = Member
-        fields = ['member', 'bank_account', 'budget']
+        fields = ['member', 'bank_account']
         
         
 class TripMainSerializer(serializers.ModelSerializer):

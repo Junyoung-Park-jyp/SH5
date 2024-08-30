@@ -80,8 +80,7 @@ class CalculateCreateSerializer(serializers.Serializer):
             for bill_data in bills_data:
                 cost = bill_data['cost']
                 withdrawal_bank_account = bill_data['bank_account']
-                if deposit_bank_account == withdrawal_bank_account:
-                    continue
+                
                 try:
                     member = Member.objects.get(trip=trip_id, bank_account=withdrawal_bank_account)
                 except Member.DoesNotExist:
@@ -93,7 +92,11 @@ class CalculateCreateSerializer(serializers.Serializer):
                     member=member,
                     cost=cost
                 )
-
+                
+                if deposit_bank_account == withdrawal_bank_account:  # 정산 가격만 기록하고 금액 전송은 안함
+                    continue
+                if cost == 0 or cost == '0':
+                    continue
                 # 금액 이체 로직 호출
                 transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
         
