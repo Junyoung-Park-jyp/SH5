@@ -106,7 +106,7 @@ class TripMainSerializer(serializers.ModelSerializer):
     members = MemberDetailSerializer(many=True, read_only=True)
     class Meta:
         model = Trip
-        fields = ['start_date', 'end_date', 'locations', 'members']
+        fields = ['start_date', 'end_date', 'locations', 'members', "image_url"]
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
