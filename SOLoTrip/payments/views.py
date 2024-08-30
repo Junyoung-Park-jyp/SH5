@@ -142,7 +142,7 @@ def delete(request):
         try:
             payment = Payment.objects.get(id=payment_id)
         except:
-            return Response({"error": "결제 내역이 없습니다."}, status=status.HTTP_410_GONE)
+            return Response({"error": "주어진 Id에 해당되는 결제 내역이 없습니다."}, status=status.HTTP_410_GONE)
         bank_account = payment.bank_account
         # 내가 결제한거 아니면 삭제할 수 없음
         if not Member.objects.filter(user=request.user, bank_account=bank_account).exists():
@@ -153,3 +153,20 @@ def delete(request):
         brand_name = payment.brand_name
         payment.delete()
         return Response({"messagae": f"{brand_name} 결제 내역이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+    
+    
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def prepare(request):
+    if request.method == "POST":
+        trip_id = request.data.get('trip_id')
+        amount = request.data.get('amount')
+        brand_name = request.data.get('brand_name')
+        category = request.data.get('category')
+        
+        trip = Trip.objects.get(id=trip_id)
+        # pay_date
+        # pay_time
+        # bank_account
+        return Response({"data": "으아모르겠다 형 미안해요 이거 아직 안만들었어요 ㅋㅋ"}, status=status.HTTP_201_CREATED)
+    pass
