@@ -9,8 +9,8 @@ class Payment(models.Model):
     brand_name = models.CharField(max_length=30)
     category = models.CharField(max_length=10, default="")
     bank_account = models.CharField(max_length=30)
-    transaction_type = models.CharField(max_length=15)
-    transaction_unique_number = models.IntegerField(blank=True, null=True)
+    # transaction_type = models.CharField(max_length=15)
+    # transaction_unique_number = models.IntegerField(blank=True, null=True)
 
 
 class Calculate(models.Model):

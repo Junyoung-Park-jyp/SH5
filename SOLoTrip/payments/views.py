@@ -20,17 +20,16 @@ def pay(request):
     if request.method == 'POST':
         data = request.data
         bank_account = data.get('bank_account')
-        amount = data.get('amount')
-        
-        member = Member.objects.filter(bank_account=bank_account)[0]
-        
+        member = Member.objects.filter(bank_account=bank_account).first()
+
+        if member is None:
+            return Response({'error': "해당 계좌에 대한 사용자를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
         if request.user != member.user:
             return Response({'error': "현재 사용자는 해당 계좌의 주인이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        email = member.user.email
-        response = withdrawal(bank_account, amount, email)
-        data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
-        data['transaction_type'] = '출금'
+        withdrawal(bank_account, data.get('amount'), request.user.email)
+        # data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
+        # data['transaction_type'] = '출금'
         
         try:
             data['category'] = categorize(data.get('brand_name'))
@@ -52,25 +51,26 @@ def pay_list(request):
         start_date = trip.start_date
         end_date = trip.end_date
         
-        if not Member.objects.filter(trip=trip_id, user=request.user).exists():
+        members = Member.objects.filter(trip=trip_id)
+        if not members.filter(user=request.user).exists():
             return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
-        members = Member.objects.filter(trip_id=trip_id)
         bank_accounts = members.values_list('bank_account', flat=True)
         
         payments = Payment.objects.filter(
+            bank_account__in=bank_accounts, 
             pay_date__gte=start_date, 
-            pay_date__lte=end_date, 
-            bank_account__in=bank_accounts
+            pay_date__lte=end_date
         ).order_by('pay_date', 'pay_time')
         serializer = PaymentDetailSerializer(payments, many=True)
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)
-    
-    
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def adjustment(request):
     if request.method == 'POST':
+        # 이거 수정해보기
         payments = request.data.get('payments')
         for payment in payments:    
             payment_id = payment.get('payment_id')
@@ -79,7 +79,6 @@ def adjustment(request):
             bank_account = Payment.objects.get(id=payment_id).bank_account
             if not Member.objects.filter(bank_account=bank_account, user=request.user).exists():
                 return Response({'error': "현재 사용자는 해당 계좌를 사용하고 있지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
-        
         serializer = CalculateCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             result = serializer.save()

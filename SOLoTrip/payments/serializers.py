@@ -11,10 +11,10 @@ User = get_user_model()
 class PaymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['amount', 'pay_date', 'pay_time', 'brand_name', 'category', 'bank_account', 'transaction_unique_number', 'transaction_type']
+        fields = ['amount', 'pay_date', 'pay_time', 'brand_name', 'category', 'bank_account']
+        # fields = ['amount', 'pay_date', 'pay_time', 'brand_name', 'category', 'bank_account', 'transaction_unique_number', 'transaction_type']
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation.pop('transaction_unique_number')
         return representation
         
         
@@ -40,12 +40,10 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         bank_account = representation['bank_account']
 
-        representation.pop('transaction_unique_number')
+        # representation.pop('transaction_unique_number')
         user = Member.objects.filter(bank_account=bank_account).first().user
-        email = user.email
-        representation['username'] = user.username
-        
-        representation['balance'] = balance(email, bank_account)['REC']['accountBalance']
+        representation['username'] = user.username        
+        representation['balance'] = balance(user.email, bank_account)['REC']['accountBalance']
 
         return representation
 
