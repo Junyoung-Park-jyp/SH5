@@ -62,6 +62,7 @@ def finish(request):
             end_date__lt=current_date
         ).order_by('start_date')
         serializer = TripSerializer(trips, many=True)
+        data = serializer.data
         if serializer.data:
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         return Response({'error': "완료된 여행이 없습니다."}, status=status.HTTP_204_NO_CONTENT)
@@ -126,3 +127,13 @@ def budget(request):
         member.save()
         return Response({'data': {'budget': budget}}, status=status.HTTP_202_ACCEPTED)
         
+        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_image(request):
+    if request.method == 'POST':
+        trip_id = request.data.get('trip_id')
+        trip = Trip.objects.get(id=trip_id)
+        trip.image_url = request.data.get('image_url')
+        return Response({'message': "image url이 성공적으로 저장되었습니다."}, status=status.HTTP_202_ACCEPTED)
+    

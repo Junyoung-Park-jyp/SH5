@@ -6,6 +6,7 @@ class Trip(models.Model):
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField()
     trip_name = models.CharField(max_length=30)
+    image_url = models.TextField()
     
     
 class Member(models.Model):
