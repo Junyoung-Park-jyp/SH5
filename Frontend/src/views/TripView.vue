@@ -235,6 +235,9 @@ const makeTrip = () => {
   setTimeout(() => {
     router.push({ name: "createTrip" });
   }, 1000); // 애니메이션 길이와 일치시켜야 함
+
+  // 여행 출발 날짜와 도착 날짜 초기화
+  tripStore.clearTrip()
 };
 
 const goTripMain = (tripId) => {
