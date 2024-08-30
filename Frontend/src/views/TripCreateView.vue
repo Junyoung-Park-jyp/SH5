@@ -85,20 +85,16 @@ const backStep = () => {
 
 const nextStep = () => {
   if (tripFormStage.value == 0) {
-    if (
-      tripStore.startDate instanceof Date &&
-      tripStore.endDate instanceof Date &&
-      tripStore.endDate < tripStore.startDate
-    ) {
+    if (tripStore.startDate && tripStore.endDate && tripStore.endDate < tripStore.startDate) {
       alert("도착일자가 출발일자보다 빠릅니다. 다시 선택해주세요.");
     } else if (
-      tripStore.location != [] &&
+      tripStore.country.length > 0 &&
       tripStore.startDate != null &&
       tripStore.endDate != null
     ) {
       tripFormStage.value++;
     } else {
-      console.log(tripStore.location, tripStore.startDate, tripStore.endDate);
+      console.log(tripStore.locations, tripStore.startDate, tripStore.endDate);
       alert("누락된 정보가 있습니다!");
       // tripFormStage.value++;
     }

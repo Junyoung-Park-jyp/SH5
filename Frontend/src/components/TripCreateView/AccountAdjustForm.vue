@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isLoading">
-    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+  <div v-if="isLoading" class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
   </div>
   <div v-else class="main-container">
     <!-- 계좌 선택 드롭다운 -->
@@ -110,5 +110,11 @@ watch(selectedAccount, (newValue) => {
   margin-bottom: 10px;
   margin-left: 15px;
   width: 90%;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>
