@@ -47,7 +47,7 @@
     <div class="trip money">
       <div class="title">나의 지출</div>
       <div class="content">
-        <PieChart />
+        <!-- <PieChart /> -->
       </div>
     </div>
 
