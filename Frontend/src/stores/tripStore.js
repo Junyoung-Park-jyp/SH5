@@ -18,6 +18,7 @@ export const useTripStore = defineStore("trip", {
     payments: [],
     stage: 0,
     progressStage: 0,
+    imageUrl: null
   }),
 
   getters: {
@@ -55,6 +56,7 @@ export const useTripStore = defineStore("trip", {
       this.startDate = null;
       this.endDate = null;
       this.adjustTime = null;
+      this.imageUrl = null;
     },
 
     setTrip(tripData) {
@@ -63,6 +65,7 @@ export const useTripStore = defineStore("trip", {
       this.startDate = tripData.start_date;
       this.endDate = tripData.end_date;
       this.adjustTime = tripData.adjustTime;
+      this.imageUrl = tripData.image_url
     },
 
     async makeTrip(tripData) {
