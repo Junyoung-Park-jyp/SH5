@@ -33,22 +33,32 @@ export const usePaymentStore = defineStore('paymentStore', {
     },
 
     async getPayments(tripId) {
+      const tripStore = useTripStore();
+
       try {
-        const response = await axiosInstance.get('/payments/list/', { params: {
-          trip_id: tripId,
-          } 
-        })
-
+        const response = await axiosInstance.get('/payments/list/', {
+          params: {
+            trip_id: tripId,
+          }
+        });
+    
         if (response) {
-          console.log("정산 내역", response.data)
-          this.payments=response.data.data
-          console.log(this.payments)
+          console.log("정산 내역", response.data);
+          console.log("여행 멤버", tripStore.members)
+          // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
+          this.payments = response.data.data.map(payment => {
+            return {
+              ...payment,
+              members: [{member: payment.username}] // 기본값으로 username을 members에 할당
+            };
+          });
+    
+          console.log(this.payments);
         } else {
-          console.error('정산 내역 조회 실패')
+          console.error('정산 내역 조회 실패');
         }
-
-      } catch(error) {
-        console.error('결제내역 조회 실패', error)
+      } catch (error) {
+        console.error('결제내역 조회 실패', error);
       }
     },
 
@@ -118,5 +128,9 @@ export const usePaymentStore = defineStore('paymentStore', {
         payment.members.push(memberName);
       }
     },
+
+    addBills(payment, members) {
+      
+    }
   },
 });
