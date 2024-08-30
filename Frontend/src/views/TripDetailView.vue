@@ -159,7 +159,7 @@ onMounted(() => {
 onMounted(async () => {
   const tripId = route.params.id
   if (tripId) {
-    const payments = await paymentStore.getPayments(tripId, format(tripStore.startDate, 'yyyy-MM-dd'), format(tripStore.endDate, 'yyyy-MM-dd'));
+    const payments = await paymentStore.getPayments(tripId);
     if (payments) {
       // 데이터 할당
       console.log(paymentStore.payments)
