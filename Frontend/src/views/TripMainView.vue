@@ -1,12 +1,26 @@
 <template>
   <div v-if="!loading" class="main-container">
-    <!-- 수정 -->
-    <div class="modify" @click="modifyTrip">
-      <button class="icon-btn">
-        <v-icon icon="mdi-pencil" size="medium"></v-icon>
-        <span>수정</span>
-      </button>
+    <!-- 뒤로가기 / 수정하기 -->
+    <div class="header my-2">
+      <!-- BACK -->
+      <div class="back" @click="backStep">
+        <button class="icon-btn">
+          <v-icon
+            class="btns"
+            icon="mdi-arrow-left"
+            size="large"
+          ></v-icon>
+        </button>
+      </div>
+      <!-- 수정 -->
+      <div class="modify" @click="modifyTrip">
+        <button class="icon-btn">
+          <v-icon icon="mdi-pencil" size="medium"></v-icon>
+          <span>수정</span>
+        </button>
+      </div>
     </div>
+
 
     <!-- 프로필 -->
     <div class="my-10 profile">
@@ -383,7 +397,15 @@ const goDetail = () => {
 };
 
 const goInsurance = () => {
-  return router.push({ name: "insurance" });
+  if (tripId) {
+    router.push({ name: "insurance", params: { id: tripId } });
+  } else {
+    console.error("Invalid tripId:", tripId);
+    // 여기에서 에러 처리 또는 대체 행동을 추가할 수 있습니다.
+  }
+};
+const backStep = () => {
+  router.replace({ name: "home" });
 };
 </script>
 
@@ -398,13 +420,29 @@ const goInsurance = () => {
   background-color: #f4f6fa;
 }
 
+.header {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid black; */
+}
+
 /* 수정 */
 .modify {
   display: flex;
   justify-content: right;
   align-items: center;
-  padding: 10px 10px 20px 20px;
-  margin: 0px auto -52px auto;
+  /* padding: 10px 10px 20px 20px; */
+  /* margin: 0px auto -52px auto; */
 }
 
 .icon-btn {

@@ -9,9 +9,9 @@
     <!-- 미래/현재 -->
     <div v-if="ongoingTrips" class="non-past">
       <v-row class="d-flex align-center">
-        <div class="record">
+        <div class="record" style="margin-left: 30px">
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
-          다가오는 여행 <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
+          COMING <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <v-carousel
@@ -71,7 +71,7 @@
       <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
         <div class="record" style="margin-top: 20px;">
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
-          지난 여행 <span style="color: gray; font-weight: bold;">{{ pastTrips.length }}</span>
+          RECORD <span style="color: gray; font-weight: bold;">{{ pastTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <div class="record-carousel">
@@ -311,6 +311,13 @@ const getBackgroundImage = (country) => {
   font-size: xx-large;
 }
 
+.non-past {
+  margin: 0 auto;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
 .past {
   /* margin: 50px; */
   /* padding-top: 20px; */
@@ -321,12 +328,14 @@ const getBackgroundImage = (country) => {
 }
 
 .record {
-  width: 100%;
+  width: 90%;
   /* background-color: grey; */
-  text-align: center;
+  display: flex;
+  gap: 2%;
   font-size: 20px;
   font-weight: bold;
-  margin: 30px auto 10px auto;
+  margin: 30px 0 10px 20px;
+  /* border: 1px solid black; */
 }
 
 .record-carousel {
@@ -401,13 +410,9 @@ const getBackgroundImage = (country) => {
   font-weight: bolder;
 }
 
-.non-past {
-  margin: 0 auto;
-}
-
 .non-past-carousel {
   margin: 0 auto;
-  height: 120px !important;
+  height: 130px !important;
 }
 
 .info * {

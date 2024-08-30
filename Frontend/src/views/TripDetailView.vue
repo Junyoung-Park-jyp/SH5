@@ -1,7 +1,21 @@
 <template>
   <div class="main-container">
+    <!-- 뒤로가기 -->
+    <div class="header my-2">
+      <!-- BACK -->
+      <div class="back" @click="backStep">
+        <button class="icon-btn">
+          <v-icon
+            class="btns"
+            icon="mdi-arrow-left"
+            size="large"
+          ></v-icon>
+        </button>
+      </div>
+    </div>
+
     <!-- 프로필 -->
-    <div class="my-5 profile">
+    <div class="mt-8 mb-2 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ userName }} 님은 {{ tripState }}<br />
@@ -101,6 +115,9 @@ const adjustmentDiv = ref(null); // 정산 버튼 참조
 const isDragging = ref(false); // 드래그 상태를 관리하는 변수
 const startX = ref(0); // 드래그 시작 시 X 좌표 저장
 const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
+
+// URL에서 tripId를 가져옴
+const tripId = route.params.id;
 
 const country = computed(() => tripStore.country);
 const city = computed(() => tripStore.city);
@@ -271,6 +288,10 @@ const finishTrip = () => {
     });
   }, 300);
 };
+
+const backStep = () => {
+  router.replace({ name: "tripMain", params: { id: tripId } });
+};
 </script>
 
 <style scoped>
@@ -283,6 +304,23 @@ const finishTrip = () => {
   background-color: #f4f6fa;
   /* margin-bottom: -10px; */
 }
+
+.header {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid black; */
+}
+
 
 /* 프로필 */
 .profile {

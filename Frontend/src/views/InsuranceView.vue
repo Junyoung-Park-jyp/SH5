@@ -4,6 +4,7 @@
     <div class="header my-2">
       <div class="back">
         <v-icon
+         v-if="insuranceStage > 0"
           class="btns"
           icon="mdi-arrow-left"
           size="xx-large"
@@ -40,7 +41,7 @@
           <span>여행자 보험 가입을<br>취소하시겠습니까?</span>
         </div>
         <div class="modal-btns">
-          <button class="modal-btn" @click="clearInsurance">네</button>
+          <button class="modal-btn" @click="clearInsurance()">네</button>
           <button class="modal-btn" @click="closeCancelModal">아니오</button>
         </div>
       </div>
@@ -64,7 +65,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 import InsuranceStart from "@/components/InsuranceView/InsuranceStart.vue";
 import InsuranceMain from "@/components/InsuranceView/InsuranceMain.vue";
@@ -74,6 +75,11 @@ const insuranceStage = ref(0);
 const mainContainer = ref(null);
 const showCancelModal = ref(false);
 const router = useRouter();
+const route = useRoute();
+
+// URL에서 tripId를 가져옴
+const tripId = route.params.id;
+
 
 const scrollToTop = () => {
   if (mainContainer.value) {
@@ -85,7 +91,7 @@ const nextStep = () => {
   if (insuranceStage.value < 2) {
     insuranceStage.value++;
   } else {
-    router.push({ name: 'tripMain' });
+    router.push({ name: 'tripMain', params: { id: tripId } });
   }
 
   nextTick(() => {
@@ -109,9 +115,13 @@ const closeCancelModal = () => {
 };
 
 const clearInsurance = () => {
-  insuranceStage.value = 0;
-  showCancelModal.value = false;
-  router.replace({ name: "tripMain" });
+  if (tripId) {
+    insuranceStage.value = 0;
+    showCancelModal.value = false;
+    router.replace({ name: "tripMain", params: { id: tripId } });
+  } else {
+    console.error("Invalid tripId:", tripId);
+  }
 };
 
 // watch 사용하여 insuranceStage가 변경될 때 스크롤 위치 조정
