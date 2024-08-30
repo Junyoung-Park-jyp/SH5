@@ -81,9 +81,11 @@
 import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
+import { useErrorStore } from "@/stores/errorStore";
 
 const userStore = useUserStore();
 const tripStore = useTripStore();
+const errorStore = useErrorStore()
 const userName = ref("");
 const email = ref("");
 const tripName = ref("");
@@ -91,12 +93,15 @@ const tripName = ref("");
 const addMember = async () => {
   const userData = await userStore.getUser(email.value);
 
-  if (userData) {
+  if (userData && !tripStore.members.some(element => element.email === userData.email)) {
     tripStore.members.push(userData);
     email.value = "";
   } else {
-    console.error("멤버 추가 실패");
+    errorStore.showError("멤버를 중복으로 추가할 수 없습니다")
   }
+
+  console.log(tripStore.members)
+
 };
 
 // const addTripName = async () => {
