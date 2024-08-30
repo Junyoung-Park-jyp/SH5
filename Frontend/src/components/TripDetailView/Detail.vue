@@ -67,7 +67,7 @@
             :key="paymentIndex"
           >
             <!-- 체크 버튼 -->
-            <div class="check-area">
+            <div v-if="accountNum==payment.bank_account" class="check-area">
               <v-btn
                 @click="toggleCheck(paymentIndex, 'booking')"
                 variant="text"
@@ -143,7 +143,7 @@
             :key="paymentIndex"
           >
             <!-- 체크 버튼 -->
-            <div class="check-area">
+            <div v-if="accountNum==payment.bank_account" class="check-area">
               <v-btn
                 @click="toggleCheck(paymentIndex, 'trip')"
                 variant="text"
@@ -177,16 +177,16 @@
                 :key="index"
                 class="person-info"
               >
-                {{ member.member[0] }}
-                <!-- <div
+                <div
                   class="person-symbol d-flex justify-center align-center"
-                  :style="personStyle(member.member, index)"
+                  :class="addCrownClass(member, payment)"
+                  :style="personStyle(member.member, payment.members, index)"
                   @click="personClick(paymentIndex, member.member, 'trip')"
                 >
                   <div class="person-familyname">
                     {{ member.member.slice(0, 1) }}
                   </div>
-                </div> -->
+                </div>
               </div>
             </div>
 
@@ -255,13 +255,16 @@ import {
 } from "@/stores/currencyStore";
 import { useTripStore } from "@/stores/tripStore";
 import { usePaymentStore } from "@/stores/paymentStore";
+import { useUserStore } from '@/stores/userStore'
 
 const tripStore = useTripStore();
 const paymentStore = usePaymentStore();
+const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
 const payments = computed(() => paymentStore.payments)
+const accountNum = computed(() => userStore.accountNum)
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -307,6 +310,9 @@ onMounted(() => {
 
 const currencyIndex = ref(0);
 const currencies = ref(["KRW"]);
+const addCrownClass = (member, payment) => {
+  return member.bank_account === payment.bank_account ? 'crown' : '';
+};
 
 onMounted(() => {
   fetchExchangeRates();
@@ -502,9 +508,11 @@ const formattedCost = (cost) => {
     formatToTwoDecimal(convertedValue)
   )}`;
 };
-
+  
 const personStyle = (memberName, reservationMembers, index) => {
-  if (reservationMembers.includes(memberName)) {
+  const isMemberIncluded = reservationMembers.some(member => member.member === memberName);
+
+  if (isMemberIncluded) {
     return {
       backgroundColor: rgbaColor(memberColors.value[index], 0.7),
       border: "none",
@@ -518,15 +526,21 @@ const personStyle = (memberName, reservationMembers, index) => {
   }
 };
 
+
 const personClick = (index, memberName, type) => {
   const paymentList =
     type === "booking" ? bookingPayments.value : filteredPayments.value;
   const payment = paymentList[index];
 
-  if (payment.members.includes(memberName)) {
-    payment.members = payment.members.filter((name) => name !== memberName);
+  // 현재 멤버가 payment.members에 있는지 확인
+  const memberIndex = payment.members.findIndex(member => member.member === memberName);
+
+  if (memberIndex !== -1) {
+    // 이미 멤버가 있는 경우, 제거
+    payment.members = payment.members.filter((member) => member.member !== memberName);
   } else {
-    payment.members.push(memberName);
+    // 멤버가 없는 경우, 추가
+    payment.members.push({ member: memberName });
   }
 
   // paymentsDuringTrip의 실제 항목 업데이트
