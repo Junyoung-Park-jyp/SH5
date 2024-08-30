@@ -59,12 +59,15 @@
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { useTripStore } from "@/stores/tripStore";
+import { usePaymentStore } from "@/stores/paymentStore";
 import { useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
@@ -83,6 +86,8 @@ import PieChart from "./PieChart.vue";
 
 const route = useRoute()
 const tripStore = useTripStore()
+const paymentStore = usePaymentStore()
+
 const tripId = route.params.id
 // const tripData = computed(() => {
 //   return tripStore.getTrip(tripId)
@@ -165,8 +170,18 @@ const membersWithColors = ref([]);
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
 onMounted(async () => {
-  tripStore.getTrip(tripId)
-  loading.value = false
+  try {
+    await Promise.all([
+      tripStore.getTrip(tripId),
+      paymentStore.getPayments(tripId)
+    ]);
+
+    if (paymentStore.getAllPayments().length > 0) {
+      loading.value = false
+    }
+  } catch (error) {
+    loading.value = false
+  }
 })
 
 onMounted(() => {
@@ -345,5 +360,11 @@ const calculatePadding = (index) => {
 @keyframes fadeInOut {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

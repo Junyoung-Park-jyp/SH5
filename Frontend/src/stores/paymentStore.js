@@ -7,8 +7,8 @@ export const usePaymentStore = defineStore('paymentStore', {
   state: () => ({
     payments: [
     ],
-    bills: [
-    ],
+    budgets: [
+    ]
   }),
   getters: {
     getPaymentsByDate: (state) => (date) => {
@@ -48,14 +48,14 @@ export const usePaymentStore = defineStore('paymentStore', {
         if (response) {
           console.log("정산 내역", response.data);
           console.log("여행 멤버", tripStore.members);
-    
+          this.budgets = response.data.budget
           // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
           this.payments = response.data.data.map(payment => {
             const paymentMembers = tripStore.members.map(member => ({
               member: member.member,  // member 객체에서 필요한 필드를 사용
               bank_account: member.bank_account // 기본적으로 동일한 계좌 사용
             }));
-    
+          
             return {
               ...payment,
               members: paymentMembers // tripStore.members를 기반으로 새로 생성한 members 배열을 할당
@@ -95,19 +95,19 @@ export const usePaymentStore = defineStore('paymentStore', {
           payments: adjustments,
         });
     
-    if (response) {
-      // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
-      this.payments = this.payments.map(payment => {
-        const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
-        if (isCompleted) {
-          return {
-            ...payment,
-            is_completed: 1, // is_completed 값을 1로 변경
-          };
-        }
-        return payment;
-      });
-
+        if (response) {
+          // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
+          this.payments = this.payments.map(payment => {
+            const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
+            if (isCompleted) {
+              return {
+                ...payment,
+                is_completed: 1, // is_completed 값을 1로 변경
+              };
+            }
+            return payment;
+          });
+    
           
           console.log('정산에 성공했습니다');
         } else {

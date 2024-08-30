@@ -1,17 +1,21 @@
 <template>
   <div class="main-container">
-    <div class="pick">
-      <input type="file" @change="onFileChange" />
+    <div v-if="loading">
+      <v-progress-circular v-if="loading" indeterminate :size="50" :width="8" color="#4b72e1" class="mb-5"></v-progress-circular>
+      <div class="create-text">사진 생성 중입니다</div>
     </div>
-    <div class="create">
+
+    <div v-if="resultImageUrl" class="mb-5">
+      <v-img :src="resultImageUrl" />
+    </div>
+
+    <div v-if="!loading" class="pick mt-0 mb-3">
+      <input type="file" @change="onFileChange" accept="image/*" />
+    </div>
+    <div v-if="!loading" class="create">
       <button class="create-btn" @click="uploadImage">사진 생성</button>
     </div>
 
-    <div v-if="loading">사진 생성 중</div>
-
-    <div v-if="resultImageUrl">
-      <v-img :src="resultImageUrl" />
-    </div>
   </div>
 </template>
 
@@ -154,5 +158,10 @@ const getResult = async (taskId) => {
 img {
   max-width: 100%;
   height: auto;
+}
+
+.create-text {
+  font-size: large !important;
+  font-weight: bold;
 }
 </style>

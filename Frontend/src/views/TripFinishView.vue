@@ -1,5 +1,28 @@
 <template>
   <div class="main-container">
+    <!-- 뒤로가기 & 취소하기 -->
+    <div class="header my-2">
+      <!-- BACK -->
+      <div class="back" @click="backStep">
+        <button class="icon-btn">
+          <v-icon
+            class="btns"
+            icon="mdi-arrow-left"
+            size="large"
+          ></v-icon>
+        </button>
+      </div>
+      <!-- 취소 -->
+      <div class="cancel">
+        <v-icon
+          class="btns"
+          icon="mdi-window-close"
+          size="large"
+          @click="cancelTrip"
+        ></v-icon>
+      </div>
+    </div>
+
     <!-- 정산 금액 -->
     <div class="amount">{{ amount }}</div>
 
@@ -86,11 +109,14 @@
 import { ref, computed, onMounted } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useTripStore } from "@/stores/tripStore";
 
 const route = useRoute();
-const amount = route.query.amount;
+const router = useRouter();
+const tripId = route.params.id;
+
+const amount = ref(route.query.amount || 0);
 const tripStore = useTripStore();
 
 const tripMembers = computed(() => tripStore.members);
@@ -107,6 +133,16 @@ onMounted(() => {
     color: memberColors.value[index],
   }));
 });
+
+const backStep = () => {
+  amount.value = 0;
+  router.replace({ name: "tripDetail", params: { id: tripId } });
+};
+
+const cancelTrip = () => {
+  amount.value = 0;
+  router.replace({ name: "home"});
+};
 </script>
 
 <style scoped>
@@ -118,6 +154,21 @@ onMounted(() => {
   margin: 0px auto;
   padding-bottom: 0px;
   background-color: #f4f6fa;
+}
+.header {
+  position: fixed;
+  top: 45px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid black; */
 }
 
 .amount {

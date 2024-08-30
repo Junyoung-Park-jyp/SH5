@@ -1,15 +1,30 @@
 <template>
   <div v-if="!loading" class="main-container">
-    <!-- 수정 -->
-    <div class="modify" @click="modifyTrip">
-      <button class="icon-btn">
-        <v-icon icon="mdi-pencil" size="medium"></v-icon>
-        <span>수정</span>
-      </button>
+    <!-- 뒤로가기 / 수정하기 -->
+    <div class="header my-2">
+      <!-- BACK -->
+      <div class="back" @click="backStep">
+        <button class="icon-btn">
+          <v-icon
+            class="btns"
+            icon="mdi-arrow-left"
+            size="large"
+          ></v-icon>
+        </button>
+      </div>
+      
+      <!-- 수정 -->
+      <div class="modify" @click="modifyTrip">
+        <button class="icon-btn">
+          <v-icon icon="mdi-pencil" size="medium"></v-icon>
+          <span>수정</span>
+        </button>
+      </div>
     </div>
 
+
     <!-- 프로필 -->
-    <div class="my-10 profile">
+    <div class="mt-8 mb-6 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ myname }} 님은 {{ tripState }}<br />
@@ -39,11 +54,27 @@
             )
           }}
         </div>
+        <div class="progress" v-else>
+          <div class="progress-container">
+            <div
+              class="progress-bar"
+              :style="{ width: animatedWidth + '%' }"
+            ></div>
+          </div>
+          <div class="progress-text">
+            {{ calculateProgress(tripStore.startDate, tripStore.endDate, today) }}%
+          </div>
+        </div>
       </div>
       <div class="content">
         <p>시작일 &nbsp; | &nbsp; {{ formatDay(tripStore.startDate) }}</p>
         <p>종료일 &nbsp; | &nbsp; {{ formatDay(tripStore.endDate) }}</p>
       </div>
+    </div>
+
+    <!-- 지출 내역 -->
+    <div class="trip money">
+      <button class="detail-btn" @click="goDetail">지 출 내 역</button>
     </div>
 
     <!-- 멤버 -->
@@ -68,38 +99,32 @@
         <div class="member-name">{{ member.member }}</div>
 
         <!-- 정보 -->
-        <div class="member-info">
+        <div class="member-info" v-if="member.account_list != ''">
           <!-- 계좌 -->
-          <div v-if="member.account_list != ''" class="member-account">
-            <div class="member-bank">
-              <span class="member-bankname">{{
-                member.bank_name.slice(0, member.bank_name.length - 2)
-              }}</span
-              >&nbsp;
-              <span class="member-bankaccount">
-                {{
-                  member.member === myname
-                    ? member.bank_account
-                    : maskAccount(member.bank_account)
-                }}
-              </span>
-            </div>
-            <div class="member-bankbalance">
-              {{ formatWithComma(member.balance) }} 원
-            </div>
+          <div class="member-bank">
+            <span class="member-bankname">{{
+              member.bank_name.slice(0, member.bank_name.length - 2)
+            }}</span
+            >&nbsp;
+            <span class="member-bankaccount">
+              {{
+                member.member === myname
+                  ? member.bank_account
+                  : maskAccount(member.bank_account)
+              }}
+            </span>
           </div>
-          <!-- 없는 경우 -->
-          <div v-else class="member-account">
-            계좌 미등록 - {{ member.budget }}
+          <div class="member-bankbalance">
+            {{ formatWithComma(member.balance) }} 원
           </div>
+        </div>
+        <!-- 없는 경우 -->
+        <div v-else class="member-info">
+          계좌 미등록 - {{ member.budget }}
         </div>
       </div>
     </div>
 
-    <!-- 지출 내역 -->
-    <div class="trip money">
-      <button class="detail-btn" @click="goDetail">지 출 내 역</button>
-    </div>
 
     <!-- 환율 -->
     <div class="trip exchange">
@@ -179,11 +204,13 @@
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
@@ -249,6 +276,31 @@ const formatDay = (date) => {
   // date가 유효한 경우에만 포맷팅, 그렇지 않으면 빈 문자열 반환
   return date ? format(new Date(date), "yyyy년 MM월 dd일") : "";
 };
+
+/// 여행 진행율
+const calculateProgress = (startDate, endDate, currentDate) => {
+  if (!startDate || !endDate || currentDate < startDate) return 0;
+  if (currentDate > endDate) return 100;
+
+  const totalDays = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  const elapsedDays = (currentDate - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  
+  return Math.ceil((elapsedDays / totalDays) * 100);
+};
+
+// 애니메이션용 상태
+const animatedWidth = ref(0);
+
+watch(
+  () => calculateProgress(tripStore.startDate, tripStore.endDate, today),
+  (newProgress) => {
+    animatedWidth.value = 0;
+    setTimeout(() => {
+      animatedWidth.value = newProgress;
+    }, 100); 
+  },
+  { immediate: true }
+);
 
 // 여행 멤버와 계좌번호
 // const tripMembers = [
@@ -360,8 +412,8 @@ onMounted(async () => {
         tripStore.endDate = tripData.end_date
           ? new Date(tripData.end_date)
           : null;
-
         tripStore.members = tripData.members;
+
       }
     }
 
@@ -383,19 +435,43 @@ const goDetail = () => {
 };
 
 const goInsurance = () => {
-  return router.push({ name: "insurance" });
+  if (tripId) {
+    router.push({ name: "insurance", params: { id: tripId } });
+  } else {
+    console.error("Invalid tripId:", tripId);
+    // 여기에서 에러 처리 또는 대체 행동을 추가할 수 있습니다.
+  }
+};
+const backStep = () => {
+  router.replace({ name: "home" });
 };
 </script>
 
 <style scoped>
 .main-container {
-  height: 92vh;
-  overflow-y: auto;
+  height: 93vh;
+  overflow-y: none;
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0px auto;
-  padding-bottom: 20px;
+  padding-bottom: 0px;
   background-color: #f4f6fa;
+}
+
+.header {
+  position: fixed;
+  top: 45px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid black; */
 }
 
 /* 수정 */
@@ -403,8 +479,9 @@ const goInsurance = () => {
   display: flex;
   justify-content: right;
   align-items: center;
-  padding: 10px 10px 20px 20px;
-  margin: 0px auto -52px auto;
+  font-size: 12px;
+  /* padding: 10px 10px 20px 20px; */
+  /* margin: 0px auto -52px auto; */
 }
 
 .icon-btn {
@@ -518,7 +595,57 @@ const goInsurance = () => {
   margin: auto;
 }
 
+/* 진행율 */
+.progress {
+  /* border: 1px solid black; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 120px;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 25px;
+  overflow: hidden;
+  height: 10px;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4b72e1;
+  width: 0; /* 초기 너비를 0으로 설정 */
+  transition: width 1.5s ease-in-out;
+}
+
+@keyframes fillProgressBar {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.progress-bar.animate {
+  animation: fillProgressBar 1s forwards;
+}
+
+.progress-text {
+  text-align: center;
+  margin-left: 10px;
+  font-size: 0.9rem;
+  color: #4b72e1;
+  font-size: 12px;
+}
+
 /* 멤버 */
+.member {
+  padding-bottom: 30px;
+}
+
 .member * {
   margin: 0px auto;
 }
@@ -528,10 +655,10 @@ const goInsurance = () => {
 }
 
 .member-symbol {
-  border: 1px solid black;
   border-radius: 50%;
   width: 35px;
   height: 35px;
+  border: 1px solid black;
 }
 
 .member-name {
@@ -542,10 +669,29 @@ const goInsurance = () => {
   display: flex;
   flex-direction: column;
   min-width: 210px;
+  padding-left: 2px;
+  /* border: 1px solid black; */
+}
+
+.member-bank {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  text-align: left;
+  /* border: 1px solid blue; */
 }
 
 .member-bank * {
   font-size: 13px;
+}
+
+.member-bankbalance {
+  width: 80%;
+  padding-left: 5px;
+  text-align: left;
+  /* border: 1px solid green; */
 }
 
 /* 지출내역 */
@@ -554,7 +700,7 @@ const goInsurance = () => {
   text-align: center;
   padding: 10px 0;
   margin: 0 auto;
-  padding: 20px 0 50px 0;
+  padding: 10px 0 10px 0;
 }
 
 .detail-btn {
@@ -626,7 +772,7 @@ const goInsurance = () => {
 
 /* 여행자 보험 */
 .insurance {
-  padding: 30px 0;
+  padding: 40px 0;
 }
 
 .invite-btn {
@@ -662,5 +808,11 @@ const goInsurance = () => {
   font-size: large;
   font-weight: 500;
   margin-bottom: 10px;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loading" class="main-container">
     <!-- 프로필 -->
-    <div class="my-5 profile">
+    <div class="mt-2 mb-5 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <span>{{ userStore.userName }} 님 </span>
     </div>
@@ -9,9 +9,9 @@
     <!-- 미래/현재 -->
     <div v-if="ongoingTrips" class="non-past">
       <v-row class="d-flex align-center">
-        <div class="record">
+        <div class="record" style="margin-left: 30px">
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
-          다가오는 여행 <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
+          COMING <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <v-carousel
@@ -71,7 +71,7 @@
       <v-row v-if="pastTrips.length > 0" class="justify-center py-5 my-5">
         <div class="record" style="margin-top: 20px;">
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
-          지난 여행 <span style="color: gray; font-weight: bold;">{{ pastTrips.length }}</span>
+          RECORD <span style="color: gray; font-weight: bold;">{{ pastTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <div class="record-carousel">
@@ -164,7 +164,9 @@
       <button class="create-btn" @click="makeTrip">여행 만들기</button>
     </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else class="loading">
+    <v-progress-circular indeterminate :size="79" :width="10" color="#4b72e1"></v-progress-circular>
+  </div>
 </template>
 
 <script setup>
@@ -201,11 +203,6 @@ onMounted(async () => {
   try {
     // 데이터를 비동기적으로 가져옴
     await Promise.all([tripStore.getPastTrips(), tripStore.getFutureTrips()]);
-
-    // 비동기 처리 후 각 경험의 이미지를 가져옴
-    for (const experience of tripStore.tripExperiences) {
-      experience.imageUrl = await getImageUrl(experience.country);
-    }
 
     // 추가 API 호출 (예시로 추가한 부분)
     await stateStore.getAILABapi({});
@@ -283,7 +280,7 @@ const getBackgroundImage = (country) => {
 
 <style scoped>
 .main-container {
-  height: 92vh;
+  height: 93vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -311,6 +308,13 @@ const getBackgroundImage = (country) => {
   font-size: xx-large;
 }
 
+.non-past {
+  margin: 0 auto;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
 .past {
   /* margin: 50px; */
   /* padding-top: 20px; */
@@ -321,12 +325,14 @@ const getBackgroundImage = (country) => {
 }
 
 .record {
-  width: 100%;
+  width: 90%;
   /* background-color: grey; */
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 30px auto 10px auto;
+  display: flex;
+  gap: 2%;
+  font-size: 17px;
+  font-weight: 500;
+  margin: 30px 0 10px 20px;
+  /* border: 1px solid black; */
 }
 
 .record-carousel {
@@ -386,7 +392,7 @@ const getBackgroundImage = (country) => {
 }
 
 .info > span {
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .info2 {
@@ -401,13 +407,9 @@ const getBackgroundImage = (country) => {
   font-weight: bolder;
 }
 
-.non-past {
-  margin: 0 auto;
-}
-
 .non-past-carousel {
   margin: 0 auto;
-  height: 120px !important;
+  height: 130px !important;
 }
 
 .info * {
@@ -512,5 +514,11 @@ const getBackgroundImage = (country) => {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+}
+
+/* 로딩 화면 */
+.loading {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

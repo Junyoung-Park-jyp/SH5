@@ -1,7 +1,21 @@
 <template>
   <div class="main-container">
+    <!-- 뒤로가기 -->
+    <div class="header my-2">
+      <!-- BACK -->
+      <div class="back" @click="backStep">
+        <button class="icon-btn">
+          <v-icon
+            class="btns"
+            icon="mdi-arrow-left"
+            size="large"
+          ></v-icon>
+        </button>
+      </div>
+    </div>
+
     <!-- 프로필 -->
-    <div class="my-5 profile">
+    <div class="mt-8 mb-2 profile">
       <img class="profile-img" src="../assets/img/profile.png" alt="프로필" />
       <div class="profile-status">
         {{ userName }} 님은 {{ tripState }}<br />
@@ -61,25 +75,6 @@
       :selectedView="selectedView"
       @updateCheckedCost="updateCheckedCost"
     />
-
-    <!-- 정산하기 -->
-    <div class="adjustment">
-      <div class="adjust-background">
-        <button
-          class="adjust-btn"
-          @mousedown="startDrag"
-          @mousemove="onDrag"
-          @mouseup="stopDrag"
-          @touchstart="startDrag"
-          @touchmove="onDrag"
-          @touchend="stopDrag"
-          ref="adjustmentDiv"
-        >
-          정 산 하 기
-        </button>
-        <button class="slide-btn">> > ></button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -91,22 +86,41 @@ import Detail from "@/components/TripDetailView/Detail.vue";
 import { usePaymentStore } from "@/stores/paymentStore";
 import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
+
 // 여행 상태
 const tripState = ref("");
 const userStore = useUserStore();
 const tripStore = useTripStore();
 const router = useRouter();
 const route = useRoute();
-const adjustmentDiv = ref(null); // 정산 버튼 참조
-const isDragging = ref(false); // 드래그 상태를 관리하는 변수
-const startX = ref(0); // 드래그 시작 시 X 좌표 저장
-const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
+// const adjustmentDiv = ref(null); // 정산 버튼 참조
+// const isDragging = ref(false); // 드래그 상태를 관리하는 변수
+// const startX = ref(0); // 드래그 시작 시 X 좌표 저장
+// const currentX = ref(0); // 현재 드래그 위치의 X 좌표 저장
+
+// URL에서 tripId를 가져옴
+const tripId = route.params.id;
 
 const country = computed(() => tripStore.country);
 const city = computed(() => tripStore.city);
 const locations = computed(() => tripStore.locations);
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+
+const selectedDate = ref(today);
+const selectedView = ref("all"); // 선택된 뷰 ("all", "prepare", "date")
+const startDate = computed(() => new Date(tripStore.startDate));
+const endDate = computed(() => new Date(tripStore.endDate));
+const userName = computed(() => userStore.name);
+const date = computed(() =>
+  eachDayOfInterval({
+    start: startDate.value,
+    end: endDate.value,
+  })
+);
+// const todayIndex = date.findIndex((day) => isToday(day));
+const todayIndex = computed(() => date.value.findIndex((day) => isToday(day)));
+
 
 // 여행 상태를 갱신하는 함수
 const updateTripState = () => {
@@ -119,21 +133,6 @@ const updateTripState = () => {
   }
 };
 
-const selectedDate = ref(today);
-const selectedView = ref("all"); // 선택된 뷰 ("all", "prepare", "date")
-
-const startDate = computed(() => new Date(tripStore.startDate));
-const endDate = computed(() => new Date(tripStore.endDate));
-const userName = computed(() => userStore.name);
-const date = computed(() =>
-  eachDayOfInterval({
-    start: startDate.value,
-    end: endDate.value,
-  })
-);
-
-// const todayIndex = date.findIndex((day) => isToday(day));
-const todayIndex = computed(() => date.value.findIndex((day) => isToday(day)));
 
 onMounted(() => {
   updateTripState();
@@ -187,6 +186,12 @@ const isToday = (day) => isSameDay(day, today, );
 const showAllContainers = ref(true); // 모든 컨테이너 표시 여부
 const showBudgetAndBookingOnly = ref(false); // 예산 및 예약 컨테이너만 표시 여부
 
+
+const updateCheckedCost = (cost) => {
+  console.log("Checked cost updated:", cost);
+  // Handle the updated cost as needed
+};
+
 // 특정 날짜를 클릭했을 때 실행되는 함수
 const handleDayClick = (day) => {
   selectedDate.value = day;
@@ -215,61 +220,65 @@ const isSelectedDay = (day) => {
 };
 
 
-const startDrag = (event) => {
-  isDragging.value = true;
-  startX.value = event.clientX || event.touches[0].clientX;
-  currentX.value = startX.value;
-};
+// const startDrag = (event) => {
+//   isDragging.value = true;
+//   startX.value = event.clientX || event.touches[0].clientX;
+//   currentX.value = startX.value;
+// };
 
-const onDrag = (event) => {
-  if (isDragging.value) {
-    const x = event.clientX || event.touches[0].clientX;
-    const deltaX = x - startX.value;
+// const onDrag = (event) => {
+//   if (isDragging.value) {
+//     const x = event.clientX || event.touches[0].clientX;
+//     const deltaX = x - startX.value;
 
-    const maxDragDistance =
-      adjustmentDiv.value.parentElement.offsetWidth -
-      adjustmentDiv.value.offsetWidth;
+//     const maxDragDistance =
+//       adjustmentDiv.value.parentElement.offsetWidth -
+//       adjustmentDiv.value.offsetWidth;
 
-    if (deltaX > 0 && deltaX <= maxDragDistance) {
-      adjustmentDiv.value.style.transform = `translateX(${deltaX}px)`;
-      currentX.value = x;
-    }
-  }
-};
+//     if (deltaX > 0 && deltaX <= maxDragDistance) {
+//       adjustmentDiv.value.style.transform = `translateX(${deltaX}px)`;
+//       currentX.value = x;
+//     }
+//   }
+// };
 
-const stopDrag = () => {
-  if (isDragging.value) {
-    isDragging.value = false;
+// const stopDrag = () => {
+//   if (isDragging.value) {
+//     isDragging.value = false;
 
-    const dragDistance = currentX.value - startX.value;
-    const threshold = adjustmentDiv.value.offsetWidth / 2;
+//     const dragDistance = currentX.value - startX.value;
+//     const threshold = adjustmentDiv.value.offsetWidth / 2;
 
-    if (dragDistance > threshold) {
-      finishTrip();
-    } else {
-      adjustmentDiv.value.style.transform = `translateX(0)`;
-    }
-  }
-};
+//     if (dragDistance > threshold) {
+//       finishTrip();
+//     } else {
+//       adjustmentDiv.value.style.transform = `translateX(0)`;
+//     }
+//   }
+// };
 
-// 체크된 비용 저장
-const checkedCost = ref("");
+// // 체크된 비용 저장
+// const checkedCost = ref("");
 
-// Detail 컴포넌트에서 업데이트된 비용을 저장하는 함수
-const updateCheckedCost = (cost) => {
-  checkedCost.value = cost; // Update when Detail.vue emits
-};
+// // Detail 컴포넌트에서 업데이트된 비용을 저장하는 함수
+// const updateCheckedCost = (cost) => {
+//   checkedCost.value = cost; // Update when Detail.vue emits
+// };
 
-// 정산 완료 버튼 슬라이딩
-const finishTrip = () => {
-  adjustmentDiv.value.style.transform = `translateX(100%)`;
+// // 정산 완료 버튼 슬라이딩
+// const finishTrip = () => {
+//   adjustmentDiv.value.style.transform = `translateX(100%)`;
 
-  setTimeout(() => {
-    router.push({
-      name: "tripFinish",
-      query: { amount: checkedCost.value }, // Use query instead of params
-    });
-  }, 300);
+//   setTimeout(() => {
+//     router.push({
+//       name: "tripFinish",
+//       query: { amount: checkedCost.value }, // Use query instead of params
+//     });
+//   }, 300);
+// };
+
+const backStep = () => {
+  router.replace({ name: "tripMain", params: { id: tripId } });
 };
 </script>
 
@@ -283,6 +292,23 @@ const finishTrip = () => {
   background-color: #f4f6fa;
   /* margin-bottom: -10px; */
 }
+
+.header {
+  position: fixed;
+  top: 45px;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* border: 1px solid black; */
+}
+
 
 /* 프로필 */
 .profile {
@@ -435,70 +461,4 @@ const finishTrip = () => {
   opacity: 0.5;
 } */
 
-/* 정산하기 */
-.adjustment {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-  width: 100%;
-  height: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  text-align: center;
-  padding: 15px 0;
-  margin: 0 auto;
-  /* border: 1px solid black; */
-  background-color: rgba(255, 255, 255);
-}
-
-.adjust-background {
-  width: 80%;
-  height: 60%;
-  background-color: lightgrey;
-  border-radius: 30px;
-  margin: 8px 20px;
-  border: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
-  position: relative;
-  overflow: hidden;
-}
-
-.adjust-btn {
-  width: 60%;
-  height: 100%;
-  background-color: #4b72e1;
-  border-radius: 30px;
-  color: white;
-  padding: 8px 20px;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  transition: transform 0.3s ease; /* 슬라이딩 애니메이션 */
-  position: relative;
-  z-index: 1;
-}
-
-.slide-btn {
-  width: 40%;
-  height: 100%;
-  border-radius: 30px;
-  color: rgb(78, 78, 78);
-  padding: 8px 20px;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  position: absolute;
-  right: 0;
-  z-index: 0;
-}
 </style>
