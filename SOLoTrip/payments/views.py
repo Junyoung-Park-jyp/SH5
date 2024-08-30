@@ -10,6 +10,7 @@ from shinhan_api.demand_deposit import update_demand_deposit_account_withdrawal 
 from shinhan_api.demand_deposit import update_demand_deposit_account_Transfer as transfer
 from shinhan_api.demand_deposit import inquire_demand_deposit_account_balance as balance
 from chatgpt_api.api import categorize
+from datetime import datetime
 
 
 User = get_user_model()
@@ -28,8 +29,6 @@ def pay(request):
             return Response({'error': "현재 사용자는 해당 계좌의 주인이 아닙니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
         withdrawal(bank_account, data.get('amount'), request.user.email)
-        # data['transaction_unique_number'] = response['REC']['transactionUniqueNo']
-        # data['transaction_type'] = '출금'
         
         try:
             data['category'] = categorize(data.get('brand_name'))

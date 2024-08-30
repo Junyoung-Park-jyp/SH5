@@ -19,19 +19,11 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         
         
 class PaymentDetailSerializer(serializers.ModelSerializer):
-    account_owner = serializers.SerializerMethodField()
     is_completed = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Payment
         fields = "__all__"
-
-    def get_account_owner(self, obj):
-        try:
-            member = Member.objects.filter(bank_account=obj.bank_account).first()
-            return member.user.email if member else None
-        except Member.DoesNotExist:
-            return None
 
     def get_is_completed(self, obj):
         return 1 if Calculate.objects.filter(payment=obj).exists() else 0
@@ -40,10 +32,9 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         bank_account = representation['bank_account']
 
-        # representation.pop('transaction_unique_number')
         user = Member.objects.filter(bank_account=bank_account).first().user
         representation['username'] = user.username        
-        representation['balance'] = balance(user.email, bank_account)['REC']['accountBalance']
+        # representation['balance'] = balance(user.email, bank_account)['REC']['accountBalance']
 
         return representation
 
