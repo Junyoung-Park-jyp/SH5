@@ -57,7 +57,7 @@ export default {
     };
 
     const calculateCategoryData = () => {
-      const payments = paymentStore.getAllPayments;
+      const payments = paymentStore.getAllPayments();
       const categoryMap = {};
       console.log("Payments", payments)
       payments.forEach((payment) => {
@@ -65,7 +65,7 @@ export default {
         if (!categoryMap[category]) {
           categoryMap[category] = 0;
         }
-        categoryMap[category] += payment.cost;
+        categoryMap[category] += payment.amount;
       });
 
       // 카테고리별 총 금액을 내림차순으로 정렬

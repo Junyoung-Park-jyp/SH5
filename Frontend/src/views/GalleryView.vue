@@ -24,7 +24,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const backStep = () => {
-  router.replace({ name: "home"});
+  router.push({ name: "home"});
 };
 </script>
 
