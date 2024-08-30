@@ -49,19 +49,16 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async getPayments(tripId, startDate, endDate) {
+    async getPayments(tripId) {
       try {
         const response = await axiosInstance.get('/payments/list/', { params: {
           trip_id: tripId,
-          start_date: startDate,
-          end_date: endDate
           } 
         })
 
         if (response) {
           console.log("정산 내역", response.data)
           this.payments=response.data.data
-          console.log(this.payments)
         } else {
           console.error('정산 내역 조회 실패')
         }
