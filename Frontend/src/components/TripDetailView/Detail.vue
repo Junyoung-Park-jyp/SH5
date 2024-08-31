@@ -296,6 +296,15 @@
 
       <v-dialog class="dialog-modal" v-model="dialog">
         <div class="modal">
+          <!-- Close Button -->
+          <div class="close-btn">
+            <v-icon 
+              class="close-icon" 
+              icon="mdi-close" 
+              @click="closeModal"
+            ></v-icon>
+          </div>
+
           <div class="modal-title">결제 상세 정보</div>
           
           <div class="modal-content">
@@ -311,6 +320,7 @@
                 </tr>
               </table>
             </div>
+
             <div class="modal-second-table">
               <table class="second-table">
                 <tr>
@@ -327,18 +337,20 @@
                       @blur="updateRemainingAmount"
                       @input="handleInput(index)"
                       hide-details
-                      dense
                     ></v-text-field>
                   </td>
                 </tr>
               </table>
-              <p>남은 금액: {{ remainingAmount }}</p>
-              <v-btn @click="modifyCost" color="primary">확인</v-btn>
+
+              <table class="third-table">
+                <th class="remain">차액</th>
+                <td>{{ remainingAmount }}</td>
+              </table>
             </div>
           </div>
           <div class="modal-button">
-            <button class="modal-btn" text @click="closeModal">닫기</button>
             <button class="modal-btn" text @click="deletePayment(selectedPayment.id)">삭제</button>
+            <button class="ok-btn" @click="modifyCost">확 인</button>
           </div>
         </div>
       </v-dialog>
@@ -456,7 +468,7 @@ const closeModal = () => {
 };
 
 const getPlaceholder = (bankAccount) => {
-  return `Bank: ${bankAccount}`;
+  return `${bankAccount}`;
 };
 
 const updateRemainingAmount = () => {
@@ -1155,27 +1167,6 @@ const finishTrip = () => {
   /* border-top: 2px solid #4b72e1; */
 }
 
-/* 쓴 돈 */
-.spend {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-right: 1px solid black;
-}
-
-/* 남은 돈 */
-.remain {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
 .type {
   color: grey;
   font-size: smaller;
@@ -1304,7 +1295,7 @@ const finishTrip = () => {
   justify-content: center;
   align-items: center;
   color: black;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 
 .modal-title {
@@ -1317,6 +1308,7 @@ const finishTrip = () => {
   align-items: center;
   margin: 0 auto;
   border-bottom: 1px dashed grey;
+  margin-top: 10px;
   /* border: 1px solid black; */
 }
 
@@ -1326,7 +1318,7 @@ const finishTrip = () => {
   flex-direction: column;
   justify-content: center;
   align-items: leftr;
-  margin: 20px auto;
+  margin: 20px auto 0px auto;
   /* border: 1px solid black; */
 }
 
@@ -1349,12 +1341,10 @@ div.modal-first-table {
 }
 
 .first-table > tr > td.ellipsis {
-  max-width: 10px; /* Set a max-width */
+  max-width: 180px; /* Set a max-width */
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-x: scroll;
 }
-
 
 div.modal-second-table {
   width: 100%;
@@ -1390,20 +1380,27 @@ div.modal-second-table {
   /* border: 1px solid red; */
 }
 
-
-
-.modal-amount, .modal-brandname {
+.third-table {
   width: 100%;
-  border: 1px solid blue;
-  font-size: 20px;
+  margin-top: -1px;
 }
 
-
-
-
-.modal-subtitle {
-  font-weight: 600;
+.third-table > th.remain {
+  width: 70px;
+  height: 40px;
+  background-color: #8d8d8d;
+  vertical-align: middle;
 }
+
+.third-table > td {
+  height: 30px;
+  background-color: #a4a4a4;
+  padding-left: 15px;
+  margin: auto;
+  vertical-align: middle;
+  /* border: 1px solid red; */
+}
+
 
 .modal-button {
   padding: 0px;
@@ -1414,7 +1411,7 @@ div.modal-second-table {
   background-color: #ffffff;
 }
 
-.modal-btn {
+.ok-btn {
   width: 80%;
   background-color: #4b72e1;
   border-radius: 30px;
@@ -1430,5 +1427,15 @@ div.modal-second-table {
 
 .empty-icon {
   font-size: 2.5rem;
+}
+
+/* 모달 닫기 버튼  */
+.close-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px; /* Adjust size as needed */
+  color: grey; /* Change color as needed */
 }
 </style>
