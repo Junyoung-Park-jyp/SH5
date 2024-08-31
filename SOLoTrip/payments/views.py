@@ -106,6 +106,9 @@ def objection(request):
         if not Member.objects.filter(trip=trip_id, user=request.user).exists():
             return Response({'error': "현재 사용자는 해당 여행에 참여하지 않았습니다."}, status=status.HTTP_401_UNAUTHORIZED)
         
+        if not Calculate.objects.filter(payment=payment_id).exists():
+            return Response({'error': "해당 결제는 정산이 완료되지 않은 결제입니다."}, status=status.HTTP_402_PAYMENT_REQUIRED)
+        
         members = Member.objects.filter(trip=trip_id)
         result = {}
         for member in members:
