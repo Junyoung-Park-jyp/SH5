@@ -73,6 +73,7 @@
       :showAllContainers="showAllContainers"
       :showBudgetAndBookingOnly="showBudgetAndBookingOnly"
       :selectedView="selectedView"
+      :selectDayFlag="selectDayFlag"
       @updateCheckedCost="updateCheckedCost"
     />
   </div>
@@ -100,6 +101,8 @@ const route = useRoute();
 
 // URL에서 tripId를 가져옴
 const tripId = route.params.id;
+
+const selectDayFlag = ref(false)
 
 const country = computed(() => tripStore.country);
 const city = computed(() => tripStore.city);
@@ -198,6 +201,7 @@ const handleDayClick = (day) => {
   selectedView.value = "date";
   showAllContainers.value = false;
   showBudgetAndBookingOnly.value = false;
+  selectDayFlag.value = true
 };
 
 // ALL 버튼을 클릭했을 때 실행되는 함수
@@ -205,6 +209,7 @@ const handleAllClick = () => {
   selectedView.value = "all";
   showAllContainers.value = true;
   showBudgetAndBookingOnly.value = false;
+  selectDayFlag.value = false
 };
 
 // 준비 버튼을 클릭했을 때 실행되는 함수
@@ -212,6 +217,7 @@ const handlePrepareClick = () => {
   selectedView.value = "prepare";
   showAllContainers.value = false;
   showBudgetAndBookingOnly.value = true;
+  selectDayFlag.value = false
 };
 
 // 특정 날짜가 선택된 날짜인지 확인하는 함수
