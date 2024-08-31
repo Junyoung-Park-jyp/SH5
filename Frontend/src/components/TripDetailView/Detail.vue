@@ -8,6 +8,7 @@
         @click="toggleBudget"
       >
         <div class="title d-flex justify-space-between" @click="checkData" >
+          <div class="subtitle">준비 &nbsp;|&nbsp;</div>
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -88,12 +89,14 @@
             class="payment"
             v-for="(payment, paymentIndex) in bookingPayments"
             :key="paymentIndex"
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
-            <div v-if="accountNum==payment.bank_account" class="check-area">
+            <div v-if="accountNum == payment.bank_account" class="check-area">
               <v-btn
-                @click="toggleCheck(paymentIndex, 'booking')"
+                @click="toggleCheck(paymentIndex, 'trip')"
                 variant="text"
                 :color="payment.is_completed === 1 
                   ? 'grey' 
@@ -108,7 +111,7 @@
                 density="compact"
               ></v-btn>
             </div>
-
+            
             <div v-else class="check-area">
               <v-btn icon="mdi-close-circle" variant="text" color="grey" disabled></v-btn>
             </div>
@@ -181,19 +184,26 @@
             class="payment"
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
-            
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
+            :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
-            <div v-if="accountNum==payment.bank_account" class="check-area">
+            <div v-if="accountNum == payment.bank_account" class="check-area">
               <v-btn
                 @click="toggleCheck(paymentIndex, 'trip')"
                 variant="text"
-                :color="payment.checked ? 'primary' : 'grey'"
-                :icon="
-                  payment.checked
-                    ? 'mdi-check-circle'
-                    : 'mdi-checkbox-blank-circle-outline'
-                "
+                :color="payment.is_completed === 1 
+                  ? 'grey' 
+                  : (payment.checked 
+                    ? 'primary' 
+                    : 'grey')"
+                :icon="payment.is_completed === 1 
+                  ? 'mdi-circle' 
+                  : (payment.checked 
+                    ? 'mdi-check-circle' 
+                    : 'mdi-checkbox-blank-circle-outline')"
+                density="compact"
               ></v-btn>
             </div>
 
@@ -216,7 +226,10 @@
             </div>
 
             <!-- 정산 대상 -->
-            <div class="person-area">
+            <div
+              class="person-area"
+              :class="{'scrollable-person-area': payment.is_completed === 1}"
+            >
               <div
                 v-for="(member, index) in tripMembers"
                 :key="index"
@@ -225,7 +238,7 @@
               <div
                 class="person-symbol d-flex justify-center align-center"
                 :style="personStyle(member.member, payment.members, index)"
-                @click="personClick(paymentIndex, member.member, 'trip')"
+                @click="payment.is_completed !== 1 && personClick(paymentIndex, member.member, 'trip')"
                 >
                   <img class="crown" v-if="member.bank_account === payment.bank_account" src="@/assets/img/crown.png" alt="crown">
                   <div
@@ -498,12 +511,7 @@ watch(dialog, (newVal) => {
 
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
-  if (type === "trip") {
-    const payment = filteredPayments.value[index];
-    const actualIndex = paymentsDuringTrip.value.findIndex(
-      (p) => p === payment
-    );
-    const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
+  let payment;
 
     const adjustmentIndex = adjustment.value.findIndex(
       (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
@@ -533,8 +541,29 @@ const toggleCheck = (index, type) => {
       adjustment.value.push(newTripData);
       paymentToUpdate.checked = true;
     }
-  }
+  // if (type === "trip") {
+  //   payment = filteredPayments.value[index];
+  // } else if (type === "booking") {
+  //   payment = bookingPayments.value[index];
+  // }
+
+  // // Toggle the checked state
+  // payment.checked = !payment.checked;
+  // console.log("Toggled payment.checked:", payment.checked);
+
+  // // Update the adjustment array based on the new checked state
+  // if (payment.checked) {
+  //   adjustment.value.push(payment);
+  // } else {
+  //   adjustment.value = adjustment.value.filter((p) => p !== payment);
+  // }
 };
+
+
+
+
+
+
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -1010,6 +1039,7 @@ const finishTrip = () => {
   width: 100%;
   height: 65px;
   margin: auto;
+  /* border: 1px solid black; */
 }
 
 .check-area {
@@ -1106,6 +1136,12 @@ const finishTrip = () => {
   border-radius: 4px;
 }
 
+.scrollable-person-area {
+  pointer-events:fill;
+  overflow-y: auto;
+
+}
+
 .person-info {
   width: calc(50% - 5px);
   height: 25px;
@@ -1152,6 +1188,7 @@ const finishTrip = () => {
   margin: 30px auto 0px auto;
 }
 
+
 .pay-content {
   display: flex;
   flex-direction: column;
@@ -1160,6 +1197,15 @@ const finishTrip = () => {
 .payment {
   padding: 5px 10px;
 }
+.completed-payment {
+  background-color: #d3d3d3; /* Light gray background */
+  cursor: not-allowed; /* Show a not-allowed cursor */
+}
+
+.payment {
+  padding: 5px 10px;
+}
+
 .completed-payment {
   background-color: #d3d3d3; /* Light gray background */
   cursor: not-allowed; /* Show a not-allowed cursor */
