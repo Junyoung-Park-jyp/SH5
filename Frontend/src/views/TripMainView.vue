@@ -164,6 +164,7 @@
           <v-text-field
             class="korea"
             v-model="formattedKoreaCurrency"
+            readonly
           ></v-text-field>
           <!-- 한국환 기호 -->
           <button class="symbol-box">

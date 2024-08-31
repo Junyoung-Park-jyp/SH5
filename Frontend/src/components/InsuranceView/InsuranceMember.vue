@@ -94,10 +94,16 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
 import { useUserStore } from "@/stores/userStore";
 import { useTripStore } from "@/stores/tripStore";
+
+const router = useRouter()
+const route = useRoute()
+
+const tripId = route.params.id;
 
 const showModal = ref(false);
 const basePrice = 15500;
@@ -185,7 +191,9 @@ const qrInvite = () => {
 
 // 이미지 클릭 시 호출되는 함수
 const navigateToUrl = () => {
-  window.location.href = "https://direct.shinhanez.co.kr/#PDROTIOTI_M01";
+  // window.location.href = "https://direct.shinhanez.co.kr/#PDROTIOTI_M01";
+  window.open("https://direct.shinhanez.co.kr/#PDROTIOTI_M01", '_blank');
+  return router.push({ name: "tripDetail", params: { id: tripId } });
 };
 </script>
 

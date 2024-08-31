@@ -1,9 +1,22 @@
 <template>
   <div v-if="!loading" class="main-container">
     <!-- 국가 -->
-    <div class="my-10 trip country fade" :key="currentIndex">
-      {{ locations[currentIndex].country }}
+    <div class="my-10 trip country">
+      <div class="background" :style="{ backgroundImage: `url('${tripStore.imageUrl}')`}"></div>
+      <span class="text mx-2" v-for="(location, index) in locations" :key="index">
+        {{ location.country }}
+      </span>
     </div>
+
+    <!-- <div class="profile-destination">
+          <span
+            class="profile-country"
+            v-for="(location, index) in tripStore.locations"
+            :key="index"
+          >
+            {{ location.country }}
+          </span>
+        </div> -->
 
     <!-- 날짜 -->
     <div class="trip date">
@@ -109,7 +122,7 @@ const loading = ref(true)
 const locations = computed(() => tripStore.locations)
 
 // 여행 인덱스
-const currentIndex = ref(0)
+// const currentIndex = ref(0)
 
 // 오늘 날짜
 const today = new Date();
@@ -186,9 +199,9 @@ onMounted(async () => {
 
 onMounted(() => {
   // locations 배열 순회
-  setInterval(() => {
-    currentIndex.value = (currentIndex.value + 1) % locations.value.length;
-  }, 3000);
+  // setInterval(() => {
+  //   currentIndex.value = (currentIndex.value + 1) % locations.value.length;
+  // }, 3000);
   
   // `onMounted`에서 `membersWithColors`를 초기화
   membersWithColors.value = tripMembers.value.map((member, index) => ({
@@ -261,9 +274,23 @@ const calculatePadding = (index) => {
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
   margin: 0px auto;
-  height: 100px;
+  height: 200px;
   font-size: 40px;
-  font-weight: bolder;
+  /* font-weight: bolder; */
+  position: relative;
+  overflow: hidden;
+}
+
+.background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+  z-index: 1;
 }
 
 /* 날짜 */
@@ -350,11 +377,22 @@ const calculatePadding = (index) => {
   padding: 30px 20px;
 }
 
-/* 페이드인 / 페이드아웃 */
-.fade {
-  transition: opacity 0.5s ease-in-out;
+.text {
+  position: relative;
+  z-index: 2;
+
+  font-weight: 500;
+
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-style: wavy;
+  text-underline-offset: 7px; /* 글자-밑줄 간격 */
+  text-decoration-skip-ink: none;
+
+  /* 페이드인 페이드아웃 */
+  /* transition: opacity 0.5s ease-in-out;
   opacity: 0;
-  animation: fadeInOut 3s infinite;
+  animation: fadeInOut 3s infinite; */
 }
 
 @keyframes fadeInOut {
