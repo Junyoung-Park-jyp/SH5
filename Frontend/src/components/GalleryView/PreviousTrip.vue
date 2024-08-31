@@ -2,7 +2,7 @@
   <div v-if="!loading" class="main-container">
     <!-- 국가 -->
     <div class="my-10 trip country">
-      <div class="background" :style="{ backgroundImage: `url('${tripStore.imageUrl}')`}"></div>
+      <div class="background" :style="{ backgroundImage: `url('${tripStore.imageUrl}')` }"></div>
       <div v-if="showReferenceMessage" class="reference-message" @click="scrollToTarget">
         AI 여행 스케치 생성하기
         <v-icon icon="mdi-arrow-down-thick" size="16px"></v-icon>
@@ -41,19 +41,12 @@
         <div class="subtitle">{{ tripMembers.length }}명</div>
       </div>
       <div class="background-member content">
-        <div
-          v-for="(member, index) in tripMembers"
-          :key="index"
-          class="member-list"
-          :style="{
-            backgroundImage: `url(${getImagePath(index)})`,
-            paddingRight: calculatePadding(index),
-          }"
-        >
-          <div
-            class="member-symbol d-flex justify-center align-center"
-            :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }"
-          >
+        <div v-for="(member, index) in tripMembers" :key="index" class="member-list" :style="{
+          backgroundImage: `url(${getImagePath(index)})`,
+          paddingRight: calculatePadding(index),
+        }">
+          <div class="member-symbol d-flex justify-center align-center"
+            :style="{ backgroundColor: rgbaColor(memberColors[index], 0.7) }">
             <div class="member-familyname">{{ member.member.slice(0, 3) }}</div>
           </div>
         </div>
@@ -61,10 +54,19 @@
     </div>
 
     <!-- 지출 내역 -->
-    <div class="trip money">
+    <div class="paymentTrip">
       <div class="title">나의 지출</div>
       <div class="content">
-        <PieChart />
+        <PieChart @updateMostCharacter="handleMostCharacterUpdate" />
+      </div>
+    </div>
+
+    <div class="my-5 py-5 d-flex justify-space-evenly" style="background-color: white;">
+      <v-img class="category-image" :src="receivedCharacter"></v-img>
+      <div class="d-flex flex-column justify-center">
+        <div>당신의 소BTI 캐릭터는</div>
+        <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacter.split('/').pop().split('.').shift() }}</div>
+        <div>입니다!</div>
       </div>
     </div>
 
@@ -186,6 +188,13 @@ const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
+const receivedCharacter = ref(null);
+
+const handleMostCharacterUpdate = (character) => {
+  console.log(character)
+  receivedCharacter.value = character
+}
+
 onMounted(async () => {
   try {
     await Promise.all([
@@ -206,7 +215,7 @@ onMounted(() => {
   // setInterval(() => {
   //   currentIndex.value = (currentIndex.value + 1) % locations.value.length;
   // }, 3000);
-  
+
   // `onMounted`에서 `membersWithColors`를 초기화
   membersWithColors.value = tripMembers.value.map((member, index) => ({
     ...member,
@@ -263,6 +272,11 @@ const scrollToTarget = () => {
   /* border: 2px solid blue; */
 }
 
+.paymentTrip {
+  margin: 10px auto;
+  /* border: 2px solid blue; */
+}
+
 .title {
   font-size: x-large;
   font-weight: bolder;
@@ -288,8 +302,10 @@ const scrollToTarget = () => {
 /* 국가 */
 .country {
   display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: center;
+  /* 수평 가운데 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
   margin: 0px auto;
   height: 200px;
   font-size: 40px;
@@ -318,7 +334,8 @@ const scrollToTarget = () => {
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 12px;
-  z-index: 2; /* Ensure it's above the background */
+  z-index: 2;
+  /* Ensure it's above the background */
   color: rgb(169, 169, 169);
   display: flex;
   justify-content: center;
@@ -332,7 +349,7 @@ const scrollToTarget = () => {
   margin-top: -10px;
 }
 
-.date > .content {
+.date>.content {
   padding-left: 35px;
 }
 
@@ -346,7 +363,7 @@ const scrollToTarget = () => {
   margin: 0px auto;
 }
 
-.member > .title {
+.member>.title {
   display: flex;
 }
 
@@ -355,7 +372,8 @@ const scrollToTarget = () => {
   justify-content: flex-start;
   align-items: center;
   height: 200px;
-  max-width: 400px; /* 한 화면에 4명씩 (4 * 100px) */
+  max-width: 400px;
+  /* 한 화면에 4명씩 (4 * 100px) */
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -365,12 +383,15 @@ const scrollToTarget = () => {
   display: flex;
   align-items: center;
   justify-content: flex;
-  width: 100px; /* 각 사진의 너비 */
+  width: 100px;
+  /* 각 사진의 너비 */
   height: 100%;
   background-size: cover;
   background-position: center;
-  scroll-snap-align: start; /* Snap alignment */
-  flex-shrink: 0; /* Prevent shrinking */
+  scroll-snap-align: start;
+  /* Snap alignment */
+  flex-shrink: 0;
+  /* Prevent shrinking */
   /* border: 1px solid black; */
   padding-bottom: 55px;
   padding-left: 10px;
@@ -420,7 +441,8 @@ const scrollToTarget = () => {
   text-decoration-line: underline;
   text-decoration-thickness: 2px;
   text-decoration-style: wavy;
-  text-underline-offset: 7px; /* 글자-밑줄 간격 */
+  text-underline-offset: 7px;
+  /* 글자-밑줄 간격 */
   text-decoration-skip-ink: none;
 
   /* 페이드인 페이드아웃 */
@@ -430,8 +452,19 @@ const scrollToTarget = () => {
 }
 
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.category-image {
+  max-width: 30%;
 }
 
 /* 로딩 화면 */
