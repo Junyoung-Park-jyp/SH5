@@ -298,10 +298,6 @@
             <div class="modal-brandname">
               <span class="modal-subtitle">항목</span> {{ selectedPayment.brand_name }}
             </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> develop-front
             <div class="modal-member">
               <table class="modal-member-table">
                 <tr>
