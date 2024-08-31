@@ -157,6 +157,8 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+
 const showExplanation = ref(false);
 </script>
 
