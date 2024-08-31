@@ -324,8 +324,8 @@
                       v-model="memberCosts[index]"
                       type="number"
                       min="0"
-                      :placeholder="getPlaceholder(member.bank_account)"
-                      @input="updateRemainingAmount"
+                      @blur="updateRemainingAmount"
+                      @input="handleInput(index)"
                       hide-details
                       dense
                     ></v-text-field>
@@ -418,8 +418,14 @@ const memberCosts = ref([]);
 const remainingAmount = ref(0);
 const adjustment = ref([]);
 
+const handleInput = (index) => {
+  if (!memberCosts.value[index]) {
+    memberCosts.value[index] = 0;
+    updateRemainingAmount()
+  }
+};
+
 const openModal = (payment) => {
-  // userStore에서 현재 사용자 이름 가져오기
   const userStore = useUserStore();
 
   // 조건: payment의 username이 현재 사용자와 같고, is_completed가 0이어야 함
@@ -429,19 +435,18 @@ const openModal = (payment) => {
     const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
 
     if (existingAdjustment) {
+      // 이미 존재하는 정산이 있을 경우
       memberCosts.value = existingAdjustment.payments[0].bills.map(bill => bill.cost);
       remainingAmount.value = payment.amount - memberCosts.value.reduce((acc, val) => acc + parseFloat(val || 0), 0);
     } else {
-      addAdjustment(payment);
-
-      const newlyAddedAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
-      memberCosts.value = newlyAddedAdjustment.payments[0].bills.map(bill => bill.cost);
-      remainingAmount.value = 0;
+      // 존재하지 않는 경우, 평균 값을 설정만 하고 `addAdjustment`를 호출하지 않음
+      const cost = Math.floor(payment.amount / payment.members.length);
+      memberCosts.value = payment.members.map(() => cost);
+      remainingAmount.value = payment.amount - cost * payment.members.length;
     }
 
     dialog.value = true;
   } else {
-    // 조건을 충족하지 않으면 모달을 열지 않음
     console.log('조건에 맞지 않아 모달을 열지 않습니다.');
   }
 };
