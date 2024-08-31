@@ -18,13 +18,13 @@
             {{ formattedTotalBalance }}
           </div> -->
           <div v-if="currentBudgetType ==='initial'" class="sum">
-            ₩ {{ totalInitialBudget }}
+            ₩ {{ formatWithComma(totalInitialBudget) }}
           </div>
           <div v-else-if="currentBudgetType === 'used'">
-            ₩ {{ totalUsedBudget }}
+            ₩ {{ formatWithComma(totalUsedBudget) }}
           </div>
           <div v-else class="sum">
-            ₩ {{ totalRemainBudget }}
+            ₩ {{ formatWithComma(totalRemainBudget) }}
           </div>
         </div>
         <div class="budget-content">
@@ -54,13 +54,13 @@
               </div> -->
               <div class="member-balance" >
                 <template v-if="currentBudgetType === 'initial'">
-                  ₩ {{ getMemberBudget(member.member).initial_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).initial_budget) }}
                 </template>
                 <template v-else-if="currentBudgetType === 'used'">
-                  ₩ {{ getMemberBudget(member.member).used_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).used_budget) }}
                 </template>
                 <template v-else>
-                  ₩ {{ getMemberBudget(member.member).remain_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).remain_budget) }}
                 </template>
               </div>
             </div>
@@ -88,21 +88,29 @@
             class="payment"
             v-for="(payment, paymentIndex) in bookingPayments"
             :key="paymentIndex"
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
+            :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
-            <div v-if="accountNum==payment.bank_account" class="check-area">
+            <div v-if="accountNum == payment.bank_account" class="check-area">
               <v-btn
-                @click="toggleCheck(paymentIndex, 'booking')"
+                @click="toggleCheck(paymentIndex, 'trip')"
                 variant="text"
-                :color="payment.checked ? 'primary' : 'grey'"
-                :icon="
-                  payment.checked
-                    ? 'mdi-check-circle'
-                    : 'mdi-checkbox-blank-circle-outline'
-                "
+                :color="payment.is_completed === 1 
+                  ? 'grey' 
+                  : (payment.checked 
+                    ? 'primary' 
+                    : 'grey')"
+                :icon="payment.is_completed === 1 
+                  ? 'mdi-circle' 
+                  : (payment.checked 
+                    ? 'mdi-check-circle' 
+                    : 'mdi-checkbox-blank-circle-outline')"
+                density="compact"
               ></v-btn>
             </div>
-
+            
             <div v-else class="check-area">
               <v-btn icon="mdi-close-circle" variant="text" color="grey" disabled></v-btn>
             </div>
@@ -175,19 +183,26 @@
             class="payment"
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
-            
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
+            :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
-            <div v-if="accountNum==payment.bank_account" class="check-area">
+            <div v-if="accountNum == payment.bank_account" class="check-area">
               <v-btn
                 @click="toggleCheck(paymentIndex, 'trip')"
                 variant="text"
-                :color="payment.checked ? 'primary' : 'grey'"
-                :icon="
-                  payment.checked
-                    ? 'mdi-check-circle'
-                    : 'mdi-checkbox-blank-circle-outline'
-                "
+                :color="payment.is_completed === 1 
+                  ? 'grey' 
+                  : (payment.checked 
+                    ? 'primary' 
+                    : 'grey')"
+                :icon="payment.is_completed === 1 
+                  ? 'mdi-circle' 
+                  : (payment.checked 
+                    ? 'mdi-check-circle' 
+                    : 'mdi-checkbox-blank-circle-outline')"
+                density="compact"
               ></v-btn>
             </div>
 
@@ -210,7 +225,10 @@
             </div>
 
             <!-- 정산 대상 -->
-            <div class="person-area">
+            <div
+              class="person-area"
+              :class="{'scrollable-person-area': payment.is_completed === 1}"
+            >
               <div
                 v-for="(member, index) in tripMembers"
                 :key="index"
@@ -219,7 +237,7 @@
               <div
                 class="person-symbol d-flex justify-center align-center"
                 :style="personStyle(member.member, payment.members, index)"
-                @click="personClick(paymentIndex, member.member, 'trip')"
+                @click="payment.is_completed !== 1 && personClick(paymentIndex, member.member, 'trip')"
                 >
                   <img class="crown" v-if="member.bank_account === payment.bank_account" src="@/assets/img/crown.png" alt="crown">
                   <div
@@ -256,7 +274,6 @@
             <div class="modal-brandname">
               <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
             </div>
-
             <div class="modal-member">
               <!-- 정산 대상에 대한 테이블 추가 -->
               <table class="modal-member-table">
@@ -492,12 +509,7 @@ watch(dialog, (newVal) => {
 
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
-  if (type === "trip") {
-    const payment = filteredPayments.value[index];
-    const actualIndex = paymentsDuringTrip.value.findIndex(
-      (p) => p === payment
-    );
-    const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
+  let payment;
 
     const adjustmentIndex = adjustment.value.findIndex(
       (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
@@ -527,8 +539,14 @@ const toggleCheck = (index, type) => {
       adjustment.value.push(newTripData);
       paymentToUpdate.checked = true;
     }
-  }
+
 };
+
+
+
+
+
+
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -1004,6 +1022,7 @@ const finishTrip = () => {
   width: 100%;
   height: 65px;
   margin: auto;
+  /* border: 1px solid black; */
 }
 
 .check-area {
@@ -1100,6 +1119,12 @@ const finishTrip = () => {
   border-radius: 4px;
 }
 
+.scrollable-person-area {
+  pointer-events:fill;
+  overflow-y: auto;
+
+}
+
 .person-info {
   width: calc(50% - 5px);
   height: 25px;
@@ -1146,11 +1171,20 @@ const finishTrip = () => {
   margin: 30px auto 0px auto;
 }
 
+
 .pay-content {
   display: flex;
   flex-direction: column;
-  padding: 5px 10px;
   background-color: #ffffff;
+}
+
+.payment {
+  padding: 5px 10px;
+}
+
+.completed-payment {
+  background-color: #d3d3d3; /* Light gray background */
+  cursor: not-allowed; /* Show a not-allowed cursor */
 }
 
 /* 요약 */
