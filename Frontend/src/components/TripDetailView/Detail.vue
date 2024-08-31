@@ -303,7 +303,7 @@
               <table class="first-table">
                 <tr>
                   <th>항목</th>
-                  <td>{{ selectedPayment.brand_name }}</td>
+                  <td class="ellipsis">{{ selectedPayment.brand_name }}</td>
                 </tr>
                 <tr>
                   <th>금액</th>
@@ -1347,6 +1347,14 @@ div.modal-first-table {
   font-size: 14px;
   /* border: 1px solid red; */
 }
+
+.first-table > tr > td.ellipsis {
+  max-width: 10px; /* Set a max-width */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 div.modal-second-table {
   width: 100%;
