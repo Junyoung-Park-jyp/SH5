@@ -3,7 +3,7 @@
     <!-- 뒤로가기 & 취소하기 -->
     <div class="header my-2">
       <!-- BACK -->
-      <div class="back" @click="backStep">
+      <!-- <div class="back" @click="backStep">
         <button class="icon-btn">
           <v-icon
             class="btns"
@@ -11,7 +11,7 @@
             size="large"
           ></v-icon>
         </button>
-      </div>
+      </div> -->
       <!-- 취소 -->
       <div class="cancel">
         <v-icon

@@ -338,6 +338,7 @@
           </div>
           <div class="modal-button">
             <button class="modal-btn" text @click="closeModal">닫기</button>
+            <button class="modal-btn" text @click="deletePayment(selectedPayment.id)">삭제</button>
           </div>
         </div>
       </v-dialog>
@@ -537,6 +538,9 @@ const addAdjustment = (payment, index) => {
     console.log('adjustment', adjustment.value)
 }
 
+const deletePayment = async (paymentId) => {
+  const response = await paymentStore.deletePayment(paymentId)
+}
 // Props
 const props = defineProps({
   selectedDate: Date,
