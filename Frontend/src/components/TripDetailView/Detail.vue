@@ -411,6 +411,9 @@ const remainingAmount = ref(0);
 const adjustment = ref([]);
 
 const openModal = (payment) => {
+  if (payment.is_completed) {
+    
+  }
   selectedPayment.value = payment;
 
   const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
@@ -533,15 +536,6 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits(["updateCheckedCost"]);
-
-const checkData = () => {
-  console.log('startDate', paymentsDuringTrip.value)
-  console.log("store payments", paymentStore.payments)
-  console.log("const payments", payments.value)
-  console.log('booking payments', bookingPayments.value)
-  console.log('selected payments', selectedPayments.value)
-  console.log('adjustment', adjustment.value)
-}
 
 // 결제 카테고리별 아이콘 설정
 const categoryIcons = {
