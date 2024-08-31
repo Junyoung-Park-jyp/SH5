@@ -93,7 +93,6 @@ export const usePaymentStore = defineStore('paymentStore', {
           trip_id: tripId,
           payments: adjustments.flatMap(adjustment => adjustment.payments)
         };
-        console.log(mergedAdjustments)
 
         const response = await axiosInstance.post('/payments/adjustment/', { 
           trip_id : mergedAdjustments.trip_id,
@@ -102,7 +101,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     
         if (response) {
           this.adjustmentResult = response.data
-          this.budgets = response.data
+          this.budgets = response.data.data
           // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
           this.payments = this.payments.map(payment => {
             const isCompleted = adjustments.some(selected => selected.id === payment.id);
