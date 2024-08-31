@@ -62,7 +62,7 @@ const router = createRouter({
       name: 'gallery',
       component: GalleryView,
       props: true,
-    }
+    },
   ]
 });
 
