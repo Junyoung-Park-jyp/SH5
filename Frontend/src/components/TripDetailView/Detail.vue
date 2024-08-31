@@ -7,7 +7,8 @@
         class="budget-container"
         @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between">
+        <div class="title d-flex justify-space-between" @click="checkData" >
+          <div class="subtitle">준비 &nbsp;|&nbsp;</div>
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -88,6 +89,8 @@
             class="payment"
             v-for="(payment, paymentIndex) in bookingPayments"
             :key="paymentIndex"
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
@@ -191,7 +194,8 @@
             :key="paymentIndex"
             :class="{ 'completed-payment': payment.is_completed === 1 }"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
-          >
+            >
+            <!-- @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)" -->
             <!-- 체크 버튼 -->
             <div v-if="accountNum == payment.bank_account" class="check-area">
              
