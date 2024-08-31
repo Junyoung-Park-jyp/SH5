@@ -401,6 +401,7 @@ const payments = computed(() => paymentStore.payments)
 const accountNum = computed(() => userStore.accountNum)
 const budgets = computed(() => paymentStore.budgets)
 const budgetTypes = ['initial', 'used', 'remain'];
+const currentBudgetType = ref('initial')
 const dialog = ref(false);
 const selectedPayment = ref(null);
 const memberCosts = ref([]);
@@ -408,26 +409,31 @@ const remainingAmount = ref(0);
 const adjustment = ref([]);
 
 const openModal = (payment) => {
-  if (payment.is_completed) {
-    
-  }
-  selectedPayment.value = payment;
+  // userStore에서 현재 사용자 이름 가져오기
+  const userStore = useUserStore();
 
-  const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
+  // 조건: payment의 username이 현재 사용자와 같고, is_completed가 0이어야 함
+  if (payment.username === userStore.name && payment.is_completed === 0) {
+    selectedPayment.value = payment;
 
-  if (existingAdjustment) {
-    memberCosts.value = existingAdjustment.payments[0].bills.map(bill => bill.cost);
-    remainingAmount.value = payment.amount - memberCosts.value.reduce((acc, val) => acc + parseFloat(val || 0), 0);
+    const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
+
+    if (existingAdjustment) {
+      memberCosts.value = existingAdjustment.payments[0].bills.map(bill => bill.cost);
+      remainingAmount.value = payment.amount - memberCosts.value.reduce((acc, val) => acc + parseFloat(val || 0), 0);
+    } else {
+      addAdjustment(payment);
+
+      const newlyAddedAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
+      memberCosts.value = newlyAddedAdjustment.payments[0].bills.map(bill => bill.cost);
+      remainingAmount.value = 0;
+    }
+
+    dialog.value = true;
   } else {
-    addAdjustment(payment);
-
-    const newlyAddedAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
-    memberCosts.value = newlyAddedAdjustment.payments[0].bills.map(bill => bill.cost);
-    remainingAmount.value = 0;
+    // 조건을 충족하지 않으면 모달을 열지 않음
+    console.log('조건에 맞지 않아 모달을 열지 않습니다.');
   }
-
-  dialog.value = true;
-  payment.checked = true;
 };
 
 const closeModal = () => {
@@ -443,7 +449,7 @@ const updateRemainingAmount = () => {
   remainingAmount.value = selectedPayment.value.amount - totalEntered;
 };
 
-const modifyCost = () => {
+const modifyCost = (payment) => {
   if (remainingAmount.value !== 0) {
     alert("총 금액이 지불해야 할 금액과 일치하지 않습니다.");
     return;
@@ -467,8 +473,8 @@ const modifyCost = () => {
       }]
     });
   }
-
-  closeModal();
+  payment.checked = true;
+  dialog.value = false
 };
 
 const getMemberBudget = (memberName) => {
@@ -809,7 +815,7 @@ const finishTrip = () => {
     paymentStore.makeAdjustment(route.params.id, adjustment.value)
     router.push({
       name: "tripFinish",
-      query: { amount: checkedCost.value }, // Use query instead of params
+      query: { amount: totalCheckedCost.value }, // Use query instead of params
     });
   }, 300);
 };
