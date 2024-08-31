@@ -3,6 +3,10 @@
     <!-- 국가 -->
     <div class="my-10 trip country">
       <div class="background" :style="{ backgroundImage: `url('${tripStore.imageUrl}')`}"></div>
+      <div v-if="showReferenceMessage" class="reference-message" @click="scrollToBottom">
+        AI 여행 스케치 생성하기
+        <v-icon icon="mdi-arrow-down-thick" size="16px"></v-icon>
+      </div>
       <span class="text mx-2" v-for="(location, index) in locations" :key="index">
         {{ location.country }}
       </span>
@@ -210,6 +214,20 @@ onMounted(() => {
   }));
 });
 
+
+// 사진
+const showReferenceMessage = computed(() => !tripStore.imageUrl);
+
+const scrollToBottom = () => {
+  if (mainContainer.value) {
+    mainContainer.value.scrollTo({
+      top: mainContainer.value.scrollHeight,
+      behavior: "smooth"
+    });
+  }
+  
+};
+
 import member1 from "@/assets/img/member1.png";
 import member2 from "@/assets/img/member2.png";
 import member3 from "@/assets/img/member3.png";
@@ -222,10 +240,10 @@ const getImagePath = (index) => {
 };
 
 const calculatePadding = (index) => {
-  // Example padding values based on index, customize as needed
-  const paddingValues = [0, 15, 40, 40]; // These values are in pixels
+  const paddingValues = [0, 15, 40, 40];
   return `${paddingValues[index % paddingValues.length]}px`;
 };
+
 </script>
 
 <style scoped>
@@ -291,6 +309,23 @@ const calculatePadding = (index) => {
   background-position: center;
   opacity: 0.4;
   z-index: 1;
+}
+
+.reference-message {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* background-color: rgba(255, 255, 255, 0.7); */
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 2; /* Ensure it's above the background */
+  color: rgb(169, 169, 169);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid black; */
+
 }
 
 /* 날짜 */
