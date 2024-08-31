@@ -61,14 +61,34 @@
       </div>
     </div>
 
-    <div class="my-5 py-5 d-flex justify-space-evenly" style="background-color: white;">
-      <v-img class="category-image" :src="receivedCharacter"></v-img>
-      <div class="d-flex flex-column justify-center">
-        <div>당신의 소BTI 캐릭터는</div>
-        <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacterName }}</div>
-        <div>입니다!</div>
+    <!-- 소BTI -->
+    <div class="trip mbti">
+      <div class="title">여행 소BTI</div>
+      <div class="content">
+        <!-- 아이콘 -->
+        <div class="info">
+          <v-icon @click="showExplanation = true" class="info-icon" icon="mdi-information" size="22px"
+            color="gray"></v-icon>
+        </div>
+        <!-- 캐릭터 -->
+        <div class="mb-5 d-flex justify-space-evenly" style="background-color: white;">
+          <v-img class="category-image" :src="receivedCharacter"></v-img>
+          <div class="d-flex flex-column justify-center mbti-info">
+            <div>당신의 소BTI 캐릭터는</div>
+            <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacterName }}</div>
+            <div>
+              <v-chip class="ma-2" color="primary" size="xx-small">#항공마일리지왕</v-chip>
+              <v-chip class="ma-2" color="primary" size="xx-small">#하늘길애호가</v-chip>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 모달 -->
+    <v-dialog v-model="showExplanation" max-width="500px" max-height="70vh" class="explanation">
+      <Mbti />
+    </v-dialog>
 
     <!-- 여행 스케치 -->
     <div class="trip sketch" ref="sketchSection">
@@ -90,77 +110,40 @@ import { usePaymentStore } from "@/stores/paymentStore";
 import { useRoute } from "vue-router";
 import { format } from "date-fns";
 import { useMemberColors } from "@/stores/colorStore";
-import {
-  exchangeArray,
-  formatToTwoDecimal,
-  formatWithComma,
-  convertCurrency,
-  currencyIcons,
-  currencyText,
-  fetchExchangeRates,
-} from "@/stores/currencyStore";
 
 import DrawPicture from "./DrawPicture.vue";
 import PieChart from "./PieChart.vue";
+import Mbti from './MBTI.vue';
 
-const route = useRoute()
-const tripStore = useTripStore()
-const paymentStore = usePaymentStore()
+const route = useRoute();
+const tripStore = useTripStore();
+const paymentStore = usePaymentStore();
+const showExplanation = ref(false); // 다이얼로그 열고 닫는 상태 관리
 
-const tripId = route.params.id
-// const tripData = computed(() => {
-//   return tripStore.getTrip(tripId)
-// })
+const tripId = route.params.id;
 
-// 여행 목적지
-// const country = computed(() => tripStore.country.join(""));
-// const city = computed(() => tripStore.city.join(""));
+const loading = ref(true);
 
-// 대한민국 여행일 경우 목적지는 도시로 설정
-// const destination = ref(country);
-// if (country === "대한민국") {
-//   destination.value = city;
-// }
+const locations = computed(() => tripStore.locations);
 
-const loading = ref(true)
-
-// 여행 목적지
-const locations = computed(() => tripStore.locations)
-
-// 여행 인덱스
-// const currentIndex = ref(0)
-
-// 오늘 날짜
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-// 여행 날짜
 const startDate = computed(() => new Date(tripStore.startDate));
 const endDate = computed(() => new Date(tripStore.endDate));
 
-// 몇 박 몇 일 계산
 const durationInDays = computed(() => {
   const start = startDate.value;
   const end = endDate.value;
 
-  // startDate와 endDate가 유효한 Date 객체인지 확인
-  if (
-    start instanceof Date &&
-    !isNaN(start) &&
-    end instanceof Date &&
-    !isNaN(end)
-  ) {
+  if (start instanceof Date && !isNaN(start) && end instanceof Date && !isNaN(end)) {
     const diffTime = end.getTime() - start.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 일 수 계산
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   } else {
-    return 0; // 유효하지 않은 경우
+    return 0;
   }
 });
 
 const nights = computed(() => durationInDays.value - 1);
 const days = computed(() => durationInDays.value);
 
-// 몇 박 몇 일 포맷팅
 const formatDuration = (nights, days) => {
   return `${nights}박 ${days}일`;
 };
@@ -171,62 +154,42 @@ const formatDay = (date) => {
   return format(date, "yyyy년 MM월 dd일");
 };
 
-// 여행 멤버와 계좌번호
-// const tripMembers = [
-//   { name: "박준영", account: "신한 0276524561730773" },
-//   { name: "이선재", account: "신한 000-000-000" },
-//   { name: "임광영", account: "국민 000-000-000" },
-//   { name: "정태완", account: "우리 000-000-000" },
-//   { name: "최한진", account: "계좌 미등록" },
-//   { name: "이뭉크", account: "신한 000-000-000" },
-// ];
-
 const tripMembers = computed(() => tripStore.members);
 
-// computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
 const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
-const receivedCharacterName = ref(null)
+const receivedCharacterName = ref(null);
 const receivedCharacter = ref(null);
 
 const handleMostCharacterUpdate = (characterName, character) => {
-  console.log(characterName, character)
-  receivedCharacterName.value = characterName
-  receivedCharacter.value = character
-}
+  receivedCharacterName.value = characterName;
+  receivedCharacter.value = character;
+};
 
 onMounted(async () => {
   try {
     await Promise.all([
       tripStore.getTrip(tripId),
-      paymentStore.getPayments(tripId)
+      paymentStore.getPayments(tripId),
     ]);
 
     if (paymentStore.getAllPayments().length > 0) {
-      loading.value = false
+      loading.value = false;
     }
   } catch (error) {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
 onMounted(() => {
-  // locations 배열 순회
-  // setInterval(() => {
-  //   currentIndex.value = (currentIndex.value + 1) % locations.value.length;
-  // }, 3000);
-
-  // `onMounted`에서 `membersWithColors`를 초기화
   membersWithColors.value = tripMembers.value.map((member, index) => ({
     ...member,
     color: memberColors.value[index],
   }));
 });
 
-
-// 사진
 const showReferenceMessage = computed(() => !tripStore.imageUrl);
 
 import member1 from "@/assets/img/member1.png";
@@ -245,15 +208,13 @@ const calculatePadding = (index) => {
   return `${paddingValues[index % paddingValues.length]}px`;
 };
 
-// 스크롤
-const sketchSection = ref(null)
+const sketchSection = ref(null);
 
 const scrollToTarget = () => {
   if (sketchSection.value) {
-    sketchSection.value.scrollIntoView({ behavior: 'smooth' })
+    sketchSection.value.scrollIntoView({ behavior: 'smooth' });
   }
-}
-
+};
 </script>
 
 <style scoped>
@@ -465,8 +426,16 @@ const scrollToTarget = () => {
   }
 }
 
+.info {
+  text-align: right;
+}
+
 .category-image {
   max-width: 30%;
+}
+
+.mbti-info {
+  text-align: center;
 }
 
 /* 로딩 화면 */

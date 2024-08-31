@@ -350,7 +350,7 @@
             </div>
           </div>
           <div class="modal-button">
-            <button class="ok-btn" text @click="deletePayment(selectedPayment.id)">삭 제</button>
+            <button class="del-btn" @click="deletePayment(selectedPayment.id)">삭 제</button>
             <button class="ok-btn" @click="modifyCost(selectedPayment)">확 인</button>
           </div>
         </div>
@@ -1485,10 +1485,24 @@ div.modal-second-table {
   background-color: #ffffff;
 }
 
+.del-btn {
+  width: 45%;
+  background-color: #c38c8c;
+  border-radius: 30px 0 0 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
+}
+
 .ok-btn {
-  width: 80%;
+  width: 45%;
   background-color: #4b72e1;
-  border-radius: 30px;
+  border-radius: 0 30px 30px 0;
   color: white;
   padding: 8px 20px;
   border: none;
