@@ -59,7 +59,7 @@
         <thead>
           <tr>
             <th></th>
-            <th style="border: 1px dashed lightgrey">지출금</th>
+            <th style="border: 1px dashed lightgrey">초기 예산</th>
             <th style="border: 1px dashed lightgrey">정산금</th>
             <th style="border: 1px dashed lightgrey">남은 예산</th>
           </tr>
@@ -79,7 +79,7 @@
               </div>
             </td>
             <td style="border: 1px dashed lightgrey">
-              {{ formatWithComma(budgets.used_budget) }}
+              {{ formatWithComma(budgets.initial_budget) }}
             </td>
             <td
               style="border: 1px dashed lightgrey"
@@ -98,7 +98,7 @@
 
         </tbody>
       </table>
-      <div class="explanation">(개인별) 남은 예산 = 초기 예산 - 총 지출금 </div>
+      <div class="explanation">(개인별) 남은 예산 = 초기 예산 - 정산금 </div>
     </div>
   </div>
 </template>
