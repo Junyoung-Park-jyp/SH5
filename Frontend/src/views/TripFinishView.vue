@@ -61,7 +61,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(member, index) in tripMembers" :key="index">
+          <tr v-for="(budgets, index) in budgetData" :key="index">
             <td class="member-td">
               <div
                 class="member-symbol member d-flex justify-center align-center"
@@ -70,30 +70,31 @@
                 }"
               >
                 <div class="member-familyname">
-                  {{ member.member.slice(0, 1) }}
+                  {{ budgets.member.slice(0, 1) }}
                 </div>
               </div>
             </td>
             <td style="border: 1px dashed lightgrey">
-              {{ formatWithComma(member.expense) }}
+              {{ formatWithComma(budgets.used_budget) }}
             </td>
             <td
               style="border: 1px dashed lightgrey"
               :class="{
-                positive: member.adjustment > 0,
-                negative: member.adjustment < 0,
+                positive: budgets.adjustment > 0,
+                negative: budgets.adjustment < 0,
               }"
             >
-              {{ member.adjustment > 0 ? "+" : "" }}
-              {{ formatWithComma(member.adjustment) }}
+              {{ budgets.adjustment > 0 ? "+" : "" }}
+              {{ formatWithComma(budgets.adjustment) }}
             </td>
             <td style="border: 1px dashed lightgrey">
-              {{ formatWithComma(member.balance) }}
+              {{ formatWithComma(budgets.remain_budget) }}
             </td>
           </tr>
+
         </tbody>
       </table>
-      <div class="explanation">개인별 잔액 = 예산 - 총 지출액</div>
+      <div class="explanation">개인별 잔액 = 예산 - 총 지출액 </div>
     </div>
   </div>
 </template>
@@ -114,6 +115,18 @@ const amount = ref(route.query.amount || 0);
 const tripStore = useTripStore();
 const paymentStore = usePaymentStore();
 const tripMembers = computed(() => tripStore.members);
+
+const budget = computed(()=> paymentStore.budgets)
+
+const budgetData= computed(() => {
+  return Object.entries(budget.value).map(([name, data]) => ({
+    member: name,
+    used_budget: data.used_budget,
+    adjustment: data.initial_budget - data.remain_budget,
+    remain_budget: data.remain_budget,
+  }));
+});
+
 
 const adjustmentResult = computed(() => paymentStore.adjustmentResult)
 // computed 값은 변경할 수 없으므로, 별도의 ref로 상태 관리
