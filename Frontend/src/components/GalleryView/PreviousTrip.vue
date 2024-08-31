@@ -364,7 +364,16 @@ const calculatePadding = (index) => {
 
 /* 로딩 화면 */
 .loading {
+  height: 93vh;
+  overflow-y: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0px auto;
+  padding: 0px;
+  background-color: #f4f6fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin-top: 150px;
 }
 </style>
