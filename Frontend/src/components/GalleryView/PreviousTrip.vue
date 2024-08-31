@@ -65,7 +65,7 @@
       <v-img class="category-image" :src="receivedCharacter"></v-img>
       <div class="d-flex flex-column justify-center">
         <div>당신의 소BTI 캐릭터는</div>
-        <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacter.split('/').pop().split('.').shift() }}</div>
+        <div v-if="receivedCharacter" style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacter.split('/').pop().split('.').shift() }}</div>
         <div>입니다!</div>
       </div>
     </div>
