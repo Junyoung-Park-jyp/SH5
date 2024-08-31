@@ -333,7 +333,7 @@ onMounted(() => {
 const selectCurrency = ref("USD");
 
 // 지원하는 통화 배열
-const currencies = ["USD", "EUR", "JPY", "CNY", "GBP", "CHF", "CAD"];
+const currencies = ["USD", "EUR", "JPY"];
 
 // 환율 계산
 const foreignCurrency = ref(1);
