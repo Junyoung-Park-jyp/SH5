@@ -9,9 +9,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     ],
     budgets: [
     ],
-    adjustmentResult:[
-
-    ]
+    adjustmentResult:null
   }),
   getters: {
     getPaymentsByDate: (state) => (date) => {
@@ -64,8 +62,6 @@ export const usePaymentStore = defineStore('paymentStore', {
         });
     
         if (response) {
-          console.log("정산 내역", response.data.data);
-          console.log("예산 내역", response.data.budget);
           this.budgets = response.data.budget
           // response.data.data 배열을 순회하며 각 payment에 members 필드를 추가
           this.payments = response.data.data.map(payment => {
@@ -93,12 +89,19 @@ export const usePaymentStore = defineStore('paymentStore', {
       console.log('makeAdjustment 가 받은 데이터', adjustments)
       // 각 payment 객체를 적절한 형식으로 변환      
       try {
-        const response = await axiosInstance.post('/payments/adjustment/', { 
+        const mergedAdjustments = {
           trip_id: tripId,
-          payments: adjustments,
+          payments: adjustments.flatMap(adjustment => adjustment.payments)
+        };
+        console.log(mergedAdjustments)
+
+        const response = await axiosInstance.post('/payments/adjustment/', { 
+          trip_id : mergedAdjustments.trip_id,
+          payments: mergedAdjustments.payments
         });
     
         if (response) {
+          this.adjustmentResult = response.data
           // 정산 성공 시, selectedPayments의 id와 this.payments의 id를 비교하여 is_completed를 1로 설정
           this.payments = this.payments.map(payment => {
             const isCompleted = selectedPayments.some(selected => selected.id === payment.id);
@@ -110,7 +113,7 @@ export const usePaymentStore = defineStore('paymentStore', {
             }
             return payment;
           });
-    
+          
           
           console.log('정산에 성공했습니다');
         } else {

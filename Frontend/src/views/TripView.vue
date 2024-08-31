@@ -14,46 +14,26 @@
           ~ ING <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
-        <v-carousel
-          :show-arrows="true"
-          hide-delimiters
-          :cycle="false"
-          class="non-past-carousel"
-        >
+        <v-carousel :show-arrows="true" hide-delimiters :cycle="false" class="non-past-carousel">
           <template v-slot:prev="{ props }">
             <v-btn icon color="none" variant="text" @click="props.onClick">
-              <v-icon
-                class="btns"
-                icon="mdi-chevron-left"
-                size="xx-large"
-              ></v-icon>
+              <v-icon class="btns" icon="mdi-chevron-left" size="xx-large"></v-icon>
             </v-btn>
           </template>
           <template v-slot:next="{ props }">
             <v-btn icon color="none" variant="text" @click="props.onClick">
-              <v-icon
-                class="btns"
-                icon="mdi-chevron-right"
-                size="xx-large"
-              ></v-icon>
+              <v-icon class="btns" icon="mdi-chevron-right" size="xx-large"></v-icon>
             </v-btn>
           </template>
 
-          <v-carousel-item
-            v-for="(ongoingTrip, index) in ongoingTrips"
-            :key="index"
-            class="background-image-now"
-            @click="goTripMain(ongoingTrip.id)"
-          >
+          <v-carousel-item v-for="(ongoingTrip, index) in ongoingTrips" :key="index" class="background-image-now"
+            @click="goTripMain(ongoingTrip.id)">
             <!-- <div class="background-layer"></div> -->
-            <div
-              class="background-layer"
-              :style="{
-                backgroundImage: `url(${getBackgroundImage(
-                  ongoingTrip.locations[0].country
-                )})`,
-              }"
-            ></div>
+            <div class="background-layer" :style="{
+              backgroundImage: `url(${getBackgroundImage(
+                ongoingTrip.locations[0].country
+              )})`,
+            }"></div>
             <div class="info">
               <span>
                 <!-- <v-icon icon="mdi-music"></v-icon> -->
@@ -82,12 +62,7 @@
               </v-btn>
             </v-col> -->
             <v-col>
-              <v-carousel
-                v-model="currentSlide"
-                :show-arrows="false"
-                cycle
-                interval="4000"
-              >
+              <v-carousel v-model="currentSlide" :show-arrows="false" cycle interval="4000">
                 <!-- <v-carousel-item
                   v-for="(experience, index) in tripStore.tripExperiences"
                   :key="index"
@@ -109,35 +84,25 @@
                     <div class="cost">{{ formatCost(experience.cost) }}</div>
                   </div>
                 </v-carousel-item> -->
-                <v-carousel-item
-                  v-for="(experience, index) in pastTrips"
-                  :key="index"
-                  class="background-image"
-                  @click="goTripGallery(experience.id)"
-                >
+                <v-carousel-item v-for="(experience, index) in pastTrips" :key="index" class="background-image"
+                  @click="goTripGallery(experience.id)">
                   <!-- <div class="background-layer"></div> -->
-                  <div
-                    class="background-layer"
-                    :style="{
-                      backgroundImage: `url(${getBackgroundImage(
-                        experience.locations[0].country
-                      )})`,
-                    }"
-                  ></div>
+                  <div class="background-layer" :style="{
+                    backgroundImage: experience.image_url.length > 0 ? `url(${experience.image_url})` : `url(${getBackgroundImage(
+                      experience.locations[0].country
+                    )})`,
+                  }"></div>
                   <!-- background-layer 추가 -->
                   <div class="info2">
-                    <v-img
-                      :src="experience.imageUrl"
-                      class="align-center"
-                    ></v-img>
+                    <v-img :src="experience.imageUrl" class="align-center"></v-img>
                     <div class="trip-name">{{ experience.trip_name }}</div>
                     <div class="trip-country">
                       <!-- 모든 country명을 나열, experience.locations가 undefined일 경우 빈 문자열 반환 -->
                       {{
                         experience.locations
                           ? experience.locations
-                              .map((location) => location.country)
-                              .join(", ")
+                            .map((location) => location.country)
+                            .join(", ")
                           : ""
                       }}
                     </div>
@@ -294,19 +259,21 @@ const getBackgroundImage = (country) => {
 
 .profile {
   display: flex;
-  justify-content: left; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: left;
+  /* 수평 가운데 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
   margin: 0px auto;
   height: 100px;
 }
 
-.profile > img {
+.profile>img {
   height: 75px;
   margin-left: 30px;
   margin-right: 20px;
 }
 
-.profile > span {
+.profile>span {
   font-weight: bolder;
   font-size: xx-large;
 }
@@ -349,8 +316,10 @@ const getBackgroundImage = (country) => {
 
 .v-carousel-item {
   display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: center;
+  /* 수평 가운데 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
   text-align: center;
   color: black;
   height: 100%;
@@ -362,8 +331,10 @@ const getBackgroundImage = (country) => {
 }
 
 .background-image {
-  position: relative; /* 추가 */
-  overflow: hidden; /* 추가 */
+  position: relative;
+  /* 추가 */
+  overflow: hidden;
+  /* 추가 */
   background-color: lightgrey;
   background-size: cover;
   background-position: center;
@@ -394,7 +365,7 @@ const getBackgroundImage = (country) => {
   font-weight: bolder;
 }
 
-.info > span {
+.info>span {
   font-size: 26px;
 }
 

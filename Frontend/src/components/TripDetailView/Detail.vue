@@ -7,7 +7,7 @@
         class="budget-container"
         @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between" @click="checkData" >
+        <div class="title d-flex justify-space-between">
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -88,8 +88,6 @@
             class="payment"
             v-for="(payment, paymentIndex) in bookingPayments"
             :key="paymentIndex"
-            :class="{ 'completed-payment': payment.is_completed === 1 }"
-            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
@@ -184,7 +182,7 @@
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
             :class="{ 'completed-payment': payment.is_completed === 1 }"
-            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
+            @click="(payment.is_completed === 1 || !payment.checked)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
@@ -487,12 +485,12 @@ const getPlaceholder = (paymentId, bankAccount) => {
     );
 
     if (bill) {
-      return bill.cost.toString(); // 해당 멤버의 cost를 반환
+      return bill.cost // 해당 멤버의 cost를 반환
     }
   }
 
   // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
-  return defaultCostPerMember.value.toString();
+  return defaultCostPerMember.value;
 };
 
 watch(dialog, (newVal) => {
@@ -734,21 +732,6 @@ watch(formattedCheckedCost, (newCost) => {
   emit("updateCheckedCost", newCost);
 });
 
-// const toggleCheck = (index, type) => {
-//   if (type === "booking") {
-//     bookingPayments.value[index].checked =
-//       !bookingPayments.value[index].checked;
-//   } else if (type === "trip") {
-//     // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
-//     const payment = filteredPayments.value[index];
-//     const actualIndex = paymentsDuringTrip.value.findIndex(
-//       (p) => p === payment
-//     );
-//     paymentsDuringTrip.value[actualIndex].checked =
-//       !paymentsDuringTrip.value[actualIndex].checked;
-//   }
-// };
-
 const formattedTotalCost = (paymentArray) => {
   const totalCost = paymentArray.reduce(
     (sum, payment) => sum + payment.amount,
@@ -801,7 +784,6 @@ const personStyle = (memberName, reservationMembers, index) => {
     };
   }
 };
-
 
 const personClick = (index, memberName, type) => {
   const paymentList =
@@ -1180,6 +1162,13 @@ const finishTrip = () => {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+}
+.payment {
+  padding: 5px 10px;
+}
+.completed-payment {
+  background-color: #d3d3d3; /* Light gray background */
+  cursor: not-allowed; /* Show a not-allowed cursor */
 }
 
 .payment {
