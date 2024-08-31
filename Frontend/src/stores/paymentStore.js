@@ -85,12 +85,19 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async makeAdjustment(adjustments) {
+    async makeAdjustment(tripId, adjustments) {
       console.log('makeAdjustment 가 받은 데이터', adjustments)
       // 각 payment 객체를 적절한 형식으로 변환      
       try {
+        const mergedAdjustments = {
+          trip_id: tripId,
+          payments: adjustments.flatMap(adjustment => adjustment.payments)
+        };
+        console.log(mergedAdjustments)
+
         const response = await axiosInstance.post('/payments/adjustment/', { 
-          adjustments
+          trip_id : mergedAdjustments.trip_id,
+          payments: mergedAdjustments.payments
         });
     
         if (response) {

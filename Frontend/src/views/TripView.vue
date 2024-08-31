@@ -11,7 +11,7 @@
       <v-row class="d-flex align-center">
         <div class="record" style="margin-left: 30px">
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
-          COMING <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
+          ~ ING <span style="color: gray; font-weight: bold;">{{ ongoingTrips.length }}</span>
           <!-- <v-icon icon="mdi-music" size="x-small"></v-icon> -->
         </div>
         <v-carousel :show-arrows="true" hide-delimiters :cycle="false" class="non-past-carousel">
