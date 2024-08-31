@@ -182,7 +182,7 @@
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
             :class="{ 'completed-payment': payment.is_completed === 1 }"
-            @click="(payment.is_completed === 1 || !payment.checked)"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
@@ -197,7 +197,7 @@
                     : 'grey')"
                 :icon="payment.is_completed === 1 
                   ? 'mdi-circle' 
-                  : (payment.checked x
+                  : (payment.checked 
                     ? 'mdi-check-circle' 
                     : 'mdi-checkbox-blank-circle-outline')"
                 density="compact"
@@ -272,6 +272,10 @@
             <div class="modal-brandname">
               <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
             </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop-front
             <div class="modal-member">
               <!-- 정산 대상에 대한 테이블 추가 -->
               <table class="modal-member-table">

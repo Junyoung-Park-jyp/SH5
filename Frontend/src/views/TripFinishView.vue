@@ -134,7 +134,7 @@ const backStep = () => {
 
 const cancelTrip = () => {
   amount.value = 0;
-  router.replace({ name: "home"});
+  router.replace({ name: "tripDetail", params: { id: tripId}});
 };
 </script>
 
