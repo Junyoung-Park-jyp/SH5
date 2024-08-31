@@ -404,7 +404,7 @@
             </div>
           </div>
           <div class="modal-button">
-            <button class="ok-btn" @click="editPayment(selectedPayment.id)">이의 제기</button>
+            <button class="ok-btn" @click="editPayment(selectedPayment)">이의 제기</button>
           </div>
         </div>
       </v-dialog>
@@ -601,13 +601,25 @@ const addAdjustment = (payment, index) => {
 }
 
 const deletePayment = async (paymentId) => {
-  const response = await paymentStore.deletePayment(paymentId)
-}
+  // 서버나 스토어에서 삭제 작업을 진행
+  const response = await paymentStore.deletePayment(paymentId);
 
-const editPayment = async (paymentId) => {
-  const response = await paymentStore.editPayment(route.params.id, paymentId)
-  dialog_finished.value = false
-}
+  // paymentStore.payments 배열에서 해당 paymentId를 가진 payment를 찾아서 제거
+  const index = paymentStore.payments.findIndex(p => p.id === paymentId);
+  if (index !== -1) {
+    paymentStore.payments.splice(index, 1);
+    dialog.value = false
+  }
+};
+const editPayment = async (payment) => {
+  // 서버나 스토어에서 수정 작업을 진행
+  const response = await paymentStore.editPayment(route.params.id, payment.id);  
+  // paymentStore.payments 배열에서 해당 paymentId를 가진 payment의 is_completed 값을 0으로 변경
+  payment.is_completed = 0;
+
+  dialog_finished.value = false;
+  
+};
 // Props
 const props = defineProps({
   selectedDate: Date,
