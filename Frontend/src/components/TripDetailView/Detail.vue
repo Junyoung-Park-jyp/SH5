@@ -7,7 +7,7 @@
         class="budget-container"
         @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between" >
+        <div class="title d-flex justify-space-between" @click="checkData" >
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -242,23 +242,31 @@
           </div>
         </div>
       </div>
+
       <v-dialog v-model="dialog" max-width="600px">
-        <v-card>
-          <v-card-title>
+        <div class="modal">
+          <div class="modal-title">
             결제 상세 정보
-          </v-card-title>
-          <v-card-subtitle>
-            <div>
-              <strong>금액:</strong> {{ selectedPayment.amount }}
+          </div>
+          
+          <div class="modal-content">
+            <div class="modal-amount">
+              <span class=modal-subtitle>금액</span> {{ selectedPayment.amount }}
             </div>
-            <div>
-              <strong>브랜드명:</strong> {{ selectedPayment.brand_name }}
+            <div class="modal-brandname">
+              <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
             </div>
-            <div>
-              <strong>정산 대상:</strong>
-              <ul>
-                <li v-for="(member, index) in selectedPayment.members" :key="index">
-                    {{ member.member }}
+
+            <div class="modal-member">
+              <!-- 정산 대상에 대한 테이블 추가 -->
+              <table class="modal-member-table">
+                <tr>
+                  <th>정산 대상</th>
+                  <th>금액</th>
+                </tr>
+                <tr v-for="(member, index) in selectedPayment.members" :key="index">
+                  <td>{{ member.member }}</td>
+                  <td>
                     <v-text-field
                       v-model="memberCosts[index]"
                       type="number"
@@ -268,16 +276,17 @@
                       hide-details
                       dense
                     ></v-text-field>
-                </li>
-              </ul>
+                  </td>
+                </tr>
+              </table>
               <p>남은 금액: {{ remainingAmount }}</p>
               <v-btn @click="modifyCost" color="primary">확인</v-btn>
             </div>
-          </v-card-subtitle>
-          <v-card-actions>
-            <v-btn text @click="closeModal">닫기</v-btn>
-          </v-card-actions>
-        </v-card>
+          </div>
+          <div class="modal-button">
+            <button class="modal-btn" text @click=closeModal>닫기</button>
+          </div>
+        </div>
       </v-dialog>
       <!-- <div class="summary">
         <div class="spend">
@@ -383,23 +392,6 @@ const openModal = (payment) => {
 
   };
 
-  const closeModal = () => {
-  const existingIndex = adjustment.value.findIndex(
-    (p) => p === selectedPayment.value
-  );
-
-  if (existingIndex !== -1) {
-    // 이미 adjustment에 있는 데이터라면 해당 데이터를 업데이트
-    adjustment.value[existingIndex] = { ...selectedPayment.value };
-  } else {
-    // 없으면 새로 추가
-    adjustment.value.push({ ...selectedPayment.value });
-    selectedPayment.value.checked = true; // 상태를 체크 상태로 변경
-  }
-
-  dialog.value = false;
-};
-
 const modifyCost = () => {
   // 각 멤버의 정산 금액을 selectedPayment에 반영
   selectedPayment.value.members.forEach((member, index) => {
@@ -437,12 +429,66 @@ const modifyCost = () => {
 
   updateRemainingAmount();
 
-  if (remainingAmount.value === 0) { // 남은 금액이 0일 때만 모달 닫기
+  if (remainingAmount.value < 2 && remainingAmount.value >= -2) { // 남은 금액이 0일 때만 모달 닫기
     dialog.value = false;
   } else {
     alert('금액이 일치하지 않습니다. 모든 금액을 분배해주세요.');
   }
 };
+
+const updateRemainingAmount = () => {
+  const totalAssigned = memberCosts.value.reduce((sum, cost) => sum + parseInt(cost || 0), 0);
+
+  remainingAmount.value = selectedPayment.value.amount - totalAssigned;
+  console.log(remainingAmount.value)
+};
+
+
+const closeModal = () => {
+  dialog.value = false;
+}
+
+const defaultCostPerMember = computed(() => {
+  return Math.floor(selectedPayment.value.amount / selectedPayment.value.members.length);
+});
+
+const getPlaceholder = (paymentId, bankAccount) => {
+  // adjustment에서 payment_id가 일치하는 항목을 찾음
+  const adjustmentEntry = adjustment.value.find((entry) =>
+    entry.payments.some((payment) => payment.payment_id === paymentId)
+  );
+
+  if (adjustmentEntry) {
+    // payment_id가 일치하는 payment 데이터를 찾음
+    const paymentData = adjustmentEntry.payments.find(
+      (payment) => payment.payment_id === paymentId
+    );
+
+    // 해당 paymentData에서 bank_account가 일치하는 bill을 찾음
+    const bill = paymentData.bills.find(
+      (b) => b.bank_account === bankAccount
+    );
+
+    if (bill) {
+      return bill.cost.toString(); // 해당 멤버의 cost를 반환
+    }
+  }
+
+  // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
+  return defaultCostPerMember.value.toString();
+};
+
+watch(dialog, (newVal) => {
+  if (newVal) {
+    // 각 멤버별 초기 금액 설정
+    memberCosts.value = selectedPayment.value.members.map((member, index) => {
+      const existingBill = getPlaceholder(selectedPayment.value.id, member.bank_account);
+      return parseInt(existingBill) || defaultCostPerMember.value;
+    });
+    updateRemainingAmount();
+  }
+});
+
 
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
@@ -474,7 +520,7 @@ const toggleCheck = (index, type) => {
       };
 
       const newTripData = {
-        trip_id: 5, // 고정된 trip_id
+        trip_id: route.params.id,
         payments: [newPaymentData],
       };
 
@@ -482,27 +528,6 @@ const toggleCheck = (index, type) => {
       paymentToUpdate.checked = true;
     }
   }
-};
-
-const getPlaceholder = (paymentId, bankAccount) => {
-  // adjustment에서 payment_id가 일치하는 항목을 찾음
-  const paymentData = adjustment.value.find(
-    (payment) => payment.payment_id === paymentId
-  );
-
-  if (paymentData) {
-    // 해당 paymentData에서 bank_account가 일치하는 bill을 찾음
-    const bill = paymentData.bills.find(
-      (b) => b.bank_account === bankAccount
-    );
-
-    if (bill) {
-      return bill.cost.toString(); // 해당 멤버의 cost를 반환
-    }
-  }
-
-  // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
-  return defaultCostPerMember.value.toString();
 };
 // Props
 const props = defineProps({
@@ -521,6 +546,7 @@ const checkData = () => {
   console.log("const payments", payments.value)
   console.log('booking payments', bookingPayments.value)
   console.log('selected payments', selectedPayments.value)
+  console.log('adjustment', adjustment.value)
 }
 
 // 결제 카테고리별 아이콘 설정
@@ -842,9 +868,9 @@ const updateCheckedCost = (cost) => {
 // 정산 완료 버튼 슬라이딩
 const finishTrip = () => {
   adjustmentDiv.value.style.transform = `translateX(100%)`;
-
+  console.log(adjustment.value)
   setTimeout(() => {
-    paymentStore.makeAdjustment(route.params.id, selectedPayments.value)
+    paymentStore.makeAdjustment(route.params.id, adjustment.value)
     router.push({
       name: "tripFinish",
       query: { amount: checkedCost.value }, // Use query instead of params
@@ -1284,5 +1310,64 @@ const finishTrip = () => {
   position: relative;
   z-index: 1;
   font-size: 0.8rem;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: black;
+}
+
+.modal-title {
+  width: 80%; 
+  height: 50px;
+  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  border-bottom: 1px dashed grey;
+  /* border: 1px solid black; */
+}
+
+.modal-content {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: leftr;
+  margin: 0 auto;
+  border: 1px solid black;
+}
+
+.modal-subtitle {
+  font-weight: 600;
+}
+
+.modal-button {
+  padding: 0px;
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0 auto;
+  background-color: #ffffff;
+}
+
+.modal-btn {
+  width: 80%;
+  background-color: #4b72e1;
+  border-radius: 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
 }
 </style>
