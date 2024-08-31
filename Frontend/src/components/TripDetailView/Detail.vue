@@ -291,7 +291,7 @@
         </div>
       </div>
 
-      <v-dialog v-model="dialog" max-width="600px">
+      <v-dialog class="dialog-modal" v-model="dialog">
         <div class="modal">
           <div class="modal-title">결제 상세 정보</div>
           
@@ -944,7 +944,7 @@ const finishTrip = () => {
   flex-direction: row;
   align-items: center;
   width: 100%;
-  height: 65px;
+  height: 70px;
   margin: auto;
   /* border: 1px solid black; */
 }
@@ -1020,7 +1020,7 @@ const finishTrip = () => {
 
 /* 정산 대상 */
 .person-area {
-  height: 80%;
+  height: 85%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1055,7 +1055,7 @@ const finishTrip = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2px 0;
+  padding: 1px 0;
   position: relative;
   /* border: 1px solid black; */
 }
@@ -1266,8 +1266,8 @@ const finishTrip = () => {
   padding: 0;
   margin: 0;
   display: flex;
-  margin-left: -14px;
-  margin-bottom: 17px;
+  margin-left: -15px;
+  margin-bottom: 22px;
   position: absolute;
 }
 
@@ -1277,18 +1277,21 @@ const finishTrip = () => {
   font-size: 0.8rem;
 }
 
+
 .modal {
   background-color: #ffffff;
-  border-radius: 20px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   color: black;
+  border: 1px solid black;
 }
 
 .modal-title {
   width: 80%; 
-  height: 50px;
+  height: 70px;
   font-weight: bold;
   font-size: 20px;
   display: flex;
@@ -1305,9 +1308,18 @@ const finishTrip = () => {
   flex-direction: column;
   justify-content: center;
   align-items: leftr;
-  margin: 0 auto;
+  margin: 20px auto;
   border: 1px solid black;
 }
+
+.modal-amount, .modal-brandname {
+  width: 100%;
+  border: 1px solid blue;
+  font-size: 20px;
+}
+
+
+
 
 .modal-subtitle {
   font-weight: 600;
