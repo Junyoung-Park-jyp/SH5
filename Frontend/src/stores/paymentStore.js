@@ -35,6 +35,24 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
+    async makePreparePayment(tripId, amount, brandName, category) {
+      try {
+        const response = await axiosInstance.post('/payments/prepare/', {
+          trip_id: tripId,
+          amount: amount,
+          brand_name: brandName,
+          category: category
+        })
+        
+        if (response) {
+          console.log(response.data)
+        } else {
+          console.error('데이터 양식이 올바르지 않습니다.')
+        }
+      } catch(error) {
+        console.error('결제 내역 생성 실패', error)
+      }
+    },
     async deletePayment(paymentId) {
       try {
         const response = await axiosInstance.post('/payments/delete/', {
@@ -147,7 +165,7 @@ export const usePaymentStore = defineStore('paymentStore', {
 
     // 특정 날짜 이전의 결제 내역 필터링 (예: 사전 예약)
     filterPaymentsBeforeDate(startDate) {
-      return this.payments.filter(payment => new Date(payment.pay_date) < new Date(startDate));
+      return this.payments.filter(payment => new Date(payment.pay_date) <= new Date(startDate));
     },
 
     // 특정 날짜의 결제 내역 필터링

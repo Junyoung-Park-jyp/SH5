@@ -290,8 +290,9 @@
         </div>
       </div>
       <div v-else class="d-flex flex-column align-center mt-15">
-        <v-icon class="empty-icon" icon="mdi-alert-circle-outline" size="x-large"></v-icon>
-        <div class="mt-2">결제 내역이 없습니다</div>
+        <button style="margin-left: auto; margin-right: 10%;" @click="addPayment('고속버스', '교통')" class="mt-1 btn-add">+ 추가</button>
+        <!-- <v-icon class="empty-icon" icon="mdi-alert-circle-outline" size="x-large"></v-icon> -->
+        <!-- <div class="mt-2">결제 내역이 없습니다</div> -->
       </div>
 
       <v-dialog class="dialog-modal" v-model="dialog">
@@ -396,7 +397,7 @@
                   </td>
                 </tr>
               </table>
-<!-- 
+            <!-- 
               <table class="third-table">
                 <th class="remain">차액</th>
                 <td>{{ remainingAmount }}</td>
@@ -620,6 +621,15 @@ const editPayment = async (payment) => {
   dialog_finished.value = false;
   
 };
+
+const addPayment = async (brandName, category) => {
+
+  const response = await paymentStore.makePreparePayment(route.params.id, 17900, brandName, category)
+
+  console.log(response)
+
+}
+
 // Props
 const props = defineProps({
   selectedDate: Date,
@@ -714,6 +724,8 @@ const startDate = computed(() => new Date(tripStore.startDate));
 const filteredPayments = computed(() => {
   if (props.selectedView === 'all') {
     return paymentStore.filterPaymentsAfterDate(startDate.value);
+  } else if (props.selectedView == 'prepare') {
+    return paymentStore.filterPaymentsBeforeDate(startDate.value)
   } else {
     return paymentStore.filterPaymentsByDate(props.selectedDate);
   }
