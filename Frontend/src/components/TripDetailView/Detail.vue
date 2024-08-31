@@ -349,7 +349,7 @@
             </div>
           </div>
           <div class="modal-button">
-            <button class="modal-btn" text @click="deletePayment(selectedPayment.id)">삭제</button>
+            <button class="ok-btn" text @click="deletePayment(selectedPayment.id)">삭 제</button>
             <button class="ok-btn" @click="modifyCost(selectedPayment)">확 인</button>
           </div>
         </div>
@@ -389,25 +389,18 @@
                   <th class="whom">정산 대상</th>
                   <th class="howmuch">금액</th>
                 </tr>
-                <tr v-for="(member, index) in selectedPayment.members" :key="index">
-                  <td class="whom">{{ member.member }}</td>
+                <tr v-for="(member, index) in selectedPayment.calculates" :key="index">
+                  <td class="whom">{{ member.username }}</td>
                   <td class="howmuch">
-                    <v-text-field
-                      v-model="memberCosts[index]"
-                      type="number"
-                      min="0"
-                      @blur="updateRemainingAmount"
-                      @input="handleInput(index)"
-                      hide-details
-                    ></v-text-field>
+                  {{ member.cost }}
                   </td>
                 </tr>
               </table>
-
+<!-- 
               <table class="third-table">
                 <th class="remain">차액</th>
                 <td>{{ remainingAmount }}</td>
-              </table>
+              </table> -->
             </div>
           </div>
           <div class="modal-button">
@@ -508,8 +501,10 @@ const openModal = (payment) => {
     }
 
     dialog.value = true;
-  } else {
-    console.log('조건에 맞지 않아 모달을 열지 않습니다.');
+  } else if (payment.is_completed == 1) {
+    selectedPayment.value = payment
+    console.log(payment);
+    dialog_finished.value = true;
   }
 };
 
@@ -611,6 +606,7 @@ const deletePayment = async (paymentId) => {
 
 const editPayment = async (paymentId) => {
   const response = await paymentStore.editPayment(route.params.id, paymentId)
+  dialog_finished.value = false
 }
 // Props
 const props = defineProps({
