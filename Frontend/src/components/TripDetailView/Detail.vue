@@ -244,22 +244,29 @@
       </div>
 
       <v-dialog v-model="dialog" max-width="600px">
-        <v-card>
-          <v-card-title>
+        <div class="modal">
+          <div class="modal-title">
             결제 상세 정보
-          </v-card-title>
-          <v-card-subtitle>
-            <div>
-              <strong>금액:</strong> {{ selectedPayment.amount }}
+          </div>
+          
+          <div class="modal-content">
+            <div class="modal-amount">
+              <span class=modal-subtitle>금액</span> {{ selectedPayment.amount }}
             </div>
-            <div>
-              <strong>브랜드명:</strong> {{ selectedPayment.brand_name }}
+            <div class="modal-brandname">
+              <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
             </div>
-            <div>
-              <strong>정산 대상:</strong>
-              <ul>
-                <li v-for="(member, index) in selectedPayment.members" :key="index">
-                    {{ member.member }}
+
+            <div class="modal-member">
+              <!-- 정산 대상에 대한 테이블 추가 -->
+              <table class="modal-member-table">
+                <tr>
+                  <th>정산 대상</th>
+                  <th>금액</th>
+                </tr>
+                <tr v-for="(member, index) in selectedPayment.members" :key="index">
+                  <td>{{ member.member }}</td>
+                  <td>
                     <v-text-field
                       v-model="memberCosts[index]"
                       type="number"
@@ -269,16 +276,17 @@
                       hide-details
                       dense
                     ></v-text-field>
-                </li>
-              </ul>
+                  </td>
+                </tr>
+              </table>
               <p>남은 금액: {{ remainingAmount }}</p>
               <v-btn @click="modifyCost" color="primary">확인</v-btn>
             </div>
-          </v-card-subtitle>
-          <v-card-actions>
-            <v-btn text @click="closeModal">닫기</v-btn>
-          </v-card-actions>
-        </v-card>
+          </div>
+          <div class="modal-button">
+            <button class="modal-btn" text @click=closeModal>닫기</button>
+          </div>
+        </div>
       </v-dialog>
       <!-- <div class="summary">
         <div class="spend">
@@ -1302,5 +1310,64 @@ const finishTrip = () => {
   position: relative;
   z-index: 1;
   font-size: 0.8rem;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: black;
+}
+
+.modal-title {
+  width: 80%; 
+  height: 50px;
+  font-weight: bold;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  border-bottom: 1px dashed grey;
+  /* border: 1px solid black; */
+}
+
+.modal-content {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: leftr;
+  margin: 0 auto;
+  border: 1px solid black;
+}
+
+.modal-subtitle {
+  font-weight: 600;
+}
+
+.modal-button {
+  padding: 0px;
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0 auto;
+  background-color: #ffffff;
+}
+
+.modal-btn {
+  width: 80%;
+  background-color: #4b72e1;
+  border-radius: 30px;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
 }
 </style>
