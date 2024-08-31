@@ -356,7 +356,7 @@
       </v-dialog>
 
       <!-- 정산 완료된 모달 -->
-      <v-dialog class="dialog-modal" v-model="dialog">
+      <v-dialog class="dialog-modal" v-model="dialog_finished">
         <div class="modal">
           <!-- Close Button -->
           <div class="close-btn">
@@ -474,6 +474,7 @@ const budgets = computed(() => paymentStore.budgets)
 const budgetTypes = ['initial', 'used', 'remain'];
 const currentBudgetType = ref('initial')
 const dialog = ref(false);
+const dialog_finished = ref(false);
 const selectedPayment = ref(null);
 const memberCosts = ref([]);
 const remainingAmount = ref(0);
