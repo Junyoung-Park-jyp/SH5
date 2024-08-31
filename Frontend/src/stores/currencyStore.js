@@ -1,6 +1,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import axiosInstance from "@/axios";
+import { useUserStore } from "./userStore";
 
 // 환율 데이터를 저장하는 상태
 export const exchangeArray = ref([]);
@@ -29,16 +30,17 @@ export const currencyText = {
 
 // 환율 데이터를 가져오는 함수
 export function fetchExchangeRates() {
-  try {
-    const response = axiosInstance.get('/exchange_rates/')
-    console.log(response)
-
-    if (response) {
-      exchangeArray.value = response
-    }
-  } catch (error) {
-    console.log('환율 조회 실패', error)
-  }
+  const userStore = useUserStore()
+  axios({
+    url: 'https://5illjjang.click/api/exchange_rates/',
+    headers: {Authorization: `Token ${userStore.token}`}
+  })
+    .then(res => {
+      exchangeArray.value = res.data.data
+      exchangeArray.value = res.data.data.filter(element => element.currency === 'EUR' || element.currency === 'JPY' || element.currency === 'USD');
+      console.log(exchangeArray.value)
+    })
+    .catch(err => console.log(err))
 }
 
 // Dummy exchange rates (환율 데이터를 저장)
