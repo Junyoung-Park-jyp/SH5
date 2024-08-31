@@ -166,6 +166,15 @@
 ### 8. 전체 여행 페이지(TripView)
 
 ### 9. 완료된 여행 페이지(GalleryView)
+![GalleryView1](img/GalleryView1.png)
+![GalleryView2](img/GalleryView2.png)
+![alt text](img/GalleryView3.png)
+- 이미 다녀온 여행의 기록을 볼 수 있는 페이지입니다.
+- 여행의 날짜와 멤버, 소비 내역을 볼 수 있습니다.
+- 여행 소비 내역을 자동으로 카테고리화하여 분류하며, 이에 따라 소비 성향을 분석하여 사용자의 소BTI를 알려줍니다.
+- 여행 스케치 기능을 통해 사용자의 여행 사진를 입력하면, 생성형 AI가 사진을 스케치해줍니다.
+- 스케치 한 사진은 TripView에서 확인할 수 있습니다.
+
 
 1. 설명 쭉 해주고
 2. 이미지 생성 해보고
