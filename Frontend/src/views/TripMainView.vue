@@ -164,6 +164,7 @@
           <v-text-field
             class="korea"
             v-model="formattedKoreaCurrency"
+            readonly
           ></v-text-field>
           <!-- 한국환 기호 -->
           <button class="symbol-box">
@@ -333,7 +334,7 @@ onMounted(() => {
 const selectCurrency = ref("USD");
 
 // 지원하는 통화 배열
-const currencies = ["USD", "EUR", "JPY"];
+const currencies = ["USD", "EUR", "JPY", "CNY", "GBP", "CHF", "CAD"];
 
 // 환율 계산
 const foreignCurrency = ref(1);
