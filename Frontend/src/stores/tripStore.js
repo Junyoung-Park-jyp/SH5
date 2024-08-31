@@ -89,7 +89,7 @@ export const useTripStore = defineStore("trip", {
       try {
         const response = await axiosInstance.delete(`/trips/`);
 
-        if (response.data.REC) {
+        if (response) {
           this.clearTrip();
           console.log("여행 삭제 성공");
         }
@@ -102,7 +102,7 @@ export const useTripStore = defineStore("trip", {
       try {
         const response = await axiosInstance.put(`/trips/`, tripData);
 
-        if (response.data.REC) {
+        if (response) {
           this.setTrip(tripData);
         }
       } catch (error) {

@@ -1,26 +1,39 @@
 <template>
-  <div ref="pieChart" style="width: 100%; height: 400px" class="my-chart"></div>
-  <div class="explanation">
-    <div class="title">활용법</div>
-    <div class="content">
-      <div class="first">
-        <span class="idx">1</span>
-        원형 차트를 클릭하여 지출 금액을 확인하세요
-      </div>
-      <div class="second">
-        <span class="idx">2</span>
-        하단 범례를 클릭하여 카테고리를 추가/제거하세요
-      </div>
-    </div>
-    <!-- <div class="one">항공</div>
-    <div class="two">숙소</div>
-    <div class="three">식비</div>
-    <div class="four">교통</div>
-    <div class="five">쇼핑</div>
-    <div class="six">기타</div>
-    <div class="seven">카페</div>
-    <div class="eight">관광</div> -->
+  <!-- 아이콘 -->
+  <div class="info">
+    <v-icon
+      @click="showExplanation = true"
+      class="info-icon"
+      icon="mdi-information"
+      size="22px"
+      color="gray"
+    ></v-icon>
   </div>
+
+  <!-- 파이 차트 -->
+  <div ref="pieChart" style="width: 100%; height: 400px" class="my-chart"></div>
+  
+  <!-- 모달 -->
+  <v-dialog v-model="showExplanation" max-width="500px" class="explanation">
+    <v-card>
+      <v-card-title class="headline">활용법</v-card-title>
+      <v-card-text>
+        <div class="content">
+          <div class="first">
+            <span class="idx">1</span>
+            원형 차트를 클릭하여 지출 금액을 확인하세요
+          </div>
+          <div class="second">
+            <span class="idx">2</span>
+            하단 범례를 클릭하여 카테고리를 추가/제거하세요
+          </div>
+        </div>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn class="ok-btn" text @click="showExplanation = false">확인</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -43,6 +56,7 @@ export default {
   setup() {
     const pieChart = ref(null);
     const paymentStore = usePaymentStore();
+    const showExplanation = ref(false);
 
     // 카테고리별 아이콘 경로
     const icons = {
@@ -171,12 +185,21 @@ export default {
       chart.setOption(option);
     });
 
-    return { pieChart };
+    return { pieChart, showExplanation };
   },
 };
 </script>
 
 <style scoped>
+.info {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  /* border: 1px solid black; */
+}
+
+
 .explanation {
   border-top: 1px dashed lightgrey;
   text-align: left;
@@ -185,31 +208,37 @@ export default {
   padding: 20px 0 10px 0px;
 }
 
-.title {
+.headline {
   margin-bottom: 10px;
   font-weight: 500;
   text-align: center;
+  margin-top: 20px;
 }
 
 .content {
   width: 100%;
   margin: 0 auto;
-  padding: 5px 0px 5px 10px;
+  padding: 5px 0px 5px 0px;
   /* border: 1px solid black; */
 }
 
-div.explanation > div.content > div.first,
-div.explanation > div.content > div.second {
+div.content > div.first,
+div.content > div.second {
   font-size: 13px !important;
   margin-bottom: 10px;
 }
-div.explanation > div.content > div.first > span.idx,
-div.explanation > div.content > div.second > span.idx {
+
+div.content > div.first > span.idx,
+div.content > div.second > span.idx {
   background-color: #d8e2fc;
   color: #4b72e1;
   padding: 3px 6px;
   margin-right: 3px;
   font-size: 13px;
+}
+
+.ok-btn {
+  color: #4b72e1;
 }
 
 /*

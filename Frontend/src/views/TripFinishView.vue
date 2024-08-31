@@ -33,10 +33,12 @@
           <img src="@/assets/img/withdraw.png" alt="출금" />
         </div>
         <div class="withdraw-list">
-          <div>박준영님으로부터 375,988원 입금</div>
-          <div>이선재님으로부터 82,350원 입금</div>
-          <div>임광영님으로부터 375,988원 입금</div>
-          <div>정태완님으로부터 82,350원 입금</div>
+          <div v-if="withdrawList.length === 0">
+            정산 데이터가 없습니다.
+          </div>
+          <div v-else v-for="(item, index) in withdrawList" :key="index">
+            {{ item.name }}님으로부터 {{ formatWithComma(item.amount) }}원 입금
+          </div>
         </div>
       </div>
     </div>
@@ -119,6 +121,24 @@ const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
+const withdrawList = computed(() => {
+  const result = [];
+  
+  // adjustmentsResult가 정의되어 있는지 확인
+  if (!adjustmentResult.value) {
+    return result;
+  }
+
+  for (const [name, balance] of Object.entries(adjustmentResult.value)) {
+    if (balance.difference < 0) {
+      result.push({
+        name,
+        amount: Math.abs(balance.difference),
+      });
+    }
+  }
+  return result;
+});
 // `onMounted`에서 `membersWithColors`를 초기화
 onMounted(() => {
   membersWithColors.value = tripMembers.value.map((member, index) => ({
@@ -134,7 +154,7 @@ const backStep = () => {
 
 const cancelTrip = () => {
   amount.value = 0;
-  router.replace({ name: "home"});
+  router.replace({ name: "tripDetail", params: { id: tripId}});
 };
 </script>
 

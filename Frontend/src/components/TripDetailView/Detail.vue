@@ -180,19 +180,42 @@
           </div>
         </div>
         <div class="pay-content">
+          <!-- <div
+            class="payment"
+            v-for="(payment, paymentIndex) in filteredPayments"
+            :key="paymentIndex"
+            :class="{ 'completed-payment': payment.is_completed === 1 }"
+            @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)"
+            :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
+          > -->
           <div
             class="payment"
             v-for="(payment, paymentIndex) in filteredPayments"
             :key="paymentIndex"
             :class="{ 'completed-payment': payment.is_completed === 1 }"
-            @click="(payment.is_completed === 1 || !payment.checked)"
             :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
             >
             <!-- @click="(payment.is_completed === 1 || !payment.checked) ? null : openModal(payment)" -->
             <!-- 체크 버튼 -->
             <div v-if="accountNum == payment.bank_account" class="check-area">
-              <v-btn
+             
+              <!-- <v-btn
                 @click="toggleCheck(paymentIndex, 'trip')"
+                variant="text"
+                :color="payment.is_completed === 1 
+                  ? 'grey' 
+                  : (payment.checked 
+                    ? 'primary' 
+                    : 'grey')"
+                :icon="payment.is_completed === 1 
+                  ? 'mdi-circle' 
+                  : (payment.checked 
+                    ? 'mdi-check-circle' 
+                    : 'mdi-checkbox-blank-circle-outline')"
+                density="compact"
+              ></v-btn> -->
+              <v-btn
+                @click="addAdjustment(payment, paymentIndex)"
                 variant="text"
                 :color="payment.is_completed === 1 
                   ? 'grey' 
@@ -207,7 +230,6 @@
                 density="compact"
               ></v-btn>
             </div>
-
             <div v-else class="check-area">
               <v-btn icon="mdi-close-circle" variant="text" color="grey" disabled></v-btn>
             </div>
@@ -271,19 +293,16 @@
 
       <v-dialog v-model="dialog" max-width="600px">
         <div class="modal">
-          <div class="modal-title">
-            결제 상세 정보
-          </div>
+          <div class="modal-title">결제 상세 정보</div>
           
           <div class="modal-content">
             <div class="modal-amount">
-              <span class=modal-subtitle>금액</span> {{ selectedPayment.amount }}
+              <span class="modal-subtitle">금액</span> {{ selectedPayment.amount }}
             </div>
             <div class="modal-brandname">
-              <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
+              <span class="modal-subtitle">항목</span> {{ selectedPayment.brand_name }}
             </div>
             <div class="modal-member">
-              <!-- 정산 대상에 대한 테이블 추가 -->
               <table class="modal-member-table">
                 <tr>
                   <th>정산 대상</th>
@@ -296,7 +315,7 @@
                       v-model="memberCosts[index]"
                       type="number"
                       min="0"
-                      :placeholder="getPlaceholder(selectedPayment.id, member.bank_account, index)"
+                      :placeholder="getPlaceholder(member.bank_account)"
                       @input="updateRemainingAmount"
                       hide-details
                       dense
@@ -309,10 +328,11 @@
             </div>
           </div>
           <div class="modal-button">
-            <button class="modal-btn" text @click=closeModal>닫기</button>
+            <button class="modal-btn" text @click="closeModal">닫기</button>
           </div>
         </div>
       </v-dialog>
+
       <!-- <div class="summary">
         <div class="spend">
           <div class="type">쓴 돈</div>
@@ -381,10 +401,72 @@ const payments = computed(() => paymentStore.payments)
 const accountNum = computed(() => userStore.accountNum)
 const budgets = computed(() => paymentStore.budgets)
 const budgetTypes = ['initial', 'used', 'remain'];
-const currentBudgetType = ref('initial'); 
+const dialog = ref(false);
 const selectedPayment = ref(null);
 const memberCosts = ref([]);
 const remainingAmount = ref(0);
+const adjustment = ref([]);
+
+const openModal = (payment) => {
+  selectedPayment.value = payment;
+
+  const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
+
+  if (existingAdjustment) {
+    memberCosts.value = existingAdjustment.payments[0].bills.map(bill => bill.cost);
+    remainingAmount.value = payment.amount - memberCosts.value.reduce((acc, val) => acc + parseFloat(val || 0), 0);
+  } else {
+    addAdjustment(payment);
+
+    const newlyAddedAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === payment.id);
+    memberCosts.value = newlyAddedAdjustment.payments[0].bills.map(bill => bill.cost);
+    remainingAmount.value = 0;
+  }
+
+  dialog.value = true;
+  payment.checked = true;
+};
+
+const closeModal = () => {
+  dialog.value = false;
+};
+
+const getPlaceholder = (bankAccount) => {
+  return `Bank: ${bankAccount}`;
+};
+
+const updateRemainingAmount = () => {
+  const totalEntered = memberCosts.value.reduce((acc, val) => acc + parseFloat(val || 0), 0);
+  remainingAmount.value = selectedPayment.value.amount - totalEntered;
+};
+
+const modifyCost = () => {
+  if (remainingAmount.value !== 0) {
+    alert("총 금액이 지불해야 할 금액과 일치하지 않습니다.");
+    return;
+  }
+
+  const existingAdjustment = adjustment.value.find(adj => adj.payments[0].payment_id === selectedPayment.value.id);
+  if (existingAdjustment) {
+    existingAdjustment.payments[0].bills = selectedPayment.value.members.map((member, index) => ({
+      cost: memberCosts.value[index],
+      bank_account: member.bank_account,
+    }));
+  } else {
+    adjustment.value.push({
+      trip_id: route.params.id,
+      payments: [{
+        payment_id: selectedPayment.value.id,
+        bills: selectedPayment.value.members.map((member, index) => ({
+          cost: memberCosts.value[index],
+          bank_account: member.bank_account,
+        })),
+      }]
+    });
+  }
+
+  closeModal();
+};
 
 const getMemberBudget = (memberName) => {
       return budgets.value[memberName] || { initial_budget: 0, remain_budget: 0, used_budget: 0 };
@@ -407,167 +489,35 @@ const totalRemainBudget = computed(() => {
   return Object.values(budgets.value).reduce((sum, budget) => sum + budget.remain_budget, 0);
 });
 
-const dialog = ref(false);
+const addAdjustment = (payment, index) => {
+    payment.checked = !payment.checked
 
-const openModal = (payment) => {
-  if(payment.bank_account == userStore.accountNum) {
-    selectedPayment.value = payment;
-    dialog.value = true;
-  }
+    if (payment.checked) {
+        const cost = Math.floor(payment.amount / payment.members.length);
+        
+        // members 리스트를 순회하면서 {cost, bank_account} 형태의 객체를 만든다.
+        const bills = payment.members.map(member => ({
+            cost: cost,
+            bank_account: member.bank_account
+        }));
 
-  };
-
-const modifyCost = () => {
-  // 각 멤버의 정산 금액을 selectedPayment에 반영
-  selectedPayment.value.members.forEach((member, index) => {
-    member.assignedCost = memberCosts.value[index];
-  });
-
-  // payment 데이터를 adjustment 형식으로 변환
-  const paymentData = {
-    payment_id: selectedPayment.value.id, // payment의 id가 payment_id에 해당
-    bills: selectedPayment.value.members.map((member) => {
-      return {
-        cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
-        bank_account: member.bank_account  // 멤버의 bank_account
-      };
-    }),
-  };
-
-  const tripData = {
-    trip_id: route.params.id,
-    payments: [paymentData],
-  };
-
-  const existingIndex = adjustment.value.findIndex(
-    (p) => p.payments.some(payment => payment.payment_id === selectedPayment.value.id)
-  );
-
-  if (existingIndex !== -1) {
-    // 이미 adjustment에 있는 데이터라면 해당 데이터를 업데이트
-    adjustment.value[existingIndex] = tripData;
-  } else {
-    // 없으면 새로 추가
-    adjustment.value.push(tripData);
-    selectedPayment.value.checked = true; // 상태를 체크 상태로 변경
-  }
-
-  updateRemainingAmount();
-
-  if (remainingAmount.value < 2 && remainingAmount.value >= -2) { // 남은 금액이 0일 때만 모달 닫기
-    dialog.value = false;
-  } else {
-    alert('금액이 일치하지 않습니다. 모든 금액을 분배해주세요.');
-  }
-};
-
-const updateRemainingAmount = () => {
-  const totalAssigned = memberCosts.value.reduce((sum, cost) => sum + parseInt(cost || 0), 0);
-
-  remainingAmount.value = selectedPayment.value.amount - totalAssigned;
-  console.log(remainingAmount.value)
-};
-
-
-const closeModal = () => {
-  dialog.value = false;
-}
-
-const defaultCostPerMember = computed(() => {
-  return Math.floor(selectedPayment.value.amount / selectedPayment.value.members.length);
-});
-
-const getPlaceholder = (paymentId, bankAccount) => {
-  // adjustment에서 payment_id가 일치하는 항목을 찾음
-  const adjustmentEntry = adjustment.value.find((entry) =>
-    entry.payments.some((payment) => payment.payment_id === paymentId)
-  );
-
-  if (adjustmentEntry) {
-    // payment_id가 일치하는 payment 데이터를 찾음
-    const paymentData = adjustmentEntry.payments.find(
-      (payment) => payment.payment_id === paymentId
-    );
-
-    // 해당 paymentData에서 bank_account가 일치하는 bill을 찾음
-    const bill = paymentData.bills.find(
-      (b) => b.bank_account === bankAccount
-    );
-
-    if (bill) {
-      return bill.cost // 해당 멤버의 cost를 반환
-    }
-  }
-
-  // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
-  return defaultCostPerMember.value;
-};
-
-watch(dialog, (newVal) => {
-  if (newVal) {
-    // 각 멤버별 초기 금액 설정
-    memberCosts.value = selectedPayment.value.members.map((member, index) => {
-      const existingBill = getPlaceholder(selectedPayment.value.id, member.bank_account);
-      return parseInt(existingBill) || defaultCostPerMember.value;
-    });
-    updateRemainingAmount();
-  }
-});
-
-
-// 체크 토글 기능 수정
-const toggleCheck = (index, type) => {
-  let payment;
-
-    const adjustmentIndex = adjustment.value.findIndex(
-      (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
-    );
-
-    if (adjustmentIndex !== -1) {
-      // adjustment에 이미 존재하는 경우 해당 항목 제거
-      adjustment.value.splice(adjustmentIndex, 1);
-      paymentToUpdate.checked = false;
+        adjustment.value.push({
+            trip_id: route.params.id,
+            payments: [{
+                payment_id: payment.id,
+                bills: bills
+            }]
+        });
     } else {
-      // adjustment에 없으면 새로운 항목 추가
-      const newPaymentData = {
-        payment_id: paymentToUpdate.id, // payment의 id가 payment_id에 해당
-        bills: paymentToUpdate.members.map((member) => {
-          return {
-            cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
-            bank_account: member.bank_account  // 멤버의 bank_account
-          };
-        }),
-      };
-
-      const newTripData = {
-        trip_id: route.params.id,
-        payments: [newPaymentData],
-      };
-
-      adjustment.value.push(newTripData);
-      paymentToUpdate.checked = true;
+        // 이미 추가된 adjustment를 제거하기 위한 로직 (이 부분은 어떻게 정의할지에 따라 달라집니다)
+        const adjustmentIndex = adjustment.value.findIndex(adj => adj.payments[0].payment_id === payment.id);
+        if (adjustmentIndex !== -1) {
+            adjustment.value.splice(adjustmentIndex, 1);
+        }
     }
-  // if (type === "trip") {
-  //   payment = filteredPayments.value[index];
-  // } else if (type === "booking") {
-  //   payment = bookingPayments.value[index];
-  // }
 
-  // // Toggle the checked state
-  // payment.checked = !payment.checked;
-  // console.log("Toggled payment.checked:", payment.checked);
-
-  // // Update the adjustment array based on the new checked state
-  // if (payment.checked) {
-  //   adjustment.value.push(payment);
-  // } else {
-  //   adjustment.value = adjustment.value.filter((p) => p !== payment);
-  // }
-};
-
-
-
-
+    console.log('adjustment', adjustment.value)
+}
 
 // Props
 const props = defineProps({
@@ -666,41 +616,8 @@ const getExchangeRate = () => {
   }
 };
 
-const formattedTotalBalance = computed(() => {
-  const exchangeRate = getExchangeRate();
-  const convertedValue = convertCurrency(
-    totalBalance.value,
-    exchangeRate,
-    currencies.value[currencyIndex.value] !== "KRW"
-  );
-  const currencySymbol =
-    currencies.value[currencyIndex.value] === "KRW"
-      ? "₩"
-      : currencyText[currencies.value[currencyIndex.value]];
-  return `${currencySymbol} ${formatWithComma(
-    formatToTwoDecimal(convertedValue)
-  )}`;
-});
-
-const formattedMemberBalance = (balance) => {
-  const exchangeRate = getExchangeRate();
-  const convertedValue = convertCurrency(
-    balance,
-    exchangeRate,
-    currencies.value[currencyIndex.value] !== "KRW"
-  );
-  const currencySymbol =
-    currencies.value[currencyIndex.value] === "KRW"
-      ? "₩"
-      : currencyText[currencies.value[currencyIndex.value]];
-  return `${currencySymbol} ${formatWithComma(
-    formatToTwoDecimal(convertedValue)
-  )}`;
-};
 
 const startDate = computed(() => new Date(tripStore.startDate));
-
-const adjustment = ref([]);
 
 const filteredPayments = computed(() => {
   if (props.selectedView === 'all') {
