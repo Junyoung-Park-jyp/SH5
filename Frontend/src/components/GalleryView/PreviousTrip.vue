@@ -3,7 +3,7 @@
     <!-- 국가 -->
     <div class="my-10 trip country">
       <div class="background" :style="{ backgroundImage: `url('${tripStore.imageUrl}')`}"></div>
-      <div v-if="showReferenceMessage" class="reference-message" @click="scrollToBottom">
+      <div v-if="showReferenceMessage" class="reference-message" @click="scrollToTarget">
         AI 여행 스케치 생성하기
         <v-icon icon="mdi-arrow-down-thick" size="16px"></v-icon>
       </div>
@@ -69,7 +69,7 @@
     </div>
 
     <!-- 여행 스케치 -->
-    <div class="trip sketch">
+    <div class="trip sketch" ref="sketchSection">
       <div class="title">여행 스케치</div>
       <div class="content">
         <DrawPicture />
@@ -218,16 +218,6 @@ onMounted(() => {
 // 사진
 const showReferenceMessage = computed(() => !tripStore.imageUrl);
 
-const scrollToBottom = () => {
-  if (mainContainer.value) {
-    mainContainer.value.scrollTo({
-      top: mainContainer.value.scrollHeight,
-      behavior: "smooth"
-    });
-  }
-  
-};
-
 import member1 from "@/assets/img/member1.png";
 import member2 from "@/assets/img/member2.png";
 import member3 from "@/assets/img/member3.png";
@@ -243,6 +233,15 @@ const calculatePadding = (index) => {
   const paddingValues = [0, 15, 40, 40];
   return `${paddingValues[index % paddingValues.length]}px`;
 };
+
+// 스크롤
+const sketchSection = ref(null)
+
+const scrollToTarget = () => {
+  if (sketchSection.value) {
+    sketchSection.value.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 
 </script>
 
