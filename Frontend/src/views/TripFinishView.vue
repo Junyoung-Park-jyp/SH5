@@ -22,10 +22,14 @@
         ></v-icon>
       </div>
     </div>
-
-    <!-- 정산 금액 -->
-    <div class="amount">총 정산금 {{ formatWithComma(amount) }}</div>
-
+    
+    <!-- 정산완료 -->
+    <div class="complete">
+      <div class="img"><img src="@/assets/img/check.png" alt="체크" /></div>
+      <div class="amount">{{ formatWithComma(amount) }}</div>
+      <div class="message">정 산 완 료</div>
+    </div>
+    
     <!-- 입금/출금 -->
     <div class="type">
       <div class="withdraw">
@@ -33,16 +37,21 @@
           <img src="@/assets/img/withdraw.png" alt="출금" />
         </div>
         <div class="withdraw-list">
-          프로그레스바
+          <div v-for="(member, index) in budgetData" :key="index" class="progress-container">
+            <div class="progress-text">
+              {{ member.member }} {{ calculateProgress(member) }}%
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress"
+                :style="{ width: calculateProgress(member) + '%' }"
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 정산완료 -->
-    <div class="complete">
-      <div class="img"><img src="@/assets/img/check.png" alt="체크" /></div>
-      <div class="message">정 산 완 료</div>
-    </div>
 
     <!-- 상세내역 -->
     <div class="detail">
@@ -95,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useMemberColors } from "@/stores/colorStore";
 import { formatWithComma } from "@/stores/currencyStore";
 import { useRoute, useRouter } from "vue-router";
@@ -119,6 +128,7 @@ const budgetData= computed(() => {
     used_budget: data.used_budget,
     adjustment: data.initial_budget - data.remain_budget,
     remain_budget: data.remain_budget,
+    initial_budget: data.initial_budget,
   }));
 });
 
@@ -129,31 +139,42 @@ const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
-const withdrawList = computed(() => {
-  const result = [];
+// const withdrawList = computed(() => {
+//   const result = [];
   
-  // adjustmentsResult가 정의되어 있는지 확인
-  if (!adjustmentResult.value) {
-    return result;
-  }
+//   // adjustmentsResult가 정의되어 있는지 확인
+//   if (!adjustmentResult.value) {
+//     return result;
+//   }
 
-  for (const [name, balance] of Object.entries(adjustmentResult.value)) {
-    if (balance.difference < 0) {
-      result.push({
-        name,
-        amount: Math.abs(balance.difference),
-      });
-    }
-  }
-  return result;
-});
+//   for (const [name, balance] of Object.entries(adjustmentResult.value)) {
+//     if (balance.difference < 0) {
+//       result.push({
+//         name,
+//         amount: Math.abs(balance.difference),
+//       });
+//     }
+//   }
+//   return result;
+// });
+
 // `onMounted`에서 `membersWithColors`를 초기화
 onMounted(() => {
   membersWithColors.value = tripMembers.value.map((member, index) => ({
     ...member,
     color: memberColors.value[index],
   }));
+
+  // 프로그레스바 애니메이션 시작
+  nextTick(() => {
+    const progressBars = document.querySelectorAll('.progress');
+    progressBars.forEach((el, index) => {
+      const member = budgetData.value[index];
+      el.style.width = calculateProgress(member) + '%';
+    });
+  });
 });
+
 
 const backStep = () => {
   amount.value = 0;
@@ -163,6 +184,12 @@ const backStep = () => {
 const cancelTrip = () => {
   amount.value = 0;
   router.replace({ name: "tripDetail", params: { id: tripId}});
+};
+
+// 프로그레스바
+const calculateProgress = (member) => {
+  if (member.initial_budget === 0) return 0;
+  return Math.round((member.used_budget / member.initial_budget) * 100);
 };
 </script>
 
@@ -192,25 +219,59 @@ const cancelTrip = () => {
   /* border: 1px solid black; */
 }
 
-.amount {
+/* 정산 완료  */
+.complete {
   width: 100%;
-  height: 150px;
+  height: 200px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  color: #4b72e1;
+  margin: 0px auto;
+  margin-top: 30px;
   /* border: 1px solid black; */
+}
+
+.img {
+  margin: 0;
+  padding: 0;
+  /* border: 1px solid black; */
+}
+
+
+.img > img {
+  height: 60px;
+  width: 60px;
+}
+
+.amount {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  text-align: center;
   color: #4b72e1;
   font-size: xx-large;
   font-weight: bolder;
   margin: 0px auto;
+  padding: 0px;
   /* padding-bottom: 30px; */
+  /* border: 1px solid black; */
 }
 
+.message {
+  font-size: 22px;
+  font-weight: bolder;
+}
+
+/* 입금 로고 */
 .type {
   background-color: #ffffff;
   width: 100%;
-  height: 200px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -237,10 +298,11 @@ const cancelTrip = () => {
 .withdraw-img,
 .deposit-img {
   width: 70px;
-  margin: auto 15px auto 30px;
+  margin: auto 25px auto 30px;
   display: flex;
   justify-content: center;
   align-items: center;
+  /* border: 1px solid red; */
 }
 
 .withdraw-img img,
@@ -253,39 +315,67 @@ const cancelTrip = () => {
 
 .withdraw-list,
 .deposit-list {
-  text-align: left;
-  font-size: 15px;
-}
-
-.complete {
-  width: 100%;
-  height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  width: 70%;
+  margin-right: 40px;
+  text-align: left;
+  font-size: 15px;
+  /* border: 1px solid blue; */
+}
+
+/* 프로그레스바 */
+.progress-container {
   /* border: 1px solid black; */
-  color: #4b72e1;
-  margin: 0px auto;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
-.img > img {
-  height: 60px;
-  width: 60px;
+.progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  width: 90%;
+  height: 15px;
+  margin-bottom: 5px;
+  position: relative;
 }
 
-.message {
-  font-size: 22px;
-  font-weight: bolder;
+.progress {
+  background-color: #4b72e1;
+  height: 100%;
+  border-radius: 5px;
+  width: 0;
+  transition: width 2s ease;
 }
+
+@keyframes fillProgressBar {
+  0% {
+    width: -100%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.progress.animate {
+  animation: fillProgressBar 3s forwards;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #333;
+}
+
 
 .detail {
   width: 100%;
   height: 70%;
   background-color: #ffffff;
   margin: auto;
-  padding: 5px 15px 5px 0px;
+  margin-top: -10px;
+  padding: 3px 15px 5px 0px;
 }
 
 .settlement-table {

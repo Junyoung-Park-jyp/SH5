@@ -65,7 +65,7 @@
       <v-img class="category-image" :src="receivedCharacter"></v-img>
       <div class="d-flex flex-column justify-center">
         <div>당신의 소BTI 캐릭터는</div>
-        <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacter.split('/').pop().split('.').shift() }}</div>
+        <div style="font-size: 1.5rem; font-weight: bolder;">{{ receivedCharacterName }}</div>
         <div>입니다!</div>
       </div>
     </div>
@@ -188,10 +188,12 @@ const membersWithColors = ref([]);
 
 const { memberColors, rgbaColor } = useMemberColors(tripMembers);
 
+const receivedCharacterName = ref(null)
 const receivedCharacter = ref(null);
 
-const handleMostCharacterUpdate = (character) => {
-  console.log(character)
+const handleMostCharacterUpdate = (characterName, character) => {
+  console.log(characterName, character)
+  receivedCharacterName.value = characterName
   receivedCharacter.value = character
 }
 

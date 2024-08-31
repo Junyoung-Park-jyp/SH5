@@ -93,6 +93,17 @@ const mbtiCharacters = {
   쇼핑: LAY,
 };
 
+const characterNames = {
+  교통: 'SOL',
+  카페: 'MOLI',
+  기타: 'RINO',
+  숙소: 'SHOO',
+  식비: 'DOREMI',
+  항공: 'LULULALA',
+  관광: 'PLI',
+  쇼핑: 'LAY',
+};
+
 // // 가장 많이 사용된 카테고리에 해당하는 캐릭터 이미지를 가져오는 계산 속성
 // const mostCharacterImage = computed(() => {
 //   return mostCategory.value ? mbtiCharacters[mostCategory.value] : null;
@@ -128,7 +139,8 @@ onMounted(() => {
   mostCategory.value = categoryData[0].name;
 
   const character = mostCategory.value ? mbtiCharacters[mostCategory.value] : null;
-  emit('updateMostCharacter', character); // 부모 컴포넌트로 이벤트 emit
+  const characterName = mostCategory.value ? characterNames[mostCategory.value] : null;
+  emit('updateMostCharacter', characterName, character); // 부모 컴포넌트로 이벤트 emit
 
   const option = {
     tooltip: {
