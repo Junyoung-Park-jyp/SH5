@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Payment, Calculate
-from trips.models import Member
+from trips.models import Member, Trip
 from shinhan_api.demand_deposit import update_demand_deposit_account_Transfer as transfer
 from shinhan_api.demand_deposit import inquire_demand_deposit_account_balance as balance
 
@@ -68,13 +68,6 @@ class CalculateCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         trip_id = validated_data['trip_id']
         
-        # 정산 전 금액을 계산하기 위해 결과 딕셔너리 초기화
-        members = Member.objects.filter(trip=trip_id)
-        result = {}
-        for member in members:
-            if member.bank_account:
-                result[member.user.username] = {"before_balance": int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])}  # 정산 전 잔액
-
         # 각 payment에 대해 처리
         for payment_data in validated_data['payments']:
             payment_id = payment_data['payment_id']
@@ -99,20 +92,27 @@ class CalculateCreateSerializer(serializers.Serializer):
                     cost=cost
                 )
                 
-                if deposit_bank_account == withdrawal_bank_account:  # 정산 가격만 기록하고 금액 전송은 안함
+                # 아래 조건에 해당되면 정산 가격만 기록하고 금액 전송은 안함
+                if deposit_bank_account == withdrawal_bank_account:
                     continue
                 if cost == 0 or cost == '0':
                     continue
                 # 금액 이체 로직 호출
                 transfer(member.user.email, deposit_bank_account, withdrawal_bank_account, cost)
-        
-        # 정산 후 금액을 계산하기 위해 다시 members를 순회
+        budget = {}
+        trip = Trip.objects.get(id=trip_id)
+        members = Member.objects.filter(trip=trip)
+        start_date = trip.start_date
+        end_date = trip.end_date
         for member in members:
-            if member.bank_account:
-                username = member.user.username
-                temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
-                initial_balance = result[username]["before_balance"]
-                result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
-                result[username]["after_balance"] = temp_balance  # 정산 후 잔액
-
-        return result
+            username = member.user.username
+            initial_budget = member.budget
+            used_budget = sum(Calculate.objects.filter(
+                member=member,
+                payment__pay_date__gte=start_date,
+                payment__pay_date__lte=end_date
+                ).values_list('cost', flat=True))
+            remain_budget = initial_budget - used_budget
+            budget[username] = {"initial_budget": initial_budget, "used_budget": used_budget, "remain_budget": remain_budget}
+        
+        return budget
