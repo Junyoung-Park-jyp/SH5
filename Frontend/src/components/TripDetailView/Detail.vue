@@ -464,21 +464,6 @@ const modifyCost = () => {
   closeModal();
 };
 
-const addAdjustment = (payment) => {
-  const cost = Math.floor(payment.amount / payment.members.length);
-  const bills = payment.members.map(member => ({
-    cost: cost,
-    bank_account: member.bank_account
-  }));
-
-  adjustment.value.push({
-    trip_id: route.params.id,
-    payments: [{
-      payment_id: payment.id,
-      bills: bills
-    }]
-  });
-};
 const getMemberBudget = (memberName) => {
       return budgets.value[memberName] || { initial_budget: 0, remain_budget: 0, used_budget: 0 };
     };
@@ -500,46 +485,35 @@ const totalRemainBudget = computed(() => {
   return Object.values(budgets.value).reduce((sum, budget) => sum + budget.remain_budget, 0);
 });
 
-// const addAdjustment = (payment, index) => {
-//     payment.checked = !payment.checked
+const addAdjustment = (payment, index) => {
+    payment.checked = !payment.checked
 
-//     if (payment.checked) {
-//         const cost = Math.floor(payment.amount / payment.members.length);
+    if (payment.checked) {
+        const cost = Math.floor(payment.amount / payment.members.length);
         
-//         // members 리스트를 순회하면서 {cost, bank_account} 형태의 객체를 만든다.
-//         const bills = payment.members.map(member => ({
-//             cost: cost,
-//             bank_account: member.bank_account
-//         }));
+        // members 리스트를 순회하면서 {cost, bank_account} 형태의 객체를 만든다.
+        const bills = payment.members.map(member => ({
+            cost: cost,
+            bank_account: member.bank_account
+        }));
 
-//         adjustment.value.push({
-//             trip_id: route.params.id,
-//             payments: [{
-//                 payment_id: payment.id,
-//                 bills: bills
-//             }]
-//         });
-//     } else {
-//         // 이미 추가된 adjustment를 제거하기 위한 로직 (이 부분은 어떻게 정의할지에 따라 달라집니다)
-//         const adjustmentIndex = adjustment.value.findIndex(adj => adj.payments[0].payment_id === payment.id);
-//         if (adjustmentIndex !== -1) {
-//             adjustment.value.splice(adjustmentIndex, 1);
-//         }
-//     }
+        adjustment.value.push({
+            trip_id: route.params.id,
+            payments: [{
+                payment_id: payment.id,
+                bills: bills
+            }]
+        });
+    } else {
+        // 이미 추가된 adjustment를 제거하기 위한 로직 (이 부분은 어떻게 정의할지에 따라 달라집니다)
+        const adjustmentIndex = adjustment.value.findIndex(adj => adj.payments[0].payment_id === payment.id);
+        if (adjustmentIndex !== -1) {
+            adjustment.value.splice(adjustmentIndex, 1);
+        }
+    }
 
-//     console.log('adjustment', adjustment.value)
-// }
-
-// const openModal = (payment) => {
-//   if(payment.bank_account == userStore.accountNum) {
-//     selectedPayment.value = payment;
-//     dialog.value = true;
-//   }
-// };
-
-// const closeModal = () => {
-//   dialog.value = false;
-// }
+    console.log('adjustment', adjustment.value)
+}
 
 // Props
 const props = defineProps({
