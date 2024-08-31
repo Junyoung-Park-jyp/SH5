@@ -95,12 +95,17 @@
               <v-btn
                 @click="toggleCheck(paymentIndex, 'booking')"
                 variant="text"
-                :color="payment.checked ? 'primary' : 'grey'"
-                :icon="
-                  payment.checked
-                    ? 'mdi-check-circle'
-                    : 'mdi-checkbox-blank-circle-outline'
-                "
+                :color="payment.is_completed === 1 
+                  ? 'grey' 
+                  : (payment.checked 
+                    ? 'primary' 
+                    : 'grey')"
+                :icon="payment.is_completed === 1 
+                  ? 'mdi-circle' 
+                  : (payment.checked 
+                    ? 'mdi-check-circle' 
+                    : 'mdi-checkbox-blank-circle-outline')"
+                density="compact"
               ></v-btn>
             </div>
 
@@ -1150,8 +1155,14 @@ const finishTrip = () => {
 .pay-content {
   display: flex;
   flex-direction: column;
-  padding: 5px 10px;
   background-color: #ffffff;
+}
+.payment {
+  padding: 5px 10px;
+}
+.completed-payment {
+  background-color: #d3d3d3; /* Light gray background */
+  cursor: not-allowed; /* Show a not-allowed cursor */
 }
 
 /* 요약 */
