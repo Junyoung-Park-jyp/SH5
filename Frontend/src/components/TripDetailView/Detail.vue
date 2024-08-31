@@ -243,29 +243,22 @@
         </div>
       </div>
       <v-dialog v-model="dialog" max-width="600px">
-        <div class="modal">
-          <div class="modal-title">
+        <v-card>
+          <v-card-title>
             결제 상세 정보
-          </div>
-          
-          <div class="modal-content">
-            <div class="modal-amount">
-              <span class=modal-subtitle>금액</span> {{ selectedPayment.amount }}
+          </v-card-title>
+          <v-card-subtitle>
+            <div>
+              <strong>금액:</strong> {{ selectedPayment.amount }}
             </div>
-            <div class="modal-brandname">
-              <span class=modal-subtitle>항목</span> {{ selectedPayment.brand_name }}
+            <div>
+              <strong>브랜드명:</strong> {{ selectedPayment.brand_name }}
             </div>
-
-            <div class="modal-member">
-              <!-- 정산 대상에 대한 테이블 추가 -->
-              <table class="modal-member-table">
-                <tr>
-                  <th>정산 대상</th>
-                  <th>금액</th>
-                </tr>
-                <tr v-for="(member, index) in selectedPayment.members" :key="index">
-                  <td>{{ member.member }}</td>
-                  <td>
+            <div>
+              <strong>정산 대상:</strong>
+              <ul>
+                <li v-for="(member, index) in selectedPayment.members" :key="index">
+                    {{ member.member }}
                     <v-text-field
                       v-model="memberCosts[index]"
                       type="number"
@@ -275,17 +268,16 @@
                       hide-details
                       dense
                     ></v-text-field>
-                  </td>
-                </tr>
-              </table>
+                </li>
+              </ul>
               <p>남은 금액: {{ remainingAmount }}</p>
               <v-btn @click="modifyCost" color="primary">확인</v-btn>
             </div>
-          </div>
-          <div class="modal-button">
-            <button class="modal-btn" text @click=closeModal>닫기</button>
-          </div>
-        </div>
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn text @click="closeModal">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
       <!-- <div class="summary">
         <div class="spend">
@@ -357,6 +349,8 @@ const budgets = computed(() => paymentStore.budgets)
 const budgetTypes = ['initial', 'used', 'remain'];
 const currentBudgetType = ref('initial'); 
 const selectedPayment = ref(null);
+const memberCosts = ref([]);
+const remainingAmount = ref(0);
 
 const getMemberBudget = (memberName) => {
       return budgets.value[memberName] || { initial_budget: 0, remain_budget: 0, used_budget: 0 };
@@ -406,6 +400,50 @@ const openModal = (payment) => {
   dialog.value = false;
 };
 
+const modifyCost = () => {
+  // 각 멤버의 정산 금액을 selectedPayment에 반영
+  selectedPayment.value.members.forEach((member, index) => {
+    member.assignedCost = memberCosts.value[index];
+  });
+
+  // payment 데이터를 adjustment 형식으로 변환
+  const paymentData = {
+    payment_id: selectedPayment.value.id, // payment의 id가 payment_id에 해당
+    bills: selectedPayment.value.members.map((member) => {
+      return {
+        cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
+        bank_account: member.bank_account  // 멤버의 bank_account
+      };
+    }),
+  };
+
+  const tripData = {
+    trip_id: route.params.id,
+    payments: [paymentData],
+  };
+
+  const existingIndex = adjustment.value.findIndex(
+    (p) => p.payments.some(payment => payment.payment_id === selectedPayment.value.id)
+  );
+
+  if (existingIndex !== -1) {
+    // 이미 adjustment에 있는 데이터라면 해당 데이터를 업데이트
+    adjustment.value[existingIndex] = tripData;
+  } else {
+    // 없으면 새로 추가
+    adjustment.value.push(tripData);
+    selectedPayment.value.checked = true; // 상태를 체크 상태로 변경
+  }
+
+  updateRemainingAmount();
+
+  if (remainingAmount.value === 0) { // 남은 금액이 0일 때만 모달 닫기
+    dialog.value = false;
+  } else {
+    alert('금액이 일치하지 않습니다. 모든 금액을 분배해주세요.');
+  }
+};
+
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
   if (type === "trip") {
@@ -415,14 +453,56 @@ const toggleCheck = (index, type) => {
     );
     const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
 
-    if (adjustment.value.includes(paymentToUpdate)) {
-      adjustment.value.splice(adjustment.value.indexOf(paymentToUpdate), 1);
+    const adjustmentIndex = adjustment.value.findIndex(
+      (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
+    );
+
+    if (adjustmentIndex !== -1) {
+      // adjustment에 이미 존재하는 경우 해당 항목 제거
+      adjustment.value.splice(adjustmentIndex, 1);
       paymentToUpdate.checked = false;
     } else {
-      adjustment.value.push(paymentToUpdate);
+      // adjustment에 없으면 새로운 항목 추가
+      const newPaymentData = {
+        payment_id: paymentToUpdate.id, // payment의 id가 payment_id에 해당
+        bills: paymentToUpdate.members.map((member) => {
+          return {
+            cost: member.assignedCost,         // 각 멤버가 부담해야 하는 비용
+            bank_account: member.bank_account  // 멤버의 bank_account
+          };
+        }),
+      };
+
+      const newTripData = {
+        trip_id: 5, // 고정된 trip_id
+        payments: [newPaymentData],
+      };
+
+      adjustment.value.push(newTripData);
       paymentToUpdate.checked = true;
     }
   }
+};
+
+const getPlaceholder = (paymentId, bankAccount) => {
+  // adjustment에서 payment_id가 일치하는 항목을 찾음
+  const paymentData = adjustment.value.find(
+    (payment) => payment.payment_id === paymentId
+  );
+
+  if (paymentData) {
+    // 해당 paymentData에서 bank_account가 일치하는 bill을 찾음
+    const bill = paymentData.bills.find(
+      (b) => b.bank_account === bankAccount
+    );
+
+    if (bill) {
+      return bill.cost.toString(); // 해당 멤버의 cost를 반환
+    }
+  }
+
+  // adjustment에 해당 데이터가 없을 경우 기본 더치페이 금액 반환
+  return defaultCostPerMember.value.toString();
 };
 // Props
 const props = defineProps({
