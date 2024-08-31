@@ -121,17 +121,24 @@ def objection(request):
             deposit_user = calculate.member
             deposit_bank_account = deposit_user.bank_account
             transfer(withdrawal_email, deposit_bank_account, withdrawal_bank_account, calculate.cost)
-        
+            
+        budget = {}
+        trip = Trip.objects.get(id=trip_id)
+        start_date = trip.start_date
+        end_date = trip.end_date
         for member in members:
-            if member.bank_account:
-                username = member.user.username
-                temp_balance = int(balance(member.user.email, member.bank_account)['REC']['accountBalance'])
-                initial_balance = result[username]["before_balance"]
-                result[username]["difference"] = temp_balance - initial_balance  # 정산 전후 차액
-                result[username]["after_balance"] = temp_balance  # 정산 후 잔액
+            username = member.user.username
+            initial_budget = member.budget
+            used_budget = sum(Calculate.objects.filter(
+                member=member,
+                payment__pay_date__gte=start_date,
+                payment__pay_date__lte=end_date
+                ).values_list('cost', flat=True))
+            remain_budget = initial_budget - used_budget
+            budget[username] = {"initial_budget": initial_budget, "used_budget": used_budget, "remain_budget": remain_budget}
         
         calculates.delete()
-        return Response({'data': result}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'data': budget}, status=status.HTTP_204_NO_CONTENT)
     
     
 @api_view(["POST"])
