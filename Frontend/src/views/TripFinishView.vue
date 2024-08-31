@@ -24,7 +24,7 @@
     </div>
 
     <!-- 정산 금액 -->
-    <div class="amount">{{ amount }}</div>
+    <div class="amount">총 정산금 {{ formatWithComma(amount) }}</div>
 
     <!-- 입금/출금 -->
     <div class="type">
@@ -33,12 +33,7 @@
           <img src="@/assets/img/withdraw.png" alt="출금" />
         </div>
         <div class="withdraw-list">
-          <div v-if="withdrawList.length === 0">
-            정산 데이터가 없습니다.
-          </div>
-          <div v-else v-for="(item, index) in withdrawList" :key="index">
-            {{ item.name }}님으로부터 {{ formatWithComma(item.amount) }}원 입금
-          </div>
+          프로그레스바
         </div>
       </div>
     </div>
@@ -55,9 +50,9 @@
         <thead>
           <tr>
             <th></th>
-            <th style="border: 1px dashed lightgrey">지출액</th>
-            <th style="border: 1px dashed lightgrey">정산액</th>
-            <th style="border: 1px dashed lightgrey">잔액</th>
+            <th style="border: 1px dashed lightgrey">지출금</th>
+            <th style="border: 1px dashed lightgrey">정산금</th>
+            <th style="border: 1px dashed lightgrey">남은 예산</th>
           </tr>
         </thead>
         <tbody>
@@ -80,11 +75,11 @@
             <td
               style="border: 1px dashed lightgrey"
               :class="{
-                positive: budgets.adjustment > 0,
-                negative: budgets.adjustment < 0,
+                negative: budgets.adjustment > 0,
+                positive: budgets.adjustment < 0,
               }"
             >
-              {{ budgets.adjustment > 0 ? "+" : "" }}
+              {{ budgets.adjustment > 0 ? "-" : "" }}
               {{ formatWithComma(budgets.adjustment) }}
             </td>
             <td style="border: 1px dashed lightgrey">
@@ -94,7 +89,7 @@
 
         </tbody>
       </table>
-      <div class="explanation">개인별 잔액 = 예산 - 총 지출액 </div>
+      <div class="explanation">(개인별) 남은 예산 = 초기 예산 - 총 지출금 </div>
     </div>
   </div>
 </template>
