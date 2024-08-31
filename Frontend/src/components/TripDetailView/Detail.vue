@@ -350,23 +350,72 @@
           </div>
           <div class="modal-button">
             <button class="modal-btn" text @click="deletePayment(selectedPayment.id)">삭제</button>
-            <button class="ok-btn" @click="modifyCost">확 인</button>
+            <button class="ok-btn" @click="modifyCost(selectedPayment)">확 인</button>
           </div>
         </div>
       </v-dialog>
 
-      <!-- <div class="summary">
-        <div class="spend">
-          <div class="type">쓴 돈</div>
-          <div class="today">₩ 4057</div>
-          <div class="total">₩ 426864</div>
+      <!-- 정산 완료된 모달 -->
+      <v-dialog class="dialog-modal" v-model="dialog">
+        <div class="modal">
+          <!-- Close Button -->
+          <div class="close-btn">
+            <v-icon 
+              class="close-icon" 
+              icon="mdi-close" 
+              @click="closeModal"
+            ></v-icon>
+          </div>
+
+          <div class="modal-title">결제 상세 정보</div>
+          
+          <div class="modal-content">
+            <div class="modal-first-table">
+              <table class="first-table">
+                <tr>
+                  <th>항목</th>
+                  <td class="ellipsis">{{ selectedPayment.brand_name }}</td>
+                </tr>
+                <tr>
+                  <th>금액</th>
+                  <td>₩ {{ formatWithComma(selectedPayment.amount) }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-second-table">
+              <table class="second-table">
+                <tr>
+                  <th class="whom">정산 대상</th>
+                  <th class="howmuch">금액</th>
+                </tr>
+                <tr v-for="(member, index) in selectedPayment.members" :key="index">
+                  <td class="whom">{{ member.member }}</td>
+                  <td class="howmuch">
+                    <v-text-field
+                      v-model="memberCosts[index]"
+                      type="number"
+                      min="0"
+                      @blur="updateRemainingAmount"
+                      @input="handleInput(index)"
+                      hide-details
+                    ></v-text-field>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="third-table">
+                <th class="remain">차액</th>
+                <td>{{ remainingAmount }}</td>
+              </table>
+            </div>
+          </div>
+          <div class="modal-button">
+            <button class="ok-btn" @click="editPayment(selectedPayment.id)">이의 제기</button>
+          </div>
         </div>
-        <div class="remain">
-          <div class="type">남은 돈</div>
-          <div class="today">₩ 6024</div>
-          <div class="total">₩ 426864</div>
-        </div>
-      </div> -->
+      </v-dialog>
+
 
       <div class="calculation">
         <div class="result" @click="toggleCurrencyInResult">
@@ -557,6 +606,10 @@ const addAdjustment = (payment, index) => {
 
 const deletePayment = async (paymentId) => {
   const response = await paymentStore.deletePayment(paymentId)
+}
+
+const editPayment = async (paymentId) => {
+  const response = await paymentStore.editPayment(route.params.id, paymentId)
 }
 // Props
 const props = defineProps({

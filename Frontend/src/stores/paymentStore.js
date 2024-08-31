@@ -50,6 +50,23 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
+    async editPayment(tripId, paymentId) {
+      try {
+        const response = await axiosInstance.post('/payments/objection/', {
+          trip_id: tripId,
+          payment_id: paymentId
+        })
+        if (response) {
+          console.log(response)
+          this.budgets = response.data
+        } else {
+          console.error('오류 발생')
+        }
+      } catch(error) {
+        console.error("결제 내역 이의 제기 실패", error)
+      }
+    },
+
     async getPayments(tripId) {
       const tripStore = useTripStore();
       const userStore = useUserStore();
