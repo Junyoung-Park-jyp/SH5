@@ -296,21 +296,27 @@
           <div class="modal-title">결제 상세 정보</div>
           
           <div class="modal-content">
-            <div class="modal-amount">
-              <span class="modal-subtitle">금액</span> {{ selectedPayment.amount }}
-            </div>
-            <div class="modal-brandname">
-              <span class="modal-subtitle">항목</span> {{ selectedPayment.brand_name }}
-            </div>
-            <div class="modal-member">
-              <table class="modal-member-table">
+            <div class="modal-first-table">
+              <table class="first-table">
                 <tr>
-                  <th>정산 대상</th>
+                  <th>항목</th>
+                  <td>{{ selectedPayment.brand_name }}</td>
+                </tr>
+                <tr>
                   <th>금액</th>
+                  <td>₩ {{ formatWithComma(selectedPayment.amount) }}</td>
+                </tr>
+              </table>
+            </div>
+            <div class="modal-second-table">
+              <table class="second-table">
+                <tr>
+                  <th class="whom">정산 대상</th>
+                  <th class="howmuch">금액</th>
                 </tr>
                 <tr v-for="(member, index) in selectedPayment.members" :key="index">
-                  <td>{{ member.member }}</td>
-                  <td>
+                  <td class="whom">{{ member.member }}</td>
+                  <td class="howmuch">
                     <v-text-field
                       v-model="memberCosts[index]"
                       type="number"
@@ -1303,8 +1309,62 @@ const finishTrip = () => {
   justify-content: center;
   align-items: leftr;
   margin: 20px auto;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
+
+div.modal-first-table {
+  width: 100%;
+  /* border: 1px solid blue; */
+}
+
+.first-table > tr > th {
+  width: 70px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  /* border: 1px solid green; */
+}
+
+.first-table > tr > td {
+  font-size: 14px;
+  /* border: 1px solid red; */
+}
+
+div.modal-second-table {
+  width: 100%;
+  margin-top: 20px;
+  /* border: 1px solid green; */
+}
+
+.second-table > tr > th {
+  font-weight: 400;
+  background-color: #4b72e1;
+  color: white;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.second-table > tr > th.whom {
+  width: 70px;
+  /* border: 1px solid red; */
+}
+
+.second-table > tr > th.howmuch {
+  /* border: 1px solid red; */
+}
+
+.second-table > tr > td.whom {
+  /* border: 1px solid red; */
+  text-align: center;
+  background-color: #d2d2d2;
+}
+
+.second-table > tr > td.howmuch {
+  /* border: 1px solid red; */
+}
+
+
 
 .modal-amount, .modal-brandname {
   width: 100%;
