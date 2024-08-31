@@ -7,7 +7,7 @@
         class="budget-container"
         @click="toggleBudget"
       >
-        <div class="title d-flex justify-space-between" @click="checkData" >
+        <div class="title d-flex justify-space-between">
           <div v-if="currentBudgetType === 'initial'" class="prepare">초기</div>
           <div v-else-if="currentBudgetType === 'used'" class="prepare">소비</div>
           <div v-else class="prepare">잔여</div>
@@ -718,21 +718,6 @@ watch(formattedCheckedCost, (newCost) => {
   emit("updateCheckedCost", newCost);
 });
 
-// const toggleCheck = (index, type) => {
-//   if (type === "booking") {
-//     bookingPayments.value[index].checked =
-//       !bookingPayments.value[index].checked;
-//   } else if (type === "trip") {
-//     // filteredPayments 내의 실제 결제 항목에 접근하여 상태를 업데이트합니다.
-//     const payment = filteredPayments.value[index];
-//     const actualIndex = paymentsDuringTrip.value.findIndex(
-//       (p) => p === payment
-//     );
-//     paymentsDuringTrip.value[actualIndex].checked =
-//       !paymentsDuringTrip.value[actualIndex].checked;
-//   }
-// };
-
 const formattedTotalCost = (paymentArray) => {
   const totalCost = paymentArray.reduce(
     (sum, payment) => sum + payment.amount,
@@ -785,7 +770,6 @@ const personStyle = (memberName, reservationMembers, index) => {
     };
   }
 };
-
 
 const personClick = (index, memberName, type) => {
   const paymentList =
