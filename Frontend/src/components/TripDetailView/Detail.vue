@@ -18,13 +18,13 @@
             {{ formattedTotalBalance }}
           </div> -->
           <div v-if="currentBudgetType ==='initial'" class="sum">
-            ₩ {{ totalInitialBudget }}
+            ₩ {{ formatWithComma(totalInitialBudget) }}
           </div>
           <div v-else-if="currentBudgetType === 'used'">
-            ₩ {{ totalUsedBudget }}
+            ₩ {{ formatWithComma(totalUsedBudget) }}
           </div>
           <div v-else class="sum">
-            ₩ {{ totalRemainBudget }}
+            ₩ {{ formatWithComma(totalRemainBudget) }}
           </div>
         </div>
         <div class="budget-content">
@@ -54,13 +54,13 @@
               </div> -->
               <div class="member-balance" >
                 <template v-if="currentBudgetType === 'initial'">
-                  ₩ {{ getMemberBudget(member.member).initial_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).initial_budget) }}
                 </template>
                 <template v-else-if="currentBudgetType === 'used'">
-                  ₩ {{ getMemberBudget(member.member).used_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).used_budget) }}
                 </template>
                 <template v-else>
-                  ₩ {{ getMemberBudget(member.member).remain_budget }}
+                  ₩ {{ formatWithComma(getMemberBudget(member.member).remain_budget) }}
                 </template>
               </div>
             </div>
@@ -88,6 +88,7 @@
             class="payment"
             v-for="(payment, paymentIndex) in bookingPayments"
             :key="paymentIndex"
+            :style="payment.is_completed === 1 ? { 'pointer-events': 'auto' } : {}"
           >
             <!-- 체크 버튼 -->
             <div v-if="accountNum==payment.bank_account" class="check-area">
