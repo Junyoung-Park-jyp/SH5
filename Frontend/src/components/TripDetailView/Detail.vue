@@ -197,7 +197,7 @@
                     : 'grey')"
                 :icon="payment.is_completed === 1 
                   ? 'mdi-circle' 
-                  : (payment.checked 
+                  : (payment.checked x
                     ? 'mdi-check-circle' 
                     : 'mdi-checkbox-blank-circle-outline')"
                 density="compact"
