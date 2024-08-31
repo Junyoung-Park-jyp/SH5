@@ -509,7 +509,12 @@ watch(dialog, (newVal) => {
 
 // 체크 토글 기능 수정
 const toggleCheck = (index, type) => {
-  let payment;
+  if (type === "trip") {
+    const payment = filteredPayments.value[index];
+    const actualIndex = paymentsDuringTrip.value.findIndex(
+      (p) => p === payment
+    );
+    const paymentToUpdate = paymentsDuringTrip.value[actualIndex];
 
     const adjustmentIndex = adjustment.value.findIndex(
       (p) => p.payments.some(payment => payment.payment_id === paymentToUpdate.id)
@@ -539,9 +544,8 @@ const toggleCheck = (index, type) => {
       adjustment.value.push(newTripData);
       paymentToUpdate.checked = true;
     }
-
+  }
 };
-
 
 
 
