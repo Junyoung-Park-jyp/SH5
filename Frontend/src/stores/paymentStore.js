@@ -85,13 +85,12 @@ export const usePaymentStore = defineStore('paymentStore', {
       }
     },
 
-    async makeAdjustment(tripId, adjustments) {
+    async makeAdjustment(adjustments) {
       console.log('makeAdjustment 가 받은 데이터', adjustments)
       // 각 payment 객체를 적절한 형식으로 변환      
       try {
         const response = await axiosInstance.post('/payments/adjustment/', { 
-          trip_id: tripId,
-          payments: adjustments,
+          adjustments
         });
     
         if (response) {
