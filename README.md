@@ -12,8 +12,8 @@
 
 | 이름   | 구분 | 역할 및 수행업무                       |
 | ------ | ---- | -------------------------------------- |
-| 박준영 | 팀장 | 프론트엔드, Axios                      |
-| 이선재 | 팀원 | 프론트엔드, 카테고리화, UI/UX          |
+| 박준영 | 팀장 | 프론트엔드, Axios, UI/UX               |
+| 이선재 | 팀원 | 프론트엔드, Axios, UI/UX, CSS          |
 | 임광영 | 팀원 | 프론트엔드, 결제 카테고리화, AI 이미지 |
 | 정태완 | 팀원 | DB, API, 인프라                        |
 
@@ -28,3 +28,17 @@
 - **빌드 및 배포 도구:** Docker, Jenkins
 
 ## 빌드 및 실행 방법
+
+**SOLoTrip 홈페이지**: [SOLoTrip 홈페이지](https://5illjjang.click/)  
+**SOLoTrip API Page**: [SOLoTrip API Page](https://5illjjang.click/api/)
+
+### locat host에서 빌드하고 싶다면?
+
+1. backend branch로 이동: `git switch backend`
+2. SOLoTrip 폴더로 이동: `cd SOLoTrip`
+3. 가상환경 생성: `python -m venv venv`
+4. 가상환경 활성화: `source venv/`
+
+#### Django
+
+#### Vue3
