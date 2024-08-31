@@ -170,8 +170,7 @@
           filteredPayments.length &&
           (showAllContainers || !showBudgetAndBookingOnly)
         "
-        class="pay-container"
-      >
+        class="pay-container">
         <div class="title d-flex justify-space-between">
           <div class="subtitle">결제 &nbsp;|&nbsp; 지출</div>
           <v-spacer></v-spacer>
@@ -289,6 +288,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-else class="d-flex flex-column align-center mt-15">
+        <v-icon class="empty-icon" icon="mdi-alert-circle-outline" size="x-large"></v-icon>
+        <div class="mt-2">결제 내역이 없습니다</div>
       </div>
 
       <v-dialog v-model="dialog" max-width="600px">
@@ -1334,5 +1337,9 @@ const finishTrip = () => {
   font-weight: bold;
   text-align: center;
   margin: auto;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
 }
 </style>
