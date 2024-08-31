@@ -145,7 +145,11 @@
 - 여행자 보험 가입 단계가 끝나면, 다시 이 페이지로 돌아오게 됩니다.
 - 이제 지출내역 버튼을 클릭해줍니다.
 
-#### 5-1. 보험 페이지(TripMainView - InsuranceView)
+#### 5-1. 보험 페이지(InsuranceView)
+
+![InsuranceView1](./img/InsuranceView1.png)
+![InsuranceView2](./img/InsuranceView2.png)
+![InsuranceView3](./img/InsuranceView3.png)
 
 - 신한 SOL 트래블 보험을 안내하는 페이지입니다.
 - 기본 정보 및 보장에 대한 정보도 제공합니다.
@@ -154,14 +158,18 @@
 
 ### 6. 여행 상세 페이지(TripDetailView)
 
+![TripDetailView](./img/TripDetailView.png)
+
 - 여행의 꽃, 결제 내역을 표기해주는 페이지입니다.
 - 상단의 날짜를 클릭하면 해당 날짜의 결제 내역을 보여주고, 좌측의 A를 클릭하면 모든 결제 내역을 표기해줍니다.
 - P를 클릭하면 여행 전 결제 내역이 표기되고, 결제 내역을 추가할 수 있습니다.
   - 항공, 숙박과 같은 경우 여행 전에 미리 결제하는 경우가 많아 결제 내역 추가 기능을 제공합니다.
 - 예산은 초기, 잔여, 소비 예산을 보여줍니다. 예산 부분을 클릭하면 보여지는 정보가 달라지는 것을 볼 수 있습니다.
-- 하단 결제에서는
+- 하단 결제에서는 자신이 결제한 결제 내역에 대해서만 정산할 수 있도록 설정했고, 정산이 완료되면 회색으로 표기됩니다.
 
 ### 7. 정산 완료 페이지(TripFinishView)
+
+![TripFinishView](./img/TripFinishView.png)
 
 ### 8. 전체 여행 페이지(TripView)
 
