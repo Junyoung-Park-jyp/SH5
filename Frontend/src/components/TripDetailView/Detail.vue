@@ -241,8 +241,14 @@
             </div>
 
             <!-- 결제 날짜 -->
-            <div class="date-area">
+            <!-- ALL 또는 준비 기간일 때는 일자와 시간 -->
+            <div v-if="!props.selectDayFlag" class="date-area">
               {{ formatDate(payment.pay_date) }}
+              {{ formatTime(payment.pay_time) }}
+            </div>
+            <!-- 특정 날짜일 때는 시간만 -->
+            <div v-else class="date-area">
+              <!-- {{ formatDate(payment.pay_date) }} -->
               {{ formatTime(payment.pay_time) }}
             </div>
           </div>
@@ -541,6 +547,7 @@ const props = defineProps({
   showAllContainers: Boolean,
   showBudgetAndBookingOnly: Boolean,
   selectedView: String,
+  selectDayFlag: Boolean,
 });
 
 // Emits
