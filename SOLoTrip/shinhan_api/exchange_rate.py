@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from shinhan_api.request import post
 from shinhan_api.common import make_header
 
@@ -28,5 +32,5 @@ def exchange_rate_search():
 
 
 if __name__ == "__main__":
-    # exchange_rate()
-    exchange_rate_search()
+    exchange_rate()
+    # exchange_rate_search()

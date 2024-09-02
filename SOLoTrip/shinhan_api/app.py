@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from shinhan_api.request import post
 
 
@@ -20,5 +24,5 @@ def re_issued_api_key():
     
 
 if __name__ == "__main__":
-    # issued_api_key()
-    print(re_issued_api_key())
+    issued_api_key()
+    # print(re_issued_api_key())
