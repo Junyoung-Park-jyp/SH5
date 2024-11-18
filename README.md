@@ -10,12 +10,12 @@
 
 ## Team 5일장
 
-| 이름   | 구분 | 역할 및 수행업무                       |
-| ------ | ---- | -------------------------------------- |
-| OOO | 팀장 | 프론트엔드, Axios, UI/UX               |
-| OOO | 팀원 | 프론트엔드, Axios, UI/UX, CSS          |
-| OOO | 팀원 | 프론트엔드, 결제 카테고리화, AI 이미지 |
-| OOO | 팀원 | DB, API, 인프라                        |
+| 이름 | 구분 | 역할 및 수행업무                       |
+| ---- | ---- | -------------------------------------- |
+| OOO  | 팀장 | 프론트엔드, Axios, UI/UX               |
+| OOO  | 팀원 | 프론트엔드, Axios, UI/UX, CSS          |
+| OOO  | 팀원 | 프론트엔드, 결제 카테고리화, AI 이미지 |
+| OOO  | 팀원 | DB, API, 인프라                        |
 
 ## 개발 환경
 
@@ -41,13 +41,13 @@
 현재 Django는 MySQL과 연결된 상태이고, MySQL은 EC2에서 구동되고 있습니다.  
 즉, `.env`파일의 변수들이 없다면, localhost에서 기능 테스트는 불가합니다.  
 물론 배포된 사이트에선 가능합니다.  
-만약 테스트를 해보고 싶으시다면, 5일장 팀원 `정태완`에게 연락주시면 해당 변수 값이 담긴 `.env`파일을 개별적으로 보내드리겠습니다.
+만약 테스트를 해보고 싶으시다면, 5일장 팀원 `OOO`에게 연락주시면 해당 변수 값이 담긴 `.env`파일을 개별적으로 보내드리겠습니다.
 
-##### 연락처
+<!-- ##### 연락처
 
 ```json
 { "전화번호": "010-6369-7071", "email": "oodeng98@naver.com" }
-```
+``` -->
 
 #### Django 실행 방법
 
@@ -102,7 +102,8 @@
 ### 4. 여행 생성 페이지(TripCreateView)
 
 ![TripCreateView1](./img/TripCreateView1.png)
-![TripCreateView2](./img/TripCreateView2.png)
+
+<!-- ![TripCreateView2](./img/TripCreateView2.png) -->
 
 - 이 페이지는 여행을 생성하는 페이지입니다.
 - 여행에 필요한 데이터로는
@@ -137,7 +138,7 @@
 
 ### 5. 여행 메인 페이지(TripMainView)
 
-![TripMainView](./img/TripMainView.png)
+<!-- ![TripMainView](./img/TripMainView.png) -->
 
 - 여행에 대한 정보를 제공하는 페이지입니다.
 - 여행지, 여행 기간, 멤버, 환율에 대한 정보를 제공합니다.
@@ -149,7 +150,8 @@
 
 ![InsuranceView1](./img/InsuranceView1.png)
 ![InsuranceView2](./img/InsuranceView2.png)
-![InsuranceView3](./img/InsuranceView3.png)
+
+<!-- ![InsuranceView3](./img/InsuranceView3.png) -->
 
 - 신한 SOL 트래블 보험을 안내하는 페이지입니다.
 - 기본 정보 및 보장에 대한 정보도 제공합니다.
@@ -169,20 +171,21 @@
 
 ### 7. 정산 완료 페이지(TripFinishView)
 
-![TripFinishView](./img/TripFinishView.png)
+<!-- ![TripFinishView](./img/TripFinishView.png) -->
 
 ### 8. 전체 여행 페이지(TripView)
 
 ### 9. 완료된 여행 페이지(GalleryView)
+
 ![GalleryView1](img/GalleryView1.png)
 ![GalleryView2](img/GalleryView2.png)
 ![alt text](img/GalleryView3.png)
+
 - 이미 다녀온 여행의 기록을 볼 수 있는 페이지입니다.
 - 여행의 날짜와 멤버, 소비 내역을 볼 수 있습니다.
 - 여행 소비 내역을 자동으로 카테고리화하여 분류하며, 이에 따라 소비 성향을 분석하여 사용자의 소BTI를 알려줍니다.
 - 여행 스케치 기능을 통해 사용자의 여행 사진를 입력하면, 생성형 AI가 사진을 스케치해줍니다.
 - 스케치 한 사진은 TripView에서 확인할 수 있습니다.
-
 
 1. 설명 쭉 해주고
 2. 이미지 생성 해보고
